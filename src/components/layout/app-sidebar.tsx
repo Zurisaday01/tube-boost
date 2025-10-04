@@ -22,9 +22,7 @@ import {
 } from '@/components/ui/sidebar';
 import { navItems } from '@/constants/data';
 import { useMediaQuery } from '@/hooks/use-media-query';
-// import { useUser } from '@clerk/nextjs';
 import { IconChevronRight } from '@tabler/icons-react';
-// import { SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';

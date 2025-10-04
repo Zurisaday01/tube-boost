@@ -1,15 +1,10 @@
+import { requireSession } from '@/lib/auth-check';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import { auth } from 'auth';
 
 export default async function Dashboard() {
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
+  // This will redirect automatically if no session
+  await requireSession();
 
-  if (!session) {
-    return redirect('/auth/sign-in');
-  } else {
-    redirect('/dashboard/overview');
-  }
+  // You already know session exists here
+  redirect('/dashboard/playlists');
 }

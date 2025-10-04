@@ -56,8 +56,9 @@ export const getAllPlaylists = cache(async () => {
     headers: await headers()
   });
 
+  // return a nullable value for unauthorized access
   if (!session?.user.id) {
-    return [];
+    return null;
   }
 
   const playlists = await prisma.playlist.findMany({
@@ -107,8 +108,9 @@ export const getPlaylistById = cache(async (id: string) => {
     headers: await headers()
   });
 
+  // return a nullable value for unauthorized access
   if (!session?.user.id) {
-    return [];
+    return null;
   }
 
   const playlist = await prisma.playlist.findUnique({

@@ -11,7 +11,7 @@ import {
   FormLabel
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { createElement, JSX, useState } from 'react';
+import { JSX, useState } from 'react';
 import { Box } from '@/components/ui/box';
 
 type PasswordFieldProps = {
@@ -49,14 +49,20 @@ export function PasswordField({
                 className={`pr-12 ${getFieldState(name).error && 'text-destructive'}`}
                 {...field}
               />
-              <Box
+              <button
+                type='button'
                 className='text-muted-foreground absolute inset-y-0 right-0 flex cursor-pointer items-center p-3'
                 onClick={() => setPasswordVisibility(!passwordVisibility)}
+                aria-label={
+                  passwordVisibility ? 'Hide password' : 'Show password'
+                }
               >
-                {createElement(passwordVisibility ? EyeOffIcon : EyeIcon, {
-                  className: 'size-5'
-                })}
-              </Box>
+                {passwordVisibility ? (
+                  <EyeOffIcon className='size-5' />
+                ) : (
+                  <EyeIcon className='size-5' />
+                )}
+              </button>
             </Box>
           </FormControl>
           <FormMessage />

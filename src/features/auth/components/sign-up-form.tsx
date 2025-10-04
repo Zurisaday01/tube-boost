@@ -34,17 +34,13 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    const payload = {
+    const res = await signUp.email({
       name: `${values.firstName} ${values.lastName}`,
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
       password: values.password
-    };
-
-    console.log('Sending Payload:', payload);
-
-    const res = await signUp.email(payload);
+    });
 
     if (res.data && res.data.token) {
       toast.success(`Welcome ${values.firstName}!`);

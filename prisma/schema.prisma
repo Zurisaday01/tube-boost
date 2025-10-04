@@ -9,9 +9,9 @@ datasource db {
 
 model User {
   id            String          @id
-  name          String
-  firstName     String
-  lastName      String
+  name          String // better auth requires name
+  firstName     String // additional fields
+  lastName      String // additional fields
   email         String
   emailVerified Boolean
   image         String?

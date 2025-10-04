@@ -4,10 +4,10 @@ import { z } from 'zod';
 import { createPlaylistSchema } from '@/lib/schemas';
 import { prisma } from '../db/prisma';
 import { auth } from 'auth';
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
 import { devLog } from '../utils';
+import { headers } from 'next/headers';
 
 export const createPlaylist = async (
   data: z.infer<typeof createPlaylistSchema>
@@ -51,7 +51,18 @@ export const createPlaylist = async (
 };
 
 export const getAllPlaylists = cache(async () => {
+  // get user id
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  // return a nullable value for unauthorized access
+  if (!session?.user.id) {
+    return null;
+  }
+
   const playlists = await prisma.playlist.findMany({
+    where: { userId: session?.user.id },
     select: {
       id: true,
       title: true,
@@ -92,8 +103,18 @@ export const getAllPlaylists = cache(async () => {
 });
 
 export const getPlaylistById = cache(async (id: string) => {
+  // get user id
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  // return a nullable value for unauthorized access
+  if (!session?.user.id) {
+    return null;
+  }
+
   const playlist = await prisma.playlist.findUnique({
-    where: { id },
+    where: { id, userId: session?.user.id },
     select: {
       id: true,
       title: true,

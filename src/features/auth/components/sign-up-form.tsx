@@ -1,70 +1,139 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { signUp } from '@/lib/auth-client';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
-import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { signUpSchema } from '@/lib/schemas';
+import { toast } from 'sonner';
+import { PasswordField } from './password-field';
+import { Loader2 } from 'lucide-react';
+import { signUp } from '@/lib/auth-client';
 
 const SignUpForm = () => {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
+  });
 
-    const formData = new FormData(e.currentTarget);
-
+  async function onSubmit(values: z.infer<typeof signUpSchema>) {
     const res = await signUp.email({
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      password: formData.get('password') as string
+      name: `${values.firstName} ${values.lastName}`,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      password: values.password
     });
 
+    if (res.data && res.data.token) {
+      toast.success(`Welcome ${values.firstName}!`);
+      window.location.href = '/dashboard/playlists'; // Redirect to dashboard on success
+    }
+
     if (res.error) {
-      setError(res.error.message || 'Something went wrong.');
-    } else {
-      router.push('/dashboard');
+      toast.error(res.error.statusText || 'Something went wrong.');
     }
   }
+
   return (
-    <div className='flex flex-col items-center justify-center gap-2'>
-      <form onSubmit={handleSubmit} className='space-y-4'>
-        <input
-          name='name'
-          placeholder='Full Name'
-          required
-          className='w-full rounded-md border px-3 py-2'
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
+        <FormField
+          control={form.control}
+          name='firstName'
+          render={({ field }) => (
+            <FormItem className='w-full'>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={form.formState.isSubmitting}
+                  placeholder='Enter your first name'
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <input
+        <FormField
+          control={form.control}
+          name='lastName'
+          render={({ field }) => (
+            <FormItem className='w-full'>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={form.formState.isSubmitting}
+                  placeholder='Enter your last name'
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name='email'
-          type='email'
-          placeholder='Email'
-          required
-          className='w-full rounded-md border px-3 py-2'
-        />
-        <input
-          name='password'
-          type='password'
-          placeholder='Password'
-          required
-          minLength={8}
-          className='w-full rounded-md border px-3 py-2'
+          render={({ field }) => (
+            <FormItem className='w-full'>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={form.formState.isSubmitting}
+                  placeholder='you@example.com'
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        <Button type='submit' className='w-full'>
-          Sign Up
-        </Button>
+        <PasswordField disabled={form.formState.isSubmitting} />
 
-        <Link
-          href='/auth/sign-in'
-          className='text-sm text-gray-500 hover:underline'
+        <PasswordField
+          name='confirmPassword'
+          placeholder='Confirm your password'
+          label='Confirm Password'
+          disabled={form.formState.isSubmitting}
+        />
+
+        <Button
+          disabled={form.formState.isSubmitting}
+          type='submit'
+          className='w-full'
         >
-          Already have an account? Sign In
-        </Link>
+          {form.formState.isSubmitting ? (
+            <Loader2 className='size-5 animate-spin' />
+          ) : (
+            'Sign Up'
+          )}
+        </Button>
       </form>
-      {error && <p className='text-red-500'>{error}</p>}
-    </div>
+    </Form>
   );
 };
+
 export default SignUpForm;

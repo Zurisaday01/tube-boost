@@ -5,6 +5,8 @@ import { getAllPlaylists } from '@/lib/actions/playlist';
 const PlaylistsPage = async () => {
   const playlists = await getAllPlaylists();
 
+  if (!playlists) return <div>Please sign in to view your playlists.</div>;
+
   return (
     <PageContainer>
       <section className='flex flex-col gap-6'>

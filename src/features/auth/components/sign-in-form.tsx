@@ -1,62 +1,95 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { signIn } from '@/lib/auth-client';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
-import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { signInSchema } from '@/lib/schemas';
+import { signIn } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { PasswordField } from './password-field';
+import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 
 const SignInForm = () => {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
 
-    const formData = new FormData(e.currentTarget);
-
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof signInSchema>) {
     const res = await signIn.email({
-      email: formData.get('email') as string,
-      password: formData.get('password') as string
+      email: values.email,
+      password: values.password
     });
 
+    if (res.data && res.data.token) {
+      toast.success('Signed in successfully!');
+      window.location.href = '/dashboard/playlists'; // Redirect to dashboard on success
+    }
+
     if (res.error) {
-      setError(res.error.message || 'Something went wrong.');
-    } else {
-      router.push('/dashboard');
+      toast.error(res.error.statusText || 'Something went wrong.');
     }
   }
-  return (
-    <div className='flex flex-col items-center justify-center gap-2'>
-      <form onSubmit={handleSubmit} className='space-y-4'>
-        <input
-          name='email'
-          type='email'
-          placeholder='Email'
-          required
-          className='w-full rounded-md border px-3 py-2'
-        />
-        <input
-          name='password'
-          type='password'
-          placeholder='Password'
-          required
-          minLength={8}
-          className='w-full rounded-md border px-3 py-2'
-        />
-        <Button type='submit' className='w-full'>
-          Sign In
-        </Button>
 
-        <Link
-          href='/auth/sign-up'
-          className='text-sm text-gray-500 hover:underline'
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
+        <FormField
+          control={form.control}
+          name='email'
+          render={({ field }) => (
+            <FormItem className='w-full'>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={form.formState.isSubmitting}
+                  placeholder='you@example.com'
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <PasswordField
+          disabled={form.formState.isSubmitting}
+          description={<Link href='reset'>Forgot your password?</Link>}
+        />
+
+        <Button
+          disabled={form.formState.isSubmitting}
+          type='submit'
+          className='w-full'
         >
-          Don&#39;t have an account? Sign Up
-        </Link>
+          {form.formState.isSubmitting ? (
+            <Loader2 className='size-5 animate-spin' />
+          ) : (
+            'Sign In'
+          )}
+        </Button>
       </form>
-      {error && <p className='text-red-500'>{error}</p>}
-    </div>
+    </Form>
   );
 };
+
 export default SignInForm;

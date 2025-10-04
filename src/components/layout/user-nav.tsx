@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
-import { useSession } from '@/lib/auth-client';
+import { useSession, signOut } from '@/lib/auth-client';
 
 import { useRouter } from 'next/navigation';
 export function UserNav() {
@@ -55,7 +55,15 @@ export function UserNav() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            {/* <SignOutButton redirectUrl='/auth/sign-in' /> */}
+            <Button
+              variant='ghost'
+              className='w-full'
+              onClick={async () => {
+                await signOut();
+              }}
+            >
+              Sign Out
+            </Button>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,5 +1,6 @@
 import { auth } from 'auth';
-import { Session } from 'better-auth/*';
+import { Session } from 'better-auth/*'; // TODO: Fix types export
+
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 

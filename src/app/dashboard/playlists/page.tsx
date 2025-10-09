@@ -12,7 +12,8 @@ const PlaylistsPage = async () => {
       <section className='flex flex-col gap-6'>
         <h1 className='text-2xl font-bold'>Your Playlists</h1>
 
-        <div>
+        {/* Grid container */}
+        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
           {playlists.map((playlist) => (
             <PlaylistCard
               key={playlist.id}

@@ -21,7 +21,7 @@ const PlaylistCard = ({
 }: PlaylistCardProps) => {
   return (
     <Link href={`/dashboard/playlists/${id}`}>
-      <div className='group w-[350px]'>
+      <div className='group'>
         <div className='flex h-[200px] items-center justify-center rounded-md bg-gray-200 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
           <Music className='size-20 text-gray-400' />
         </div>

@@ -4,6 +4,9 @@ import { VideoData } from '@/types';
 import { prisma } from '../db/prisma';
 import { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { cache } from 'react';
+import { headers } from 'next/headers';
+import { auth } from 'auth';
 
 export const createVideoAndAttach = async (
   data: VideoData,
@@ -106,3 +109,38 @@ export const reorderPlaylistVideos = async ({
     return { success: false, error: 'Failed to reorder videos.' };
   }
 };
+
+export const getPlaylistVideoById = cache(async (id: string) => {
+  // get user id
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  // return a nullable value for unauthorized access
+  if (!session?.user.id) {
+    return null;
+  }
+
+  try {
+    const video = await prisma.playlistVideo.findFirst({
+      where: {
+        id,
+        playlist: {
+          userId: session.user.id
+        }
+      },
+      include: {
+        video: true
+      }
+    });
+
+    if (!video) {
+      throw new Error('Video not found');
+    }
+
+    return video;
+  } catch (error) {
+    console.error('Error fetching video:', error);
+    return null;
+  }
+});

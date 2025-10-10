@@ -3,9 +3,10 @@
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 
-import { BlockNoteEditor } from '@blocknote/core';
+import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useState } from 'react';
 import { useCallback } from 'react';
+import createTimestamp from './timestamp';
 
 interface TimestampedContent {
   time: number;
@@ -16,14 +17,26 @@ interface RichNoteEditorProps {
   initialContent: TimestampedContent[];
   onChange?: (content: any) => void;
   editable?: boolean;
+  jumpTo: (time: number) => void;
+  onEmptyChange?: (isEmpty: boolean) => void;
 }
+
 function RichNoteEditor({
   initialContent,
   onChange,
   editable = true,
   jumpTo
-}: RichNoteEditorProps & { jumpTo?: (time: number) => void }) {
-  const editor = useCreateBlockNote();
+}: RichNoteEditorProps) {
+  // Our schema with block specs, which contain the configs and implementations for
+  // blocks that we want our editor to use.
+  const schema = BlockNoteSchema.create().extend({
+    blockSpecs: {
+      // Creates an instance of the Timestamp block and adds it to the schema.
+      timestamp: createTimestamp(jumpTo)()
+    }
+  });
+
+  const editor = useCreateBlockNote({ schema });
 
   const [mounted, setMounted] = useState(false);
 
@@ -36,85 +49,46 @@ function RichNoteEditor({
     if (onChange) onChange(editor.document);
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Insert timestamps into the editor
   // Insert timestamps into the editor
   const handleInsertTimestamps = useCallback(() => {
     if (!editor || !initialContent) return;
 
     const sorted = [...initialContent].sort((a, b) => a.time - b.time);
 
-    // 1. Get the current text content of all blocks in the editor
-    const existingBlockTexts = editor.document.map((block) => {
-      // Block content can be complex (array of text, links, etc.).
-      // This crude conversion is often sufficient for simple checks.
-      if (block.content) {
-        return (block.content as any[])
-          .map(
-            (item) => item.text || (item.content && item.content[0]?.text) || ''
-          )
-          .join('');
-      }
-      return '';
-    });
+    // Collect all existing timestamp values from the editor blocks
+    const existingTimes = editor.document
+      .filter((block) => block.type === 'timestamp')
+      .map((block) => block.props.time);
 
-    // 2. Identify and filter out timestamps that are already present
-    const uniqueNewTimestamps = sorted.filter((note) => {
-      const formattedTime = formatTime(note.time);
-      // Check if the formatted time string is contained in any existing block text
-      return !existingBlockTexts.some((text) => text.includes(formattedTime));
-    });
+    // Filter out timestamps that are already present
+    const newBlocks = sorted
+      .filter((note) => !existingTimes.includes(note.time))
+      .map((note) => ({
+        type: 'timestamp',
+        props: { time: note.time }
+      }));
 
-    // need to have any due to type mismatch
-    const newBlocks: any[] = [];
-
-    // 3. Create blocks only for the unique, new timestamps
-    uniqueNewTimestamps.forEach((note) => {
-      const blockContent = [
-        {
-          type: 'link',
-          href: '#',
-          content: [
-            {
-              type: 'text',
-              text: formatTime(note.time),
-              styles: { bold: true, textColor: 'red' }
-            }
-          ]
-        }
-      ];
-
-      newBlocks.push({
-        type: 'paragraph',
-        content: blockContent
-      });
-    });
-
-    // If there are no new blocks, stop here
     if (newBlocks.length === 0) return;
 
-    // 4. Insert the new blocks
-    const documentBlocks = editor.document;
-    const referenceBlockId =
-      documentBlocks.length > 0
-        ? documentBlocks[documentBlocks.length - 1].id
-        : undefined;
+    // Always insert after the last empty block
+    const lastBlock = editor.document[editor.document.length - 1];
+    const lastBlockContent = lastBlock?.content;
 
-    if (referenceBlockId) {
-      editor.insertBlocks(newBlocks, referenceBlockId, 'after');
+    const isLastBlockEmpty =
+      lastBlockContent !== undefined &&
+      Array.isArray(lastBlockContent) &&
+      lastBlockContent.length === 0;
+
+    if (isLastBlockEmpty && lastBlock.type === 'paragraph') {
+      editor.insertBlocks(newBlocks as any[], lastBlock.id, 'after');
     } else {
-      editor.replaceBlocks(editor.document, newBlocks);
+      editor.replaceBlocks(editor.document, newBlocks as any[]);
     }
   }, [editor, initialContent]);
 
   // Run once on mount or when initialContent changes
   useEffect(() => {
-    handleInsertTimestamps();
+    queueMicrotask(() => handleInsertTimestamps());
   }, [handleInsertTimestamps]);
 
   // Only render editor on client
@@ -125,7 +99,7 @@ function RichNoteEditor({
       <BlockNoteView
         theme='light'
         className='min-h-[200px] p-3'
-        editor={editor}
+        editor={editor as BlockNoteEditor}
         onChange={handleEditorChange}
         editable={editable}
       />

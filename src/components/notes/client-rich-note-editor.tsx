@@ -11,7 +11,7 @@ interface RichNoteEditorProps {
   initialContent: TimestampedContent[];
   onChange?: (content: any) => void;
   editable?: boolean;
-  jumpTo?: (time: number) => void;
+  jumpTo: (time: number) => void;
 }
 
 // Dynamically import the editor to avoid SSR

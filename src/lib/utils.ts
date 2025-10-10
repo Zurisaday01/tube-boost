@@ -241,4 +241,10 @@ export const formatDuration = (seconds: number): string => {
   const h = Math.floor(truncated / 3600);
   const m = Math.floor((truncated % 3600) / 60);
   return m === 0 ? `${h}h` : `${h}h ${m}m`; // over an hour → hours + optional minutes
-}
+};
+
+export const formatTimestampTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};

@@ -158,3 +158,9 @@
   /* Apply the reveal animation */
   animation: reveal 0.4s ease-in-out forwards;
 }
+
+/* Utility class to modify the appearance of selected nodes */
+.u-timestamp-selected {
+  outline: none !important;
+  border: none !important;
+}

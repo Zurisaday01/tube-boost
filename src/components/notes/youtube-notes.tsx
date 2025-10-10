@@ -7,6 +7,7 @@ import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
+import { BlockNoteEditor } from '@blocknote/core';
 
 interface TimestampedContent {
   time: number;
@@ -19,9 +20,8 @@ interface YouTubeNotesProps {
 
 // Single big note with timestamps inside it
 // Timestamps will be added inside the note, and clicking them will jump to that time in the video
-// Timestamps will be added in a sorted manner (timestampedNote)
-
 export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
+  const [isNoteEmpty, setIsNoteEmpty] = useState(true);
   const playerRef = useRef<YouTubePlayer | null>(null);
   const [timestampedNotes, setTimestampedNote] = useState<TimestampedContent[]>(
     []
@@ -60,12 +60,6 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
     //
   };
 
-  // const updateNote = (index: number, content: any) => {
-  //   setTimestampedNote((prev) =>
-  //     prev.map((note, i) => (i === index ? { ...note, content } : note))
-  //   );
-  // };
-
   const jumpTo = async (time: number) => {
     if (!playerRef.current) return;
     await playerRef.current.seekTo(time, true);
@@ -77,6 +71,23 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
     setIsPlaying(
       event.target.getPlayerState() === 1 || event.target.getPlayerState() === 2
     );
+  };
+
+  const handleCheckEmpty = (content: BlockNoteEditor['document']) => {
+    // Check if content is empty (no blocks or only one empty paragraph block)
+    const isEmpty =
+      content.length === 0 ||
+      (content.length === 1 &&
+        content[0].type === 'paragraph' &&
+        (content[0].content === undefined ||
+          (Array.isArray(content[0].content) &&
+            content[0].content.length === 0)));
+    setIsNoteEmpty(isEmpty);
+  };
+
+  const handleChange = (content: BlockNoteEditor['document']) => {
+    console.log('All Notes Content:', content);
+    handleCheckEmpty(content);
   };
 
   return (
@@ -112,11 +123,13 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
         {/* Notes Instance */}
         <ClientRichNoteEditor
           initialContent={sortedTimestampedNotes as TimestampedContent[]}
-          onChange={(content) => console.log('All Notes Content:', content)}
+          onChange={handleChange}
           jumpTo={jumpTo}
         />
 
-        <Button className='self-start'> Save Note</Button>
+        <Button className='self-start' disabled={isNoteEmpty}>
+          Save Note
+        </Button>
       </div>
     </div>
   );

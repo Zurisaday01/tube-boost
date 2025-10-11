@@ -135,12 +135,53 @@ export const getPlaylistVideoById = cache(async (id: string) => {
     });
 
     if (!video) {
-      throw new Error('Video not found');
+      throw new Error('Playlist video not found');
     }
 
     return video;
   } catch (error) {
-    console.error('Error fetching video:', error);
+    console.error('Error fetching playlist video:', error);
     return null;
   }
 });
+
+interface SaveNoteInput {
+  playlistVideoId: string;
+  document: string; // BlockNote document JSON
+}
+
+export async function savePlaylistVideoNote({
+  playlistVideoId,
+  document
+}: SaveNoteInput) {
+  // get user id
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  // return a nullable value for unauthorized access
+  if (!session?.user.id) {
+    return null;
+  }
+
+  try {
+    // Upsert: create if not exists, update if exists
+    const note = await prisma.playlistVideoNote.upsert({
+      where: { playlistVideoId }, // one-to-one key
+      update: {
+        document: document as Prisma.InputJsonValue,
+        userId: session.user.id
+      },
+      create: {
+        playlistVideoId,
+        userId: session.user.id,
+        document: document as Prisma.InputJsonValue
+      }
+    });
+
+    return note;
+  } catch (error: unknown) {
+    console.error('Error saving playlist video note:', error);
+    return (error as Error).message || 'Failed to save note.';
+  }
+}

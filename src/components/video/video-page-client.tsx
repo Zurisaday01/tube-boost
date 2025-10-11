@@ -3,6 +3,7 @@ interface VideoPageClientProps {
   youtubeVideoId: string;
   title: string;
   channelTitle: string;
+  playlistVideoId: string;
 }
 
 import Link from 'next/link';
@@ -25,6 +26,7 @@ const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
 );
 
 const VideoPageClient = ({
+  playlistVideoId,
   youtubeVideoId,
   title,
   channelTitle
@@ -61,6 +63,7 @@ const VideoPageClient = ({
         </div>
         <div className='w-full'>
           <YouTubeNotes
+            playlistVideoId={playlistVideoId}
             videoId={youtubeVideoId}
             onVideoLoad={handleVideoLoad}
           />

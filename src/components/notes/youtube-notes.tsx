@@ -9,8 +9,10 @@ import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/lib/types/notes';
+import { savePlaylistVideoNote } from '@/lib/actions/video';
 
 interface YouTubeNotesProps {
+  playlistVideoId: string;
   videoId: string;
   onVideoLoad: () => void;
 }
@@ -18,6 +20,7 @@ interface YouTubeNotesProps {
 // Single big note with timestamps inside it
 // Timestamps will be added inside the note, and clicking them will jump to that time in the video
 export default function YouTubeNotes({
+  playlistVideoId,
   videoId,
   onVideoLoad
 }: YouTubeNotesProps) {
@@ -27,8 +30,11 @@ export default function YouTubeNotes({
     TimestampedContent[]
   >([]);
   const [isNoteTakingReady, setIsNoteTakingReady] = useState(false);
+  const [currentDocument, setCurrentDocument] = useState<
+    BlockNoteEditor['document'] | null
+  >(null);
 
-  const sortedTimestampedNotes = timestampedNotes.sort(
+  const sortedTimestampedNotes = [...timestampedNotes].sort(
     (a, b) => a.time - b.time
   );
 
@@ -88,8 +94,25 @@ export default function YouTubeNotes({
   };
 
   const handleChange = (content: BlockNoteEditor['document']) => {
-    console.log('All Notes Content:', content);
+    setCurrentDocument(content); // always store the latest
     handleCheckEmpty(content);
+  };
+
+  const handleSaveNote = async () => {
+    if (!playerRef.current) return;
+    // Convert the BlockNote editor content into JSON string
+    const noteContent = JSON.stringify(currentDocument);
+
+    try {
+      await savePlaylistVideoNote({
+        playlistVideoId,
+        document: noteContent
+      });
+      toast.success('Note saved successfully!');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to save note.');
+    }
   };
 
   return (
@@ -134,7 +157,11 @@ export default function YouTubeNotes({
           jumpTo={jumpTo}
         />
 
-        <Button className='self-start' disabled={isNoteEmpty}>
+        <Button
+          className='self-start'
+          disabled={isNoteEmpty}
+          onClick={handleSaveNote}
+        >
           Save Note
         </Button>
       </div>

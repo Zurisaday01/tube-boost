@@ -2,5 +2,3 @@ reviews:
   auto_review:
     enabled: true
   review_status: true
-  comment_mode: suggestion
-  review_scope: diff

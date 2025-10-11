@@ -68,9 +68,9 @@ function RichNoteEditor({
       lastBlockContent.length === 0;
 
     if (isLastBlockEmpty && lastBlock.type === 'paragraph') {
-      editor.insertBlocks(newBlocks as any[], lastBlock.id, 'after');
+      editor.insertBlocks(newBlocks as any[], lastBlock.id, 'before');
     } else {
-      editor.replaceBlocks(editor.document, newBlocks as any[]);
+      editor.insertBlocks(newBlocks as any[], lastBlock.id, 'after');
     }
   }, [editor, initialContent]);
 

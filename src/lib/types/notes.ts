@@ -6,7 +6,6 @@ export interface TimestampedContent {
 }
 
 export interface RichNoteEditor {
-  blockNoteViewRef: React.RefObject<HTMLDivElement | null>;
   initialEditorContent: BlockNoteEditor['document'] | null;
   timestampsNotes: TimestampedContent[];
   onChange?: (content: any) => void;

@@ -2,7 +2,7 @@
 
 import '@blocknote/mantine/blocknoteStyles.css';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -16,9 +16,28 @@ interface YouTubeNotesProps {
   dbVideoId: string;
   videoId: string;
   initialEditorContent: BlockNoteEditor['document'] | null;
-  blockNoteViewRef: React.RefObject<HTMLDivElement | null>;
   onVideoLoad: () => void;
 }
+
+const normalizeDocument = (doc: BlockNoteEditor['document'] | null) => {
+  if (!doc) return [];
+
+  // Copy to avoid mutating the original
+  const cleaned = [...doc];
+
+  // Remove only trailing empty paragraphs
+  while (
+    cleaned.length > 0 &&
+    cleaned[cleaned.length - 1].type === 'paragraph' &&
+    (!cleaned[cleaned.length - 1].content ||
+      (Array.isArray(cleaned[cleaned.length - 1].content) &&
+        (cleaned[cleaned.length - 1].content as unknown[]).length === 0))
+  ) {
+    cleaned.pop();
+  }
+
+  return cleaned;
+};
 
 // Single big note with timestamps inside it
 // Timestamps will be added inside the note, and clicking them will jump to that time in the video
@@ -26,7 +45,6 @@ export default function YouTubeNotes({
   playlistVideoId,
   videoId, // NOTE: External YouTube video ID from YouTube API
   dbVideoId,
-  blockNoteViewRef,
   initialEditorContent,
   onVideoLoad
 }: YouTubeNotesProps) {
@@ -106,8 +124,17 @@ export default function YouTubeNotes({
 
   const handleSaveNote = async () => {
     if (!playerRef.current) return;
+
     // Convert the BlockNote editor content into JSON string
     const noteContent = JSON.stringify(currentDocument);
+
+    if (
+      JSON.stringify(normalizeDocument(currentDocument)) ===
+      JSON.stringify(normalizeDocument(initialEditorContent))
+    ) {
+      toast.error('No changes to save.');
+      return;
+    }
 
     try {
       await savePlaylistVideoNote({
@@ -148,17 +175,18 @@ export default function YouTubeNotes({
           >
             Add Note at Current Time
           </Button>
-          {timestampedNotes.length === 0 && (
-            <p className='text-muted-foreground mt-4 text-sm'>
-              Click &quot;Add Note at Current Time&quot; to start referencing to
-              specific timestamps in the video.
-            </p>
-          )}
+          {timestampedNotes.length === 0 &&
+            !isNoteTakingReady &&
+            !initialEditorContent && (
+              <p className='text-muted-foreground mt-4 text-sm'>
+                Click &quot;Add Note at Current Time&quot; to start referencing
+                to specific timestamps in the video.
+              </p>
+            )}
         </div>
 
         {/* Notes Instance */}
         <ClientRichNoteEditor
-          blockNoteViewRef={blockNoteViewRef}
           initialEditorContent={initialEditorContent}
           timestampsNotes={sortedTimestampedNotes as TimestampedContent[]}
           onChange={handleChange}

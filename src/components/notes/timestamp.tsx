@@ -23,18 +23,21 @@ const createTimestamp = (jumpTo: (time: number) => void) =>
         };
 
         return (
-          <span
-            className='u-timestamp-selected'
-            onClick={handleClick}
-            style={{
-              color: 'var(--color-primary)',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              textDecoration: 'underline'
-            }}
-          >
-            {formatted}
-          </span>
+          <div className='u-timestamp-selected w-full'>
+            <span
+              className=''
+              onClick={handleClick}
+              style={{
+                color: 'var(--color-primary)',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                textDecoration: 'underline'
+              }}
+            >
+              {formatted}
+            </span>
+            <div className='bg-neutral-200 h-[2px] w-full'></div>
+          </div>
         );
       }
     }

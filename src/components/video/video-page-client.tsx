@@ -42,7 +42,6 @@ const VideoPageClient = ({
   const [initialEditorContent, setInitialEditorContent] = useState<
     BlockNoteEditor['document'] | null
   >(null);
-  const blockNoteViewRef = useRef<HTMLDivElement | null>(null);
 
   const handleVideoLoad = () => {
     setIsVideoLoading(false);
@@ -94,7 +93,6 @@ const VideoPageClient = ({
         </div>
         <div className='w-full'>
           <YouTubeNotes
-            blockNoteViewRef={blockNoteViewRef}
             initialEditorContent={initialEditorContent}
             dbVideoId={dbVideoId}
             playlistVideoId={playlistVideoId}

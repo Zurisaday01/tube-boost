@@ -1,17 +1,23 @@
 'use client';
-interface VideoPageClientProps {
-  youtubeVideoId: string;
-  title: string;
-  channelTitle: string;
-  playlistVideoId: string;
-}
 
 import Link from 'next/link';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import PageContainer from '../layout/page-container';
 import YouTubeNotes from '../notes/youtube-notes';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { getPlaylistVideoNote } from '@/lib/actions/playlist-video-note';
+import { BlockNoteEditor } from '@blocknote/core';
+import { useCallback } from 'react';
+
+interface VideoPageClientProps {
+  youtubeVideoId: string;
+  dbVideoId: string;
+  title: string;
+  channelTitle: string;
+  playlistVideoId: string;
+}
 
 const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
   <div
@@ -27,15 +33,40 @@ const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
 
 const VideoPageClient = ({
   playlistVideoId,
-  youtubeVideoId,
+  dbVideoId,
+  youtubeVideoId, // NOTE: External YouTube video ID from YouTube API
   title,
   channelTitle
 }: VideoPageClientProps) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [initialEditorContent, setInitialEditorContent] = useState<
+    BlockNoteEditor['document'] | null
+  >(null);
+  const blockNoteViewRef = useRef<HTMLDivElement | null>(null);
 
   const handleVideoLoad = () => {
     setIsVideoLoading(false);
   };
+
+  const loadNote = useCallback(async () => {
+    try {
+      const note = await getPlaylistVideoNote(playlistVideoId);
+      if (note?.document) {
+        // Since it is stored as JSON, we need to parse it
+        const parsedDocument = JSON.parse(note.document as string);
+        const clonedDocument = JSON.parse(JSON.stringify(parsedDocument));
+        setInitialEditorContent(clonedDocument);
+      }
+    } catch (err) {
+      console.error('Error fetching initial notes:', err);
+      toast.error('Failed to load initial notes.');
+    }
+  }, [playlistVideoId]);
+
+  // Load initial note on mount
+  useEffect(() => {
+    loadNote();
+  }, [loadNote]);
 
   return (
     <PageContainer>
@@ -63,6 +94,9 @@ const VideoPageClient = ({
         </div>
         <div className='w-full'>
           <YouTubeNotes
+            blockNoteViewRef={blockNoteViewRef}
+            initialEditorContent={initialEditorContent}
+            dbVideoId={dbVideoId}
             playlistVideoId={playlistVideoId}
             videoId={youtubeVideoId}
             onVideoLoad={handleVideoLoad}

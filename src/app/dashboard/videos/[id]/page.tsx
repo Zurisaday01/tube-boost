@@ -26,6 +26,7 @@ const VideoDetailsPage = async ({ params }: PageProps) => {
   return (
     <VideoPageClient
       playlistVideoId={playlistVideo.id}
+      dbVideoId={videoId}
       youtubeVideoId={youtubeVideoId}
       title={title}
       channelTitle={channelTitle}

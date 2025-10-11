@@ -9,11 +9,14 @@ import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/lib/types/notes';
-import { savePlaylistVideoNote } from '@/lib/actions/video';
+import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 
 interface YouTubeNotesProps {
   playlistVideoId: string;
+  dbVideoId: string;
   videoId: string;
+  initialEditorContent: BlockNoteEditor['document'] | null;
+  blockNoteViewRef: React.RefObject<HTMLDivElement | null>;
   onVideoLoad: () => void;
 }
 
@@ -21,7 +24,10 @@ interface YouTubeNotesProps {
 // Timestamps will be added inside the note, and clicking them will jump to that time in the video
 export default function YouTubeNotes({
   playlistVideoId,
-  videoId,
+  videoId, // NOTE: External YouTube video ID from YouTube API
+  dbVideoId,
+  blockNoteViewRef,
+  initialEditorContent,
   onVideoLoad
 }: YouTubeNotesProps) {
   const [isNoteEmpty, setIsNoteEmpty] = useState(true);
@@ -152,7 +158,9 @@ export default function YouTubeNotes({
 
         {/* Notes Instance */}
         <ClientRichNoteEditor
-          initialContent={sortedTimestampedNotes as TimestampedContent[]}
+          blockNoteViewRef={blockNoteViewRef}
+          initialEditorContent={initialEditorContent}
+          timestampsNotes={sortedTimestampedNotes as TimestampedContent[]}
           onChange={handleChange}
           jumpTo={jumpTo}
         />

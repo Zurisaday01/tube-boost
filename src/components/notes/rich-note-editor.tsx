@@ -10,11 +10,14 @@ import createTimestamp from './timestamp';
 import type { RichNoteEditor as RichNoteEditorProps } from '@/lib/types/notes';
 
 function RichNoteEditor({
-  initialContent,
+  blockNoteViewRef,
+  timestampsNotes,
+  initialEditorContent,
   onChange,
   editable = true,
   jumpTo
 }: RichNoteEditorProps) {
+  const [mounted, setMounted] = useState(false);
   // Our schema with block specs, which contain the configs and implementations for
   // blocks that we want our editor to use.
   const schema = BlockNoteSchema.create().extend({
@@ -24,13 +27,26 @@ function RichNoteEditor({
     }
   });
 
-  const editor = useCreateBlockNote({ schema });
-
-  const [mounted, setMounted] = useState(false);
+  const editor = useCreateBlockNote({
+    schema
+  });
 
   useEffect(() => {
     setMounted(true); // mark that we are on client
   }, []);
+
+  useEffect(() => {
+    // when initial content is set, update the editor
+
+    if (initialEditorContent && editor) {
+      // Use queueMicrotask to ensure this runs after the current call stack
+      queueMicrotask(() => {
+        // get the document id of the last block
+        const lastBlock = editor.document[editor.document.length - 1];
+        editor.insertBlocks(initialEditorContent, lastBlock.id, 'before');
+      });
+    }
+  }, [editor, initialEditorContent]);
 
   // Whenever the content changes, notify parent
   const handleEditorChange = (editor: BlockNoteEditor) => {
@@ -39,9 +55,9 @@ function RichNoteEditor({
 
   // Insert timestamps into the editor
   const handleInsertTimestamps = useCallback(() => {
-    if (!editor || !initialContent) return;
+    if (!editor || !timestampsNotes) return;
 
-    const sorted = [...initialContent].sort((a, b) => a.time - b.time);
+    const sorted = [...timestampsNotes].sort((a, b) => a.time - b.time);
 
     // Collect all existing timestamp values from the editor blocks
     const existingTimes = editor.document
@@ -72,9 +88,9 @@ function RichNoteEditor({
     } else {
       editor.insertBlocks(newBlocks as any[], lastBlock.id, 'after');
     }
-  }, [editor, initialContent]);
+  }, [editor, timestampsNotes]);
 
-  // Run once on mount or when initialContent changes
+  // Run once on mount or when timestampsNotes changes
   useEffect(() => {
     queueMicrotask(() => handleInsertTimestamps());
   }, [handleInsertTimestamps]);
@@ -88,6 +104,7 @@ function RichNoteEditor({
         theme='light'
         className='min-h-[200px] p-3'
         editor={editor as BlockNoteEditor}
+        ref={blockNoteViewRef}
         onChange={handleEditorChange}
         editable={editable}
       />

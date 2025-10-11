@@ -1,0 +1,5 @@
+reviews:
+  auto_review: true # Automatically review new pull requests
+  review_status: true # Adds review status checks to the PR
+  comment_mode: suggestion
+  review_scope: diff

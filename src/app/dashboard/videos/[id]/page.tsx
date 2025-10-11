@@ -8,25 +8,15 @@ const VideoDetailsPage = async ({ params }: PageProps) => {
 
   const playlistVideo = await getPlaylistVideoById(id);
 
-  console.log('Fetched playlist video:', playlistVideo);
-
   if (!playlistVideo) {
     return <div>Video not found or you do not have access to it.</div>;
   }
 
-  const {
-    id: videoId,
-    youtubeVideoId,
-    channelTitle,
-    duration,
-    thumbnails,
-    title
-  } = playlistVideo.video;
+  const { youtubeVideoId, channelTitle, title } = playlistVideo.video;
 
   return (
     <VideoPageClient
       playlistVideoId={playlistVideo.id}
-      dbVideoId={videoId}
       youtubeVideoId={youtubeVideoId}
       title={title}
       channelTitle={channelTitle}

@@ -59,12 +59,7 @@ export default function Header() {
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
-        {/* Filter the videos based on either the selected grade or tag or both at the same time */}
-        <Combobox
-          placeholder='Select a grade'
-          type='grade'
-          dataItems={grades}
-        />
+        {/* Filter the videos based on either the selected tag */}
         <Combobox placeholder='Select a tag' type='tag' dataItems={tags} />
         <Tooltip>
           <TooltipTrigger asChild>

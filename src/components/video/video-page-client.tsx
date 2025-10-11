@@ -12,7 +12,6 @@ import { BlockNoteEditor } from '@blocknote/core';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
-  dbVideoId: string;
   title: string;
   channelTitle: string;
   playlistVideoId: string;
@@ -32,7 +31,6 @@ const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
 
 const VideoPageClient = ({
   playlistVideoId,
-  dbVideoId,
   youtubeVideoId, // NOTE: External YouTube video ID from YouTube API
   title,
   channelTitle
@@ -93,7 +91,6 @@ const VideoPageClient = ({
         <div className='w-full'>
           <YouTubeNotes
             initialEditorContent={initialEditorContent}
-            dbVideoId={dbVideoId}
             playlistVideoId={playlistVideoId}
             videoId={youtubeVideoId}
             onVideoLoad={handleVideoLoad}

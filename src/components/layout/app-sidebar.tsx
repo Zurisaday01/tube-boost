@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
+import { Tags } from 'lucide-react';
 
 export default function AppSidebar() {
   const pathname = usePathname();
@@ -51,7 +52,7 @@ export default function AppSidebar() {
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
           <SidebarMenu>
-            {navItems.slice(0, 1).map((item) => {
+            {navItems.slice(0, 2).map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible
@@ -106,10 +107,11 @@ export default function AppSidebar() {
             })}
           </SidebarMenu>
         </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Your Playlists</SidebarGroupLabel>
           <SidebarMenu>
-            {navItems.slice(1).map((item) => {
+            {navItems.slice(2).map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible

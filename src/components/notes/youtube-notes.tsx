@@ -2,7 +2,7 @@
 
 import '@blocknote/mantine/blocknoteStyles.css';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -13,7 +13,6 @@ import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 
 interface YouTubeNotesProps {
   playlistVideoId: string;
-  dbVideoId: string;
   videoId: string;
   initialEditorContent: BlockNoteEditor['document'] | null;
   onVideoLoad: () => void;
@@ -44,7 +43,6 @@ const normalizeDocument = (doc: BlockNoteEditor['document'] | null) => {
 export default function YouTubeNotes({
   playlistVideoId,
   videoId, // NOTE: External YouTube video ID from YouTube API
-  dbVideoId,
   initialEditorContent,
   onVideoLoad
 }: YouTubeNotesProps) {

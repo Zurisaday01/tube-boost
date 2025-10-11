@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id            String          @id
-  name          String // better auth requires name
-  firstName     String // additional fields
-  lastName      String // additional fields
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  Playlist      Playlist[]
-  VideoMetadata VideoMetadata[]
-  PlaylistNote  PlaylistNote[]
-  ChannelRule   ChannelRule[]
+  id                String              @id
+  name              String // better auth requires name
+  firstName         String // additional fields
+  lastName          String // additional fields
+  email             String
+  emailVerified     Boolean
+  image             String?
+  createdAt         DateTime
+  updatedAt         DateTime
+  sessions          Session[]
+  accounts          Account[]
+  Playlist          Playlist[]
+  VideoMetadata     VideoMetadata[]
+  PlaylistNote      PlaylistNote[]
+  ChannelRule       ChannelRule[]
+  PlaylistVideoNote PlaylistVideoNote[]
 
   @@unique([email])
   @@map("user")
@@ -135,15 +136,27 @@ model Video {
 }
 
 model PlaylistVideo {
-  id            String       @id @default(uuid())
-  playlist      Playlist     @relation(fields: [playlistId], references: [id])
+  id            String             @id @default(uuid())
+  playlist      Playlist           @relation(fields: [playlistId], references: [id])
   playlistId    String
-  video         Video        @relation(fields: [videoId], references: [id])
+  video         Video              @relation(fields: [videoId], references: [id])
   videoId       String
-  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  subcategory   Subcategory?       @relation(fields: [subcategoryId], references: [id])
+  note          PlaylistVideoNote? // Optional one-to-one relation
   subcategoryId String? // nullable: video can be uncategorized
   orderIndex    Int // order inside the subcategory or playlist if no subcategory
   addedAt       DateTime? // when video was added to playlist (from YouTube)
+}
+
+model PlaylistVideoNote {
+  id              String        @id @default(uuid())
+  playlistVideo   PlaylistVideo @relation(fields: [playlistVideoId], references: [id])
+  playlistVideoId String        @unique
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+  document        Json // rich text content stored as JSON (It's a big array of blocks in JSON format)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model Tag {

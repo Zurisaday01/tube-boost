@@ -64,7 +64,6 @@ const SearchVideoToAdd = ({
             </div>
 
             <p>{searchedVideo.title}</p>
-
             <p>{searchedVideo.channelTitle}</p>
 
             <AddVideo

@@ -153,7 +153,7 @@ model PlaylistVideoNote {
   playlistVideo   PlaylistVideo @relation(fields: [playlistVideoId], references: [id])
   playlistVideoId String        @unique
   user            User          @relation(fields: [userId], references: [id])
-  userId          String        @unique
+  userId          String
   document        Json // rich text content stored as JSON (It's a big array of blocks in JSON format)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt

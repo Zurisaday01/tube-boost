@@ -7,9 +7,7 @@ import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useState } from 'react';
 import { useCallback } from 'react';
 import createTimestamp from './timestamp';
-import type { RichNoteEditor } from '@/lib/types/notes';
-
-type RichNoteEditorProps = RichNoteEditor;
+import type { RichNoteEditor as RichNoteEditorProps } from '@/lib/types/notes';
 
 function RichNoteEditor({
   initialContent,

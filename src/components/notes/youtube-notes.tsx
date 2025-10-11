@@ -10,20 +10,23 @@ import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/lib/types/notes';
 
-
 interface YouTubeNotesProps {
   videoId: string;
+  onVideoLoad: () => void;
 }
 
 // Single big note with timestamps inside it
 // Timestamps will be added inside the note, and clicking them will jump to that time in the video
-export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
+export default function YouTubeNotes({
+  videoId,
+  onVideoLoad
+}: YouTubeNotesProps) {
   const [isNoteEmpty, setIsNoteEmpty] = useState(true);
   const playerRef = useRef<YouTubePlayer | null>(null);
-  const [timestampedNotes, setTimestampedNote] = useState<TimestampedContent[]>(
-    []
-  );
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [timestampedNotes, setTimestampedNotes] = useState<
+    TimestampedContent[]
+  >([]);
+  const [isNoteTakingReady, setIsNoteTakingReady] = useState(false);
 
   const sortedTimestampedNotes = timestampedNotes.sort(
     (a, b) => a.time - b.time
@@ -31,6 +34,8 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
 
   const onReady = (event: YouTubeEvent) => {
     playerRef.current = event.target;
+    // This is to hide the loading spinner in the parent component
+    onVideoLoad();
   };
 
   const addNote = async () => {
@@ -47,7 +52,7 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
       return;
     }
 
-    setTimestampedNote((prev) => [
+    setTimestampedNotes((prev) => [
       ...prev,
       {
         time: currentTime,
@@ -62,10 +67,10 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
     await playerRef.current.seekTo(time, true);
   };
 
-  // when the video plays/pauses, update isPlaying state
-  // if state is 1 (playing) or 2 (paused), set isPlaying to true, else false (-1=unstarted, 1=playing, 0=ended, 2=paused, 3=buffering, 5=cued)
+  // when the video plays/pauses, update isNoteTakingReady state
+  // if state is 1 (playing) or 2 (paused), set isNoteTakingReady to true, else false (-1=unstarted, 1=playing, 0=ended, 2=paused, 3=buffering, 5=cued)
   const onStateChange = (event: YouTubeEvent) => {
-    setIsPlaying(
+    setIsNoteTakingReady(
       event.target.getPlayerState() === 1 || event.target.getPlayerState() === 2
     );
   };
@@ -110,7 +115,7 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
             onClick={addNote}
             variant='secondary'
             className='w-fit cursor-pointer'
-            disabled={!isPlaying}
+            disabled={!isNoteTakingReady}
           >
             Add Note at Current Time
           </Button>

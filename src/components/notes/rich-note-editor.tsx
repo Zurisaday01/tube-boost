@@ -7,19 +7,9 @@ import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useState } from 'react';
 import { useCallback } from 'react';
 import createTimestamp from './timestamp';
+import type { RichNoteEditor } from '@/lib/types/notes';
 
-interface TimestampedContent {
-  time: number;
-  content: any;
-}
-
-interface RichNoteEditorProps {
-  initialContent: TimestampedContent[];
-  onChange?: (content: any) => void;
-  editable?: boolean;
-  jumpTo: (time: number) => void;
-  onEmptyChange?: (isEmpty: boolean) => void;
-}
+type RichNoteEditorProps = RichNoteEditor;
 
 function RichNoteEditor({
   initialContent,

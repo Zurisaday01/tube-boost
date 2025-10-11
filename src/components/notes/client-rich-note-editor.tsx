@@ -1,24 +1,15 @@
 'use client';
 
+import type { RichNoteEditor } from '@/lib/types/notes';
 import dynamic from 'next/dynamic';
-
-interface TimestampedContent {
-  time: number;
-  content: any;
-}
-
-interface RichNoteEditorProps {
-  initialContent: TimestampedContent[];
-  onChange?: (content: any) => void;
-  editable?: boolean;
-  jumpTo: (time: number) => void;
-}
 
 // Dynamically import the editor to avoid SSR
 const RichNoteEditor = dynamic(() => import('./rich-note-editor'), {
   ssr: false
 });
 
-export function ClientRichNoteEditor(props: RichNoteEditorProps) {
+type ClientRichNoteEditorProps = RichNoteEditor;
+
+export function ClientRichNoteEditor(props: ClientRichNoteEditorProps) {
   return <RichNoteEditor {...props} />;
 }

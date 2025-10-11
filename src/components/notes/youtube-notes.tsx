@@ -8,11 +8,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
+import { TimestampedContent } from '@/lib/types/notes';
 
-interface TimestampedContent {
-  time: number;
-  content: any;
-}
 
 interface YouTubeNotesProps {
   videoId: string;
@@ -109,7 +106,12 @@ export default function YouTubeNotes({ videoId }: YouTubeNotesProps) {
       <div className='flex w-full flex-col gap-2'>
         {/* Add note at current time */}
         <div className='flex flex-col'>
-          <Button onClick={addNote} className='w-fit' disabled={!isPlaying}>
+          <Button
+            onClick={addNote}
+            variant='secondary'
+            className='w-fit cursor-pointer'
+            disabled={!isPlaying}
+          >
             Add Note at Current Time
           </Button>
           {timestampedNotes.length === 0 && (

@@ -4,12 +4,11 @@ import Link from 'next/link';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import PageContainer from '../layout/page-container';
 import YouTubeNotes from '../notes/youtube-notes';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getPlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import { BlockNoteEditor } from '@blocknote/core';
-import { useCallback } from 'react';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;

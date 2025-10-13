@@ -1,4 +1,6 @@
+import { ActionResponse } from '@/types/actions';
 import { type ClassValue, clsx } from 'clsx';
+import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -247,4 +249,18 @@ export const formatTimestampTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+export const handleActionResponse = (
+  response: ActionResponse,
+  onSuccess?: () => void
+) => {
+  const { status, message } = response;
+
+  if (status === 'success') {
+    toast.success(message);
+    onSuccess?.();
+  } else {
+    toast.error(message);
+  }
 };

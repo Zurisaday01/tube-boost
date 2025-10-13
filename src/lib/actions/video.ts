@@ -1,29 +1,33 @@
 'use server';
 
 import { VideoData } from '@/types';
-import { prisma } from '../db/prisma';
-import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/db/prisma';
+import { Prisma, Video } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
-import { headers } from 'next/headers';
-import { auth } from 'auth';
+import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
+import {
+  ActionResponse,
+  PlaylistVideoWithVideo,
+  ReorderVideosInput
+} from '@/types/actions';
 
 export const createVideoAndAttach = async (
   data: VideoData,
   playlistId: string,
   subcategoryId?: string
-) => {
-  if (
-    !data.youtubeVideoId ||
-    !data.title ||
-    !data.channelId ||
-    !data.channelTitle ||
-    !data.thumbnails
-  ) {
-    return { success: false, error: 'Missing required video fields.' };
-  }
-
+): Promise<ActionResponse<Video>> => {
   try {
+    if (
+      !data.youtubeVideoId ||
+      !data.title ||
+      !data.channelId ||
+      !data.channelTitle ||
+      !data.thumbnails
+    ) {
+      throw new Error('Missing required video data fields.');
+    }
+
     // Ensure we don’t create duplicates
     let video = await prisma.video.findUnique({
       where: { youtubeVideoId: data.youtubeVideoId }
@@ -72,23 +76,17 @@ export const createVideoAndAttach = async (
 
     revalidatePath(`/dashboard/playlists/${playlistId}`);
 
-    return { success: true, video };
+    return { status: 'success', message: 'Video added successfully.', data: video };
   } catch (error) {
     console.error('Error creating video:', error);
-    return { success: false, error: 'Failed to create video.' };
+    return { status: 'error', message: 'Failed to create video.' };
   }
 };
-
-interface ReorderVideosInput {
-  playlistId: string;
-  subcategoryId?: string;
-  videoIds: string[]; // ordered array of playlistVideo IDs
-}
 
 export const reorderPlaylistVideos = async ({
   playlistId,
   videoIds
-}: ReorderVideosInput) => {
+}: ReorderVideosInput): Promise<ActionResponse> => {
   try {
     // Update all videos in one transaction
     await prisma.$transaction(
@@ -103,45 +101,48 @@ export const reorderPlaylistVideos = async ({
     // Revalidate the playlist page
     revalidatePath(`/dashboard/playlists/${playlistId}`);
 
-    return { success: true };
+    return { status: 'success', message: 'Videos reordered successfully.' };
   } catch (error) {
     console.error('Error reordering videos:', error);
-    return { success: false, error: 'Failed to reorder videos.' };
+    return { status: 'error', message: 'Failed to reorder videos.' };
   }
 };
 
-export const getPlaylistVideoById = cache(async (id: string) => {
-  // get user id
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
+export const getPlaylistVideoById = cache(
+  async (id: string): Promise<ActionResponse<PlaylistVideoWithVideo>> => {
+    try {
+      const user = await getSessionUser();
 
-  // return a nullable value for unauthorized access
-  if (!session?.user.id) {
-    return null;
-  }
-
-  try {
-    const video = await prisma.playlistVideo.findFirst({
-      where: {
-        id,
-        playlist: {
-          userId: session.user.id
-        }
-      },
-      include: {
-        video: true
+      if (!isUserAuthenticated(user)) {
+        throw new Error('User not authenticated.');
       }
-    });
 
-    if (!video) {
-      throw new Error('Playlist video not found');
+      const video = await prisma.playlistVideo.findFirst({
+        where: {
+          id,
+          playlist: {
+            userId: user.userId
+          }
+        },
+        include: {
+          video: true
+        }
+      });
+
+      if (!video) {
+        throw new Error('Playlist video not found');
+      }
+
+      return {
+        status: 'success',
+        message: 'Playlist video fetched successfully.',
+        data: video as PlaylistVideoWithVideo
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: (error as Error).message || 'Failed to fetch playlist video.'
+      };
     }
-
-    return video;
-  } catch (error) {
-    console.error('Error fetching playlist video:', error);
-    return null;
   }
-});
-
+);

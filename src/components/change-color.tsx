@@ -28,7 +28,7 @@ export const ChangeColor = ({
         <Button
           disabled={color === currentColor}
           variant='secondary'
-          className='mt-2 w-full'
+          className='mt-2 w-full cursor-pointer'
           onClick={() => onColorChange(color)}
         >
           Select Color

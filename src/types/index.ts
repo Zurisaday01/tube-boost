@@ -79,6 +79,11 @@ export interface SubcategoryInformation {
   location: string;
 }
 
+export interface TagGroupInformation {
+  modified: Date;
+  created: Date;
+}
+
 export interface PlaylistVideo {
   id: string;
   playlistId: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import type { RichNoteEditor as ClientRichNoteEditorProps } from '@/lib/types/notes';
+import type { RichNoteEditor as ClientRichNoteEditorProps } from '@/types/notes';
 import dynamic from 'next/dynamic';
 
 // Dynamically import the editor to avoid SSR

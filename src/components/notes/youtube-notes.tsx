@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
-import { TimestampedContent } from '@/lib/types/notes';
+import { TimestampedContent } from '@/types/notes';
 import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 
 interface YouTubeNotesProps {

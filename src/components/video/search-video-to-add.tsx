@@ -32,14 +32,14 @@ const SearchVideoToAdd = ({
     setSearchedVideo(null);
     // this is to clear the input search
     setIsSuccessfullyAdded(true);
-  }
+  };
 
   // in a new video the isSuccessfullyAdded should be false
   const handleNewSearch = () => {
     if (isSuccessfullyAdded) {
       setIsSuccessfullyAdded(false);
     }
-  }
+  };
 
   return (
     <div className='w-full'>
@@ -47,7 +47,11 @@ const SearchVideoToAdd = ({
         <h2 className='text-xl font-semibold'>
           Let&apos;s find something for your playlist
         </h2>
-        <SearchYouTubeVideoForm onVideoSelect={handleVideoSelect} isSuccessfullyAdded={isSuccessfullyAdded} onNewSearch={handleNewSearch} />
+        <SearchYouTubeVideoForm
+          onVideoSelect={handleVideoSelect}
+          isSuccessfullyAdded={isSuccessfullyAdded}
+          onNewSearch={handleNewSearch}
+        />
       </div>
       {searchedVideo && (
         <div className='mt-4 w-full'>

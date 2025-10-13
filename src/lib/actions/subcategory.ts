@@ -47,7 +47,7 @@ export const createSubcategory = async (
 
     return {
       status: 'success',
-      message: 'Subcategory created successfully.',
+      message: `Subcategory '${subcategory.name}' created successfully.`,
       data: subcategory
     };
   } catch (error) {
@@ -85,7 +85,7 @@ export const getAllSubcategories = cache(
 );
 
 export const getSubcategoryById = cache(
-  async (id: string): Promise<ActionResponse<SubcategoryWithStats | null>> => {
+  async (id: string): Promise<ActionResponse<SubcategoryWithStats>> => {
     try {
       const subcategory = await prisma.subcategory.findUnique({
         where: { id },
@@ -116,7 +116,7 @@ export const getSubcategoryById = cache(
         color: subcategory.color,
         createdAt: subcategory.createdAt,
         updatedAt: subcategory.updatedAt,
-        videos: subcategory.videos.map((sv) => sv.video),
+        videos: subcategory.videos,
         totalVideos: subcategory?._count.videos || 0
       };
 
@@ -161,7 +161,7 @@ export const updateSubcategory = async (
 
     return {
       status: 'success',
-      message: 'Subcategory updated successfully.',
+      message: `Subcategory '${subcategory.name}' updated successfully.`,
       data: subcategory
     };
   } catch (error) {
@@ -175,7 +175,8 @@ export const updateSubcategory = async (
 
 export const updateColor = async (
   id: string,
-  color: string
+  color: string,
+  name: string
 ): Promise<ActionResponse<Subcategory>> => {
   try {
     // Update subcategory color
@@ -189,14 +190,14 @@ export const updateColor = async (
 
     return {
       status: 'success',
-      message: 'Subcategory color updated successfully.',
+      message: `Color updated to ${color} for '${subcategory.name}' subcategory`,
       data: subcategory
     };
   } catch (error) {
     devLog.error('Error updating subcategory color:', error);
     return {
       status: 'error',
-      message: (error as Error).message || 'Failed to update subcategory color.'
+      message: (error as Error).message || `Failed to update color for '${name}' subcategory.`
     };
   }
 };

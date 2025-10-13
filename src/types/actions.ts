@@ -37,11 +37,11 @@ export interface SubcategoryWithStats {
   color: string | null;
   createdAt: Date;
   updatedAt: Date;
-  videos: Video[];
+  videos: PlaylistVideo[];
   totalVideos: number;
 }
 
-export interface PlaylistVideoWithVideo extends Omit<PlaylistVideo, 'video'> {
+export interface PlaylistVideoWithVideo extends PlaylistVideo {
   video: Video;
 }
 

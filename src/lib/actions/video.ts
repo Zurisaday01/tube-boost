@@ -133,10 +133,11 @@ export const getPlaylistVideoById = cache(
         throw new Error('Playlist video not found');
       }
 
+
       return {
         status: 'success',
         message: 'Playlist video fetched successfully.',
-        data: video as PlaylistVideoWithVideo
+        data: video
       };
     } catch (error) {
       return {

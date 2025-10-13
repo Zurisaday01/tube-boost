@@ -39,7 +39,7 @@ export const createPlaylist = async (
 
     return {
       status: 'success',
-      message: 'Playlist created successfully.',
+      message: `'${playlist.title}' playlist created successfully!`,
       data: playlist
     };
   } catch (error) {

@@ -22,7 +22,7 @@ import {
   createSubcategory as createSubcategoryAction,
   updateSubcategory as updateSubcategoryAction
 } from '@/lib/actions/subcategory';
-import { devLog } from '@/lib/utils';
+import { devLog, handleActionResponse } from '@/lib/utils';
 import { createSubcategorySchema } from '@/lib/schemas';
 
 interface SubcategoryFormProps {
@@ -56,16 +56,15 @@ const ManageSubcategoryForm = ({
   const onSubmit = (values: z.infer<typeof createSubcategorySchema>) => {
     startTransition(async () => {
       try {
-        if (isEditMode && subcategory?.id) {
-          await updateSubcategoryAction(subcategory.id, values);
-          toast.success(`'${values.name}' updated successfully!`);
-        } else {
-          const { subcategory: created } =
-            await createSubcategoryAction(values);
-          toast.success(`'${created?.name}' created successfully!`);
-        }
-        form.reset();
-        onClose();
+        const action = isEditMode
+          ? updateSubcategoryAction(subcategory.id, values)
+          : createSubcategoryAction(values);
+
+        const response = await action;
+        handleActionResponse(response, () => {
+          form.reset();
+          onClose();
+        });
       } catch (err) {
         devLog.error('Error handling subcategory:', err);
         toast.error('Failed to save subcategory.');

@@ -260,7 +260,7 @@ export const handleActionResponse = (
   if (status === 'success') {
     toast.success(message);
     onSuccess?.();
-  } else {
+  } else if (status === 'error') {
     toast.error(message);
   }
 };

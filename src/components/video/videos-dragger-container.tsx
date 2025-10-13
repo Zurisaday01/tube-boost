@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { useState } from 'react';
 import { reorderPlaylistVideos } from '@/lib/actions/video';
 import { toast } from 'sonner';
+import { handleActionResponse } from '@/lib/utils';
 
 interface VideosDraggerContainerProps {
   videos: PlaylistVideo[];
@@ -22,11 +23,8 @@ const VideosDraggerContainer = ({ videos }: VideosDraggerContainerProps) => {
           playlistId: currentVideos[0]?.playlistId,
           videoIds: currentVideos.map((v) => v.id)
         });
-        if (!response.success) {
-          toast.error(response.error || 'Failed to reorder videos.');
-          return;
-        }
-        toast.success('Videos reordered successfully!');
+
+        handleActionResponse(response);
       } catch (err) {
         console.error('Failed to save new order', err);
         toast.error('Failed to reorder videos.');

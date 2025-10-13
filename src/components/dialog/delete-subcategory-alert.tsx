@@ -9,6 +9,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import { deleteSubcategory } from '@/lib/actions/subcategory';
+import { handleActionResponse } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface DeleteSubcategoryButtonProps {
@@ -23,11 +24,13 @@ const DeleteSubcategoryAlert = ({
   onOpenChange
 }: DeleteSubcategoryButtonProps) => {
   const handleDelete = async () => {
-    const result = await deleteSubcategory(id);
-    if (result.success) {
-      toast.success('Subcategory deleted successfully');
-    } else {
-      toast.error(result.error);
+    try {
+      const result = await deleteSubcategory(id);
+      handleActionResponse(result, () => {
+        onOpenChange(false);
+      });
+    } catch (error) {
+      toast.error('An unexpected error occurred.');
     }
   };
 

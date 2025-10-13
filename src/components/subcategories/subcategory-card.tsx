@@ -3,7 +3,7 @@ import { Folder } from 'lucide-react';
 import SubcategoryOptionsMenu from './subcategory-options-menu';
 import { SubcategoryInformation } from '@/types';
 import { useMemo, useState } from 'react';
-import { getLuminance, hexToRgb, lighten, rgba } from '@/lib/utils';
+import { getLuminance, handleActionResponse, hexToRgb, lighten, rgba } from '@/lib/utils';
 import { updateColor } from '@/lib/actions/subcategory';
 import { toast } from 'sonner';
 
@@ -26,17 +26,12 @@ const SubcategoryCard = ({
 
   const handleColorChange = async (newColor: string) => {
     try {
-      const result = await updateColor(id, newColor);
-      if (result.success) {
-        setColor(newColor); // update local state
-        toast.success(`Color updated to ${newColor} for '${name}' subcategory`);
-      } else {
-        console.error(result.error);
-        toast.error(`Failed to update color for '${name}' subcategory`);
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-    }
+         const response = await updateColor(id, newColor, name);
+         handleActionResponse(response, () => setColor(newColor));
+       } catch (err) {
+         console.error('Unexpected error:', err);
+         toast.error('Something went wrong while updating the color.');
+       }
   };
 
   // lighter/opaque version (e.g. 20% opacity background)

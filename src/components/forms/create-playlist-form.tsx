@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
 import z from 'zod';
+import { handleActionResponse } from '@/lib/utils';
 
 interface CreatePlaylistFormProps {
   onClose: () => void;
@@ -39,15 +40,13 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
   function onSubmit(values: z.infer<typeof createPlaylistSchema>) {
     startTransition(async () => {
       try {
-        const result = await createPlaylistAction(values);
-        if (result.success) {
-          const { playlist } = result;
-          toast.success(`'${playlist?.title}' playlist created successfully!`);
-          form.reset(); // reset form on success
-          onClose(); // close the dialog
-        } else {
-          toast.error(result.error);
-        }
+        const response = await createPlaylistAction(values);
+
+        handleActionResponse(response, () => {
+          form.reset();
+          onClose();
+        });
+        
       } catch (err) {
         toast.error('Failed to create playlist.');
       }

@@ -37,23 +37,21 @@ const AddVideo = ({
   // id holds the actual id of the playlist or subcategory
 
   const handleOptionSelect = async (isDefault: boolean, id: string) => {
-    const res = await createVideoAndAttach(
+    const { status, message } = await createVideoAndAttach(
       searchedVideo,
       playlistId,
       isDefault ? undefined : id
     );
 
-    if (res.success) {
+    if (status === 'success') {
       // Send feedback to user
       toast.success(
         `${searchedVideo.title} added successfully to '${isDefault ? 'Uncategorized' : subcategoryOptions.find((option) => option.value === id)?.label!}'!`
       );
       // clear the selected video
       onClear();
-    }
-
-    if (!res.success) {
-      toast.error(res.error);
+    } else {
+      toast.error(message);
     }
   };
 

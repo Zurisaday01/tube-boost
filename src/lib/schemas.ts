@@ -69,6 +69,12 @@ export const createSubcategorySchema = z.object({
   playlistId: z.string().uuid('Invalid playlist ID.')
 });
 
+export const updateSubcategorySchema = z.object({
+  name: z.string().min(2, {
+    message: 'Name must be at least 2 characters.'
+  })
+});
+
 export const createTagGroupSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.'

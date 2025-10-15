@@ -113,12 +113,13 @@ const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
           )}
         />
         <div className='flex justify-end gap-2'>
-          <Button type='button' variant='secondary' onClick={onCancel}>
-            {isLoading ? (
-              <LoaderCircle className='h-4 w-4 animate-spin' />
-            ) : (
-              'Cancel'
-            )}
+          <Button
+            type='button'
+            variant='secondary'
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancel
           </Button>
           <Button type='submit'>
             {isLoading ? (

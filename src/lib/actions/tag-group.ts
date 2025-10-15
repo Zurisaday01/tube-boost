@@ -17,7 +17,7 @@ export const createTagGroup = async (
     const user = await getSessionUser();
 
     if (!isUserAuthenticated(user)) {
-      throw new Error('You must be logged in to create a playlist.');
+      throw new Error('User not authenticated.');
     }
     // Validate server side
     const parsed = createTagGroupSchema.safeParse(data);

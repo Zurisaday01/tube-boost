@@ -1,6 +1,6 @@
 'use server';
 import { z } from 'zod';
-import { createSubcategorySchema } from '@/lib/schemas';
+import { createSubcategorySchema, updateSubcategorySchema } from '@/lib/schemas';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
@@ -136,11 +136,11 @@ export const getSubcategoryById = async (
 
 export const updateSubcategory = async (
   id: string,
-  data: z.infer<typeof createSubcategorySchema>
+  data: z.infer<typeof updateSubcategorySchema>
 ): Promise<ActionResponse<Subcategory>> => {
   try {
     // Validate server side
-    const parsed = createSubcategorySchema.safeParse(data);
+    const parsed = updateSubcategorySchema.safeParse(data);
 
     if (!parsed.success) throw new Error('Validation was not successful.');
 

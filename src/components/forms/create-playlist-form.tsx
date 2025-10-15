@@ -46,7 +46,6 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
           form.reset();
           onClose();
         });
-        
       } catch (err) {
         toast.error('Failed to create playlist.');
       }
@@ -56,6 +55,8 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
   const onCancel = () => {
     form.reset();
   };
+
+  const isLoading = isPending || form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -70,7 +71,7 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
                 <Input
                   placeholder='Enter playlist title'
                   autoComplete='off'
-                  disabled={isPending || form.formState.isSubmitting}
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -80,15 +81,16 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
           )}
         />
         <div className='flex justify-end gap-2'>
-          <Button type='button' variant='secondary' onClick={onCancel}>
-            {isPending || form.formState.isSubmitting ? (
-              <LoaderCircle className='h-4 w-4 animate-spin' />
-            ) : (
-              'Cancel'
-            )}
+          <Button
+            type='button'
+            variant='secondary'
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancel
           </Button>
           <Button type='submit'>
-            {isPending || form.formState.isSubmitting ? (
+            {isLoading ? (
               <LoaderCircle className='h-4 w-4 animate-spin' />
             ) : (
               'Create'

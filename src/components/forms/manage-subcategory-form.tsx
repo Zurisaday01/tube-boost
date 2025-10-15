@@ -96,12 +96,13 @@ const ManageSubcategoryForm = ({
           )}
         />
         <div className='flex justify-end gap-2'>
-          <Button type='button' variant='secondary' onClick={onCancel}>
-            {isPending || form.formState.isSubmitting ? (
-              <LoaderCircle className='h-4 w-4 animate-spin' />
-            ) : (
-              'Cancel'
-            )}
+          <Button
+            type='button'
+            variant='secondary'
+            onClick={onCancel}
+            disabled={isPending || form.formState.isSubmitting}
+          >
+            Cancel
           </Button>
           <Button type='submit'>
             {isPending || form.formState.isSubmitting ? (

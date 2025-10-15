@@ -6,7 +6,7 @@ import { BlockNoteView } from '@blocknote/mantine';
 import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import createTimestamp from './timestamp';
-import type { RichNoteEditor as RichNoteEditorProps } from '@/lib/types/notes';
+import type { RichNoteEditor as RichNoteEditorProps } from '@/types/notes';
 
 function RichNoteEditor({
   timestampsNotes,

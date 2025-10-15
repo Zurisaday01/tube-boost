@@ -3,9 +3,17 @@ import PlaylistCard from '@/components/playlists/playlist-card';
 import { getAllPlaylists } from '@/lib/actions/playlist';
 
 const PlaylistsPage = async () => {
-  const playlists = await getAllPlaylists();
+  const { status, message, data: playlists } = await getAllPlaylists();
 
-  if (!playlists) return <div>Please sign in to view your playlists.</div>;
+  if (status === 'error') {
+    return (
+      <div>
+        {message === 'User not authenticated.'
+          ? 'Please sign in to view your playlists.'
+          : 'Failed to load playlists.'}
+      </div>
+    );
+  }
 
   return (
     <PageContainer>
@@ -14,7 +22,7 @@ const PlaylistsPage = async () => {
 
         {/* Grid container */}
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-          {playlists.map((playlist) => (
+          {playlists?.map((playlist) => (
             <PlaylistCard
               key={playlist.id}
               id={playlist.id}

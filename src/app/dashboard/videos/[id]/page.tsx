@@ -1,32 +1,27 @@
 import VideoPageClient from '@/components/video/video-page-client';
 import { getPlaylistVideoById } from '@/lib/actions/video';
+import { isSuccess } from '@/lib/utils/actions';
 
 type PageProps = { params: Promise<{ id: string }> };
 
 const VideoDetailsPage = async ({ params }: PageProps) => {
   const { id } = await params;
 
-  const playlistVideo = await getPlaylistVideoById(id);
+  const response = await getPlaylistVideoById(id);
 
-  console.log('Fetched playlist video:', playlistVideo);
-
-  if (!playlistVideo) {
-    return <div>Video not found or you do not have access to it.</div>;
+  if (!isSuccess(response)) {
+    return <div>Failed to load video.</div>;
   }
 
-  const {
-    id: videoId,
-    youtubeVideoId,
-    channelTitle,
-    duration,
-    thumbnails,
-    title
-  } = playlistVideo.video;
+  // Destructure the playlist video data
+  const { id: playlistVideoId, video } = response.data;
+
+  // Destructure necessary fields from the video object
+  const { youtubeVideoId, channelTitle, title } = video;
 
   return (
     <VideoPageClient
-      playlistVideoId={playlistVideo.id}
-      dbVideoId={videoId}
+      playlistVideoId={playlistVideoId}
       youtubeVideoId={youtubeVideoId}
       title={title}
       channelTitle={channelTitle}

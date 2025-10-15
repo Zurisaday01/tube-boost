@@ -1,6 +1,7 @@
 import PageContainer from '@/components/layout/page-container';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
 import { getSubcategoryById } from '@/lib/actions/subcategory';
+import { isSuccess } from '@/lib/utils/actions';
 import { PlaylistVideo } from '@/types';
 import { Folder } from 'lucide-react';
 
@@ -9,11 +10,13 @@ type PageProps = { params: Promise<{ subcategoryId: string }> };
 const SubcategoryPage = async ({ params }: PageProps) => {
   const { subcategoryId } = await params;
 
-  const subcategory = await getSubcategoryById(subcategoryId);
+  const response = await getSubcategoryById(subcategoryId);
 
-  if (!subcategory) {
-    return <div>Subcategory not found</div>;
+  if (!isSuccess(response)) {
+    return <div>Failed to load subcategory.</div>;
   }
+
+  const { data: subcategory } = response;
 
   return (
     <PageContainer>

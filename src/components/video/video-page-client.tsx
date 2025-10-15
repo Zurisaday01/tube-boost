@@ -12,7 +12,6 @@ import { BlockNoteEditor } from '@blocknote/core';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
-  dbVideoId: string;
   title: string;
   channelTitle: string;
   playlistVideoId: string;
@@ -32,7 +31,6 @@ const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
 
 const VideoPageClient = ({
   playlistVideoId,
-  dbVideoId,
   youtubeVideoId, // NOTE: External YouTube video ID from YouTube API
   title,
   channelTitle
@@ -48,12 +46,18 @@ const VideoPageClient = ({
 
   const loadNote = useCallback(async () => {
     try {
-      const note = await getPlaylistVideoNote(playlistVideoId);
-      if (note?.document) {
-        // Since it is stored as JSON, we need to parse it
-        const parsedDocument = JSON.parse(note.document as string);
-        const clonedDocument = JSON.parse(JSON.stringify(parsedDocument));
-        setInitialEditorContent(clonedDocument);
+      const { status, message, data } =
+        await getPlaylistVideoNote(playlistVideoId);
+      if (status === 'success') {
+        const note = data;
+        if (note?.document) {
+          // Since it is stored as JSON, we need to parse it
+          const parsedDocument = JSON.parse(note.document as string);
+          const clonedDocument = JSON.parse(JSON.stringify(parsedDocument));
+          setInitialEditorContent(clonedDocument);
+        }
+      } else {
+        toast.error(message);
       }
     } catch (err) {
       console.error('Error fetching initial notes:', err);
@@ -93,7 +97,6 @@ const VideoPageClient = ({
         <div className='w-full'>
           <YouTubeNotes
             initialEditorContent={initialEditorContent}
-            dbVideoId={dbVideoId}
             playlistVideoId={playlistVideoId}
             videoId={youtubeVideoId}
             onVideoLoad={handleVideoLoad}

@@ -17,7 +17,7 @@ import { useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
-import z from 'zod';
+import { z } from 'zod';
 import { extractVideoId } from '@/lib/utils';
 import { VideoData } from '@/types';
 import { getVideoData } from '@/lib/actions/youtube';
@@ -82,6 +82,8 @@ const SearchYouTubeVideoForm = ({
     });
   }
 
+  const isLoading = isPending || form.formState.isSubmitting;
+
   return (
     <Form {...form}>
       <form
@@ -97,7 +99,7 @@ const SearchYouTubeVideoForm = ({
                 <Input
                   placeholder='Paste YouTube link here'
                   autoComplete='off'
-                  disabled={isPending || form.formState.isSubmitting}
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -108,7 +110,7 @@ const SearchYouTubeVideoForm = ({
         />
 
         <Button type='submit'>
-          {isPending || form.formState.isSubmitting ? (
+          {isLoading ? (
             <LoaderCircle className='h-4 w-4 animate-spin' />
           ) : (
             'Search'

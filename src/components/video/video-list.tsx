@@ -10,7 +10,7 @@ import {
 import {
   arrayMove,
   rectSortingStrategy,
-  SortableContext,
+  SortableContext
 } from '@dnd-kit/sortable';
 import SortableVideoCard from './sortable-video-card';
 

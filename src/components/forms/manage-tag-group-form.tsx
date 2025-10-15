@@ -19,46 +19,43 @@ import { LoaderCircle } from 'lucide-react';
 
 import { z } from 'zod';
 import {
-  createSubcategory as createSubcategoryAction,
-  updateSubcategory as updateSubcategoryAction
-} from '@/lib/actions/subcategory';
+  createTagGroup as createTagGroupAction,
+  updateTagGroup as updateTagGroupAction
+} from '@/lib/actions/tag-group';
 import { devLog, handleActionResponse } from '@/lib/utils';
-import { createSubcategorySchema } from '@/lib/schemas';
+import { createTagGroupSchema } from '@/lib/schemas';
+import { Textarea } from '@/components/ui/textarea';
 
-interface SubcategoryFormProps {
+interface TagGroupFormProps {
   onClose: () => void;
-  playlistId: string;
-  subcategory?: {
+  tagGroup?: {
     id: string;
     name: string;
+    description: string;
   };
 }
 
-// Form component for creating or updating a subcategory
-const ManageSubcategoryForm = ({
-  onClose,
-  playlistId,
-  subcategory
-}: SubcategoryFormProps) => {
+// Form component for creating or updating a tag group
+const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   // Decide whether we're in "create" or "update" mode
-  const isEditMode = !!subcategory;
+  const isEditMode = !!tagGroup;
 
-  const form = useForm<z.infer<typeof createSubcategorySchema>>({
-    resolver: zodResolver(createSubcategorySchema),
+  const form = useForm<z.infer<typeof createTagGroupSchema>>({
+    resolver: zodResolver(createTagGroupSchema),
     defaultValues: {
-      name: subcategory?.name || '',
-      playlistId
+      name: tagGroup?.name || '',
+      description: tagGroup?.description || ''
     }
   });
 
-  const onSubmit = (values: z.infer<typeof createSubcategorySchema>) => {
+  const onSubmit = (values: z.infer<typeof createTagGroupSchema>) => {
     startTransition(async () => {
       try {
         const action = isEditMode
-          ? updateSubcategoryAction(subcategory.id, values)
-          : createSubcategoryAction(values);
+          ? updateTagGroupAction(tagGroup!.id, values)
+          : createTagGroupAction(values);
 
         const response = await action;
         handleActionResponse(response, () => {
@@ -66,13 +63,15 @@ const ManageSubcategoryForm = ({
           onClose();
         });
       } catch (err) {
-        devLog.error('Error handling subcategory:', err);
-        toast.error('Failed to save subcategory.');
+        devLog.error('Unexpected error handling tag group:', err);
+        toast.error('Something went wrong.');
       }
     });
   };
 
   const onCancel = () => form.reset();
+
+  const isLoading = isPending || form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -85,9 +84,27 @@ const ManageSubcategoryForm = ({
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='Enter subcategory name'
+                  placeholder='Enter tag group name'
                   autoComplete='off'
-                  disabled={isPending || form.formState.isSubmitting}
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='description'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description </FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder='Enter description (optional)'
+                  autoComplete='off'
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -100,15 +117,15 @@ const ManageSubcategoryForm = ({
             type='button'
             variant='secondary'
             onClick={onCancel}
-            disabled={isPending || form.formState.isSubmitting}
+            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button type='submit'>
-            {isPending || form.formState.isSubmitting ? (
+            {isLoading ? (
               <LoaderCircle className='h-4 w-4 animate-spin' />
             ) : isEditMode ? (
-              'Rename'
+              'Update'
             ) : (
               'Create'
             )}
@@ -119,4 +136,4 @@ const ManageSubcategoryForm = ({
   );
 };
 
-export default ManageSubcategoryForm;
+export default ManageTagGroupForm;

@@ -5,6 +5,7 @@ import SubcategoriesList from '@/components/subcategories/subcategories-list';
 import { getPlaylistById } from '@/lib/actions/playlist';
 import { getAllSubcategories } from '@/lib/actions/subcategory';
 import { Music } from 'lucide-react';
+import { isSuccess } from '@/lib/utils/actions';
 
 const PlaylistPage = async ({
   params
@@ -15,8 +16,22 @@ const PlaylistPage = async ({
   const { id } = await params;
 
   // Fetch playlist details using the ID
-  const playlist = await getPlaylistById(id);
-  const subcategories = await getAllSubcategories(id);
+  const playlistAction = await getPlaylistById(id);
+  const subcategoriesAction = await getAllSubcategories(id);
+
+  // Initiate both requests in parallel
+  const [playlistResponse, subcategoriesResponse] = await Promise.all([playlistAction, subcategoriesAction]);
+
+  if (!isSuccess(playlistResponse)) {
+    return <div>Failed to load playlist.</div>;
+  }
+
+  if (!isSuccess(subcategoriesResponse)) {
+    return <div>Failed to load subcategories.</div>;
+  }
+
+  const { data: playlist } = playlistResponse;
+  const { data: subcategories } = subcategoriesResponse;
 
   return (
     <PageContainer>
@@ -34,7 +49,10 @@ const PlaylistPage = async ({
             </div>
           </div>
         </header>
-        <SearchVideoToAdd subcategories={subcategories} playlistId={playlist.id} />
+        <SearchVideoToAdd
+          subcategories={subcategories}
+          playlistId={playlist.id}
+        />
         <SubcategoriesList subcategories={subcategories} />
       </section>
     </PageContainer>

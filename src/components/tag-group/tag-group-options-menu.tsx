@@ -11,31 +11,31 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { EllipsisVertical, Eye, Paintbrush, Pen, Trash2 } from 'lucide-react';
-import { SubcategoryInformation } from '@/types';
-import SubcategoryInformationSheet from './subcategory-Information-sheet';
-import { ChangeColor } from '../change-color';
-import RenameSubcategory from './rename-subcategory';
+import { TagGroupInformation } from '@/types';
+import SubcategoryInformationSheet from './tag-group-Information-sheet';
+import { ChangeColor } from '@/components/change-color';
+import UpdateTagGroup from './update-tag-group';
 import { useState } from 'react';
-import DeleteSubcategoryAlert from '../dialog/delete-subcategory-alert';
 import Link from 'next/link';
+import DeleteTagGroupAlert from '../dialog/delete-tag-group-alert';
 
-interface SubcategoryOptionsMenuProps {
+interface TagGroupOptionsMenuProps {
   id: string;
   name: string;
-  details: SubcategoryInformation;
+  description: string;
+  details: TagGroupInformation;
   onColorChange: (color: string) => void;
   currentColor: string;
-  playlistId: string; // needed for rename subcategory
 }
 
-const SubcategoryOptionsMenu = ({
+const TagGroupOptionsMenu = ({
   details,
   onColorChange,
   currentColor,
   id,
   name,
-  playlistId
-}: SubcategoryOptionsMenuProps) => {
+  description
+}: TagGroupOptionsMenuProps) => {
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -62,14 +62,14 @@ const SubcategoryOptionsMenu = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem asChild>
-            <Link href={`/dashboard/playlists/${playlistId}/subcategory/${id}`}>
+            <Link href={`/dashboard/tag-groups/${id}`}>
               <Eye className='size-4' />
               See
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleRenameOpenChange}>
             <Pen className='size-4' />
-            Rename
+            Update
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <SubcategoryInformationSheet details={details} />
@@ -96,14 +96,14 @@ const SubcategoryOptionsMenu = ({
       </DropdownMenu>
 
       {/* Dialogs and Alerts (need to be outside <DropdownMenu> to function properly) */}
-      <RenameSubcategory
+      <UpdateTagGroup
         id={id}
         name={name}
-        playlistId={playlistId}
+        description={description}
         open={isRenameOpen}
         onOpenChange={setIsRenameOpen}
       />
-      <DeleteSubcategoryAlert
+      <DeleteTagGroupAlert
         id={id}
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
@@ -111,4 +111,4 @@ const SubcategoryOptionsMenu = ({
     </>
   );
 };
-export default SubcategoryOptionsMenu;
+export default TagGroupOptionsMenu;

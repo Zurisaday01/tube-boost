@@ -1,37 +1,43 @@
 'use client';
 import { Folder } from 'lucide-react';
-import SubcategoryOptionsMenu from './subcategory-options-menu';
-import { SubcategoryInformation } from '@/types';
+import SubcategoryOptionsMenu from './tag-group-options-menu';
+import { TagGroupInformation } from '@/types';
 import { useMemo, useState } from 'react';
-import { getLuminance, handleActionResponse, hexToRgb, lighten, rgba } from '@/lib/utils';
-import { updateColor } from '@/lib/actions/subcategory';
+import {
+  getLuminance,
+  handleActionResponse,
+  hexToRgb,
+  lighten,
+  rgba
+} from '@/lib/utils';
 import { toast } from 'sonner';
+import { updateTagGroupColor } from '@/lib/actions/tag-group';
 
-interface SubcategoryCardProps {
+interface TagGroupCardProps {
   id: string; // needed for color update
   name: string;
-  details: SubcategoryInformation;
+  details: TagGroupInformation;
   color: string;
-  playlistId: string; // needed for rename subcategory
+  description: string;
 }
 
-const SubcategoryCard = ({
+const TagGroupCard = ({
   id,
   name,
+  description,
   details,
-  color: subcategoryColor,
-  playlistId
-}: SubcategoryCardProps) => {
-  const [color, setColor] = useState<string>(subcategoryColor);
+  color: tagGroupColor
+}: TagGroupCardProps) => {
+  const [color, setColor] = useState<string>(tagGroupColor);
 
   const handleColorChange = async (newColor: string) => {
     try {
-         const response = await updateColor(id, newColor, name);
-         handleActionResponse(response, () => setColor(newColor));
-       } catch (err) {
-         console.error('Unexpected error:', err);
-         toast.error('Something went wrong while updating the color.');
-       }
+      const response = await updateTagGroupColor(id, newColor, name);
+      handleActionResponse(response, () => setColor(newColor));
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error('Something went wrong while updating the color.');
+    }
   };
 
   // lighter/opaque version (e.g. 20% opacity background)
@@ -56,7 +62,7 @@ const SubcategoryCard = ({
       <SubcategoryOptionsMenu
         id={id}
         name={name}
-        playlistId={playlistId}
+        description={description}
         details={details}
         onColorChange={handleColorChange}
         currentColor={color}
@@ -64,4 +70,4 @@ const SubcategoryCard = ({
     </div>
   );
 };
-export default SubcategoryCard;
+export default TagGroupCard;

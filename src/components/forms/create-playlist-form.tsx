@@ -19,7 +19,8 @@ import { createPlaylist as createPlaylistAction } from '@/lib/actions/playlist';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
-import z from 'zod';
+import { z } from 'zod';
+import { handleActionResponse } from '@/lib/utils';
 
 interface CreatePlaylistFormProps {
   onClose: () => void;
@@ -39,15 +40,12 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
   function onSubmit(values: z.infer<typeof createPlaylistSchema>) {
     startTransition(async () => {
       try {
-        const result = await createPlaylistAction(values);
-        if (result.success) {
-          const { playlist } = result;
-          toast.success(`'${playlist?.title}' playlist created successfully!`);
-          form.reset(); // reset form on success
-          onClose(); // close the dialog
-        } else {
-          toast.error(result.error);
-        }
+        const response = await createPlaylistAction(values);
+
+        handleActionResponse(response, () => {
+          form.reset();
+          onClose();
+        });
       } catch (err) {
         toast.error('Failed to create playlist.');
       }
@@ -57,6 +55,8 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
   const onCancel = () => {
     form.reset();
   };
+
+  const isLoading = isPending || form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -71,7 +71,7 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
                 <Input
                   placeholder='Enter playlist title'
                   autoComplete='off'
-                  disabled={isPending || form.formState.isSubmitting}
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -81,15 +81,16 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
           )}
         />
         <div className='flex justify-end gap-2'>
-          <Button type='button' variant='secondary' onClick={onCancel}>
-            {isPending || form.formState.isSubmitting ? (
-              <LoaderCircle className='h-4 w-4 animate-spin' />
-            ) : (
-              'Cancel'
-            )}
+          <Button
+            type='button'
+            variant='secondary'
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancel
           </Button>
           <Button type='submit'>
-            {isPending || form.formState.isSubmitting ? (
+            {isLoading ? (
               <LoaderCircle className='h-4 w-4 animate-spin' />
             ) : (
               'Create'

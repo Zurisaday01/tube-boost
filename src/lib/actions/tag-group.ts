@@ -8,6 +8,7 @@ import { cache } from 'react';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
 
 import { ActionResponse } from '@/types/actions';
+import type { TagGroup } from '@prisma/client';
 
 export const createTagGroup = async (
   data: z.infer<typeof createTagGroupSchema>

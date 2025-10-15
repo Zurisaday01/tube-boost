@@ -2,7 +2,6 @@
 
 import { prisma } from '@/lib/db/prisma';
 import { PlaylistVideoNote, Prisma } from '@prisma/client';
-import { cache } from 'react';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
 import { ActionResponse, SaveNoteInput } from '@/types/actions';
 
@@ -43,34 +42,32 @@ export const savePlaylistVideoNote = async ({
   }
 };
 
-export const getPlaylistVideoNote = cache(
-  async (
-    playlistVideoId: string
-  ): Promise<ActionResponse<PlaylistVideoNote | null>> => {
-    try {
-      const user = await getSessionUser();
-      if (!isUserAuthenticated(user)) {
-        throw new Error('User not authenticated');
-      }
-
-      const note = await prisma.playlistVideoNote.findFirst({
-        where: {
-          playlistVideoId,
-          userId: user.userId
-        }
-      });
-
-      return {
-        status: 'success',
-        message: 'Note fetched successfully.',
-        data: note
-      };
-    } catch (error: unknown) {
-      return {
-        status: 'error',
-        message: (error as Error).message || 'Failed to fetch note.',
-        data: null
-      };
+export const getPlaylistVideoNote = async (
+  playlistVideoId: string
+): Promise<ActionResponse<PlaylistVideoNote | null>> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated');
     }
+
+    const note = await prisma.playlistVideoNote.findFirst({
+      where: {
+        playlistVideoId,
+        userId: user.userId
+      }
+    });
+
+    return {
+      status: 'success',
+      message: 'Note fetched successfully.',
+      data: note
+    };
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch note.',
+      data: null
+    };
   }
-);
+};

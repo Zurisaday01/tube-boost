@@ -19,7 +19,7 @@ import { createPlaylist as createPlaylistAction } from '@/lib/actions/playlist';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
-import z from 'zod';
+import { z } from 'zod';
 import { handleActionResponse } from '@/lib/utils';
 
 interface CreatePlaylistFormProps {

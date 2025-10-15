@@ -17,7 +17,7 @@ import { useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
-import z from 'zod';
+import { z } from 'zod';
 import { extractVideoId } from '@/lib/utils';
 import { VideoData } from '@/types';
 import { getVideoData } from '@/lib/actions/youtube';

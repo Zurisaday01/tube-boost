@@ -17,7 +17,7 @@ import { useTransition } from 'react';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
-import z from 'zod';
+import { z } from 'zod';
 import {
   createTagGroup as createTagGroupAction,
   updateTagGroup as updateTagGroupAction

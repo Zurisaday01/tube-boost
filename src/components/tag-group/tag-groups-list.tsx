@@ -1,4 +1,4 @@
-import { TagGroup } from '@prisma/client';
+import type { TagGroup } from '@prisma/client';
 import TagGroupCard from './tag-group-card';
 
 interface TagGroupsListProps {
@@ -15,7 +15,7 @@ const TagGroupsList = ({ tagGroups }: TagGroupsListProps) => {
   }
 
   return (
-    <div className='w-full mt-8 grid grid-cols-[repeat(auto-fit,250px)] gap-x-3 gap-y-8'>
+    <div className='mt-8 grid w-full grid-cols-[repeat(auto-fit,250px)] gap-x-3 gap-y-8'>
       {tagGroups.map((tagGroup) => (
         <TagGroupCard
           key={tagGroup.id}

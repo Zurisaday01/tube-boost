@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
 import { cache } from 'react';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
-import { TagGroup } from '@prisma/client';
+
 import { ActionResponse } from '@/types/actions';
 
 export const createTagGroup = async (
@@ -35,6 +35,7 @@ export const createTagGroup = async (
     });
 
     // Revalidate the path where the tag groups are displayed.
+    revalidatePath('/dashboard/tag-groups');
     revalidatePath(`/dashboard/tag-groups/${tagGroup.id}`);
 
     return {
@@ -57,6 +58,13 @@ export const updateTagGroupColor = async (
   name: string // for error messages only
 ): Promise<ActionResponse<TagGroup>> => {
   try {
+    // Ensure user is authenticated
+    const user = await getSessionUser();
+
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
     // Update tag group color
     const tagGroup = await prisma.tagGroup.update({
       where: { id },
@@ -64,6 +72,7 @@ export const updateTagGroupColor = async (
     });
 
     // Revalidate the path where the tag groups are displayed.
+    revalidatePath('/dashboard/tag-groups');
     revalidatePath(`/dashboard/tag-groups/${tagGroup.id}`);
 
     return {
@@ -75,11 +84,12 @@ export const updateTagGroupColor = async (
     devLog.error('Error updating tag group color:', error);
     return {
       status: 'error',
-      message: (error as Error).message || `Failed to update color for '${name}' tag group.`
+      message:
+        (error as Error).message ||
+        `Failed to update color for '${name}' tag group.`
     };
   }
 };
-
 
 export const updateTagGroup = async (
   tagGroupId: string,
@@ -100,7 +110,7 @@ export const updateTagGroup = async (
     const { name, description } = parsed.data;
 
     // Update the tag group
-    await prisma.tagGroup.updateMany({
+    const result = await prisma.tagGroup.updateMany({
       where: {
         id: tagGroupId,
         userId: user.userId // Ensure the user owns the tag group
@@ -111,15 +121,18 @@ export const updateTagGroup = async (
       }
     });
 
+    if (result.count === 0) {
+      throw new Error('Tag group not found.');
+    }
+
     // Revalidate the path where the tag groups are displayed.
+    revalidatePath('/dashboard/tag-groups');
     revalidatePath(`/dashboard/tag-groups/${tagGroupId}`);
 
     return {
       status: 'success',
       message: `'${name}' updated successfully!`
     };
-
-
   } catch (error) {
     devLog.error('Error updating tag group:', error);
     return {
@@ -127,9 +140,7 @@ export const updateTagGroup = async (
       message: (error as Error).message || 'Failed to update tag group.'
     };
   }
-}
-
-
+};
 
 export const getAllTagGroups = cache(
   async (): Promise<ActionResponse<TagGroup[]>> => {

@@ -4,7 +4,6 @@ import { VideoData } from '@/types';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma, Video } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
-import { cache } from 'react';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
 import {
   ActionResponse,
@@ -18,6 +17,20 @@ export const createVideoAndAttach = async (
   subcategoryId?: string
 ): Promise<ActionResponse<Video>> => {
   try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+    // Ensure target playlist belongs to the user
+    const ownsPlaylist = await prisma.playlist.findFirst({
+      where: { id: playlistId, userId: user.userId },
+      select: { id: true }
+    });
+
+    if (!ownsPlaylist) {
+      throw new Error('Unauthorized playlist access.');
+    }
+    // Basic validation
     if (
       !data.youtubeVideoId ||
       !data.title ||
@@ -76,7 +89,11 @@ export const createVideoAndAttach = async (
 
     revalidatePath(`/dashboard/playlists/${playlistId}`);
 
-    return { status: 'success', message: 'Video added successfully.', data: video };
+    return {
+      status: 'success',
+      message: 'Video added successfully.',
+      data: video
+    };
   } catch (error) {
     console.error('Error creating video:', error);
     return { status: 'error', message: 'Failed to create video.' };
@@ -108,42 +125,41 @@ export const reorderPlaylistVideos = async ({
   }
 };
 
-export const getPlaylistVideoById = cache(
-  async (id: string): Promise<ActionResponse<PlaylistVideoWithVideo>> => {
-    try {
-      const user = await getSessionUser();
+export const getPlaylistVideoById = async (
+  id: string
+): Promise<ActionResponse<PlaylistVideoWithVideo>> => {
+  try {
+    const user = await getSessionUser();
 
-      if (!isUserAuthenticated(user)) {
-        throw new Error('User not authenticated.');
-      }
-
-      const video = await prisma.playlistVideo.findFirst({
-        where: {
-          id,
-          playlist: {
-            userId: user.userId
-          }
-        },
-        include: {
-          video: true
-        }
-      });
-
-      if (!video) {
-        throw new Error('Playlist video not found');
-      }
-
-
-      return {
-        status: 'success',
-        message: 'Playlist video fetched successfully.',
-        data: video
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        message: (error as Error).message || 'Failed to fetch playlist video.'
-      };
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
     }
+
+    const video = await prisma.playlistVideo.findFirst({
+      where: {
+        id,
+        playlist: {
+          userId: user.userId
+        }
+      },
+      include: {
+        video: true
+      }
+    });
+
+    if (!video) {
+      throw new Error('Playlist video not found');
+    }
+
+    return {
+      status: 'success',
+      message: 'Playlist video fetched successfully.',
+      data: video
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch playlist video.'
+    };
   }
-);
+};

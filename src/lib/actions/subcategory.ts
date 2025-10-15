@@ -4,7 +4,6 @@ import { createSubcategorySchema } from '@/lib/schemas';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
-import { cache } from 'react';
 import {
   ActionResponse,
   DeleteActionResponse,
@@ -59,81 +58,81 @@ export const createSubcategory = async (
   }
 };
 
-export const getAllSubcategories = cache(
-  async (playlistId: string): Promise<ActionResponse<Subcategory[]>> => {
-    try {
-      const subcategories = await prisma.subcategory.findMany({
-        where: { playlistId },
-        include: {
-          playlist: { select: { title: true } }
-        },
-        orderBy: { orderIndex: 'asc' }
-      });
-      return {
-        status: 'success',
-        message: 'Subcategories fetched successfully.',
-        data: subcategories
-      };
-    } catch (error) {
-      devLog.error('Error fetching subcategories:', error);
-      return {
-        status: 'error',
-        message: (error as Error).message || 'Failed to fetch subcategories.'
-      };
-    }
+export const getAllSubcategories = async (
+  playlistId: string
+): Promise<ActionResponse<Subcategory[]>> => {
+  try {
+    const subcategories = await prisma.subcategory.findMany({
+      where: { playlistId },
+      include: {
+        playlist: { select: { title: true } }
+      },
+      orderBy: { orderIndex: 'asc' }
+    });
+    return {
+      status: 'success',
+      message: 'Subcategories fetched successfully.',
+      data: subcategories
+    };
+  } catch (error) {
+    devLog.error('Error fetching subcategories:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch subcategories.'
+    };
   }
-);
+};
 
-export const getSubcategoryById = cache(
-  async (id: string): Promise<ActionResponse<SubcategoryWithStats>> => {
-    try {
-      const subcategory = await prisma.subcategory.findUnique({
-        where: { id },
-        include: {
-          playlist: true,
-          videos: {
-            include: {
-              video: true
-            },
-            orderBy: { orderIndex: 'asc' }
+export const getSubcategoryById = async (
+  id: string
+): Promise<ActionResponse<SubcategoryWithStats>> => {
+  try {
+    const subcategory = await prisma.subcategory.findUnique({
+      where: { id },
+      include: {
+        playlist: true,
+        videos: {
+          include: {
+            video: true
           },
-          _count: {
-            select: {
-              videos: true // videos directly in subcategory
-            }
+          orderBy: { orderIndex: 'asc' }
+        },
+        _count: {
+          select: {
+            videos: true // videos directly in subcategory
           }
         }
-      });
-
-      if (!subcategory) {
-        throw new Error('Subcategory not found');
       }
+    });
 
-      const subcategoryWithStats: SubcategoryWithStats = {
-        id: subcategory.id,
-        playlistId: subcategory.playlistId,
-        name: subcategory.name,
-        color: subcategory.color,
-        createdAt: subcategory.createdAt,
-        updatedAt: subcategory.updatedAt,
-        videos: subcategory.videos,
-        totalVideos: subcategory?._count.videos || 0
-      };
-
-      return {
-        status: 'success',
-        message: 'Subcategory fetched successfully.',
-        data: subcategoryWithStats
-      };
-    } catch (error) {
-      devLog.error('Error fetching subcategory:', error);
-      return {
-        status: 'error',
-        message: (error as Error).message || 'Failed to fetch subcategory.'
-      };
+    if (!subcategory) {
+      throw new Error('Subcategory not found');
     }
+
+    const subcategoryWithStats: SubcategoryWithStats = {
+      id: subcategory.id,
+      playlistId: subcategory.playlistId,
+      name: subcategory.name,
+      color: subcategory.color,
+      createdAt: subcategory.createdAt,
+      updatedAt: subcategory.updatedAt,
+      videos: subcategory.videos,
+      totalVideos: subcategory?._count.videos || 0
+    };
+
+    return {
+      status: 'success',
+      message: 'Subcategory fetched successfully.',
+      data: subcategoryWithStats
+    };
+  } catch (error) {
+    devLog.error('Error fetching subcategory:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch subcategory.'
+    };
   }
-);
+};
 
 export const updateSubcategory = async (
   id: string,
@@ -146,7 +145,7 @@ export const updateSubcategory = async (
     if (!parsed.success) throw new Error('Validation was not successful.');
 
     // Destructure the parsed data
-    const { name, playlistId } = parsed.data;
+    const { name } = parsed.data;
 
     // Update subcategory
     const subcategory = await prisma.subcategory.update({
@@ -156,8 +155,8 @@ export const updateSubcategory = async (
       }
     });
 
-    // Revalidate the path where the subcategories are displayed.
-    revalidatePath(`/dashboard/playlists/${playlistId}`);
+    // Revalidate using authoritative DB value
+    revalidatePath(`/dashboard/playlists/${subcategory.playlistId}`);
 
     return {
       status: 'success',
@@ -197,7 +196,9 @@ export const updateColor = async (
     devLog.error('Error updating subcategory color:', error);
     return {
       status: 'error',
-      message: (error as Error).message || `Failed to update color for '${name}' subcategory.`
+      message:
+        (error as Error).message ||
+        `Failed to update color for '${name}' subcategory.`
     };
   }
 };

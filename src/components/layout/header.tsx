@@ -17,13 +17,6 @@ import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import CreatePlaylistButton from '../dialog/create-playlist-button';
 
-// Grades
-const grades: ComboboxDataItem[] = [
-  { value: 'must-watch', label: 'Must Watch' },
-  { value: 'optional', label: 'Optional' },
-  { value: 'skip', label: 'Skip' }
-];
-
 // Example Tags
 const tags: ComboboxDataItem[] = [
   { value: 'react', label: 'React' },
@@ -59,7 +52,7 @@ export default function Header() {
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
-        {/* Filter the videos based on either the selected tag */}
+        {/* Filter the videos based on the selected tag */}
         <Combobox placeholder='Select a tag' type='tag' dataItems={tags} />
         <Tooltip>
           <TooltipTrigger asChild>

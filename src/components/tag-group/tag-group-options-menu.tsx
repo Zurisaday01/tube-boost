@@ -16,8 +16,8 @@ import SubcategoryInformationSheet from './tag-group-Information-sheet';
 import { ChangeColor } from '@/components/change-color';
 import UpdateTagGroup from './update-tag-group';
 import { useState } from 'react';
-import DeleteSubcategoryAlert from '../dialog/delete-subcategory-alert';
 import Link from 'next/link';
+import DeleteTagGroupAlert from '../dialog/delete-tag-group-alert';
 
 interface TagGroupOptionsMenuProps {
   id: string;
@@ -103,7 +103,7 @@ const TagGroupOptionsMenu = ({
         open={isRenameOpen}
         onOpenChange={setIsRenameOpen}
       />
-      <DeleteSubcategoryAlert
+      <DeleteTagGroupAlert
         id={id}
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}

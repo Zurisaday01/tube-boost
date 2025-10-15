@@ -7,7 +7,7 @@ import { devLog } from '@/lib/utils';
 import { cache } from 'react';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
 
-import { ActionResponse } from '@/types/actions';
+import { ActionResponse, DeleteActionResponse } from '@/types/actions';
 import type { TagGroup } from '@prisma/client';
 
 export const createTagGroup = async (
@@ -175,3 +175,28 @@ export const getAllTagGroups = cache(
     }
   }
 );
+
+export const deleteTagGroup = async (
+  id: string
+): Promise<DeleteActionResponse> => {
+  try {
+    // Delete the tag group
+    const deletedTagGroup = await prisma.tagGroup.delete({
+      where: { id }
+    });
+
+    // Revalidate the path where the tag groups are displayed.
+    revalidatePath('/dashboard/tag-groups');
+
+    return {
+      status: 'success',
+      message: `Tag group '${deletedTagGroup.name}' deleted successfully.`
+    };
+  } catch (error) {
+    devLog.error('Error deleting tag group:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to delete tag group.'
+    };
+  }
+};

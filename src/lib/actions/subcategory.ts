@@ -216,14 +216,15 @@ export const deleteSubcategory = async (
     if (!subcategory) throw new Error('Subcategory not found.');
 
     // Delete the subcategory
-    await prisma.subcategory.delete({
+    const deletedSubcategory = await prisma.subcategory.delete({
       where: { id }
     });
 
     // Revalidate the path where the subcategories are displayed.
+    revalidatePath('/dashboard/playlists');
     revalidatePath(`/dashboard/playlists/${subcategory.playlistId}`);
 
-    return { status: 'success', message: 'Subcategory deleted successfully.' };
+    return { status: 'success', message: `Subcategory '${deletedSubcategory.name}' deleted successfully.` };
   } catch (error) {
     devLog.error('Error deleting subcategory:', error);
     return {

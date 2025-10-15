@@ -180,9 +180,15 @@ export const deleteTagGroup = async (
   id: string
 ): Promise<DeleteActionResponse> => {
   try {
+    const user = await getSessionUser();
+
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
     // Delete the tag group
     const deletedTagGroup = await prisma.tagGroup.delete({
-      where: { id }
+      where: { id, userId: user.userId }
     });
 
     // Revalidate the path where the tag groups are displayed.

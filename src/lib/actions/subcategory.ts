@@ -1,6 +1,9 @@
 'use server';
 import { z } from 'zod';
-import { createSubcategorySchema, updateSubcategorySchema } from '@/lib/schemas';
+import {
+  createSubcategorySchema,
+  updateSubcategorySchema
+} from '@/lib/schemas';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
@@ -10,6 +13,7 @@ import {
   SubcategoryWithStats
 } from '@/types/actions';
 import { Subcategory } from '@prisma/client';
+import { getSessionUser, isUserAuthenticated } from '../utils/actions';
 
 export const createSubcategory = async (
   data: z.infer<typeof createSubcategorySchema>
@@ -207,6 +211,11 @@ export const deleteSubcategory = async (
   id: string
 ): Promise<DeleteActionResponse> => {
   try {
+    const user = await getSessionUser();
+
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
     // Find the subcategory to get its playlistId before deletion
     const subcategory = await prisma.subcategory.findUnique({
       where: { id },
@@ -224,7 +233,10 @@ export const deleteSubcategory = async (
     revalidatePath('/dashboard/playlists');
     revalidatePath(`/dashboard/playlists/${subcategory.playlistId}`);
 
-    return { status: 'success', message: `Subcategory '${deletedSubcategory.name}' deleted successfully.` };
+    return {
+      status: 'success',
+      message: `Subcategory '${deletedSubcategory.name}' deleted successfully.`
+    };
   } catch (error) {
     devLog.error('Error deleting subcategory:', error);
     return {

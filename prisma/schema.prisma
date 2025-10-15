@@ -204,8 +204,8 @@ model Tag {
 model VideoTag {
   videoId         String
   tagId           String
-  video           Video          @relation(fields: [videoId], references: [id])
-  tag             Tag            @relation(fields: [tagId], references: [id])
+  video           Video          @relation(fields: [videoId], references: [id], onDelete: Cascade) // if video is deleted, delete this relation
+  tag             Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade) // if tag is deleted, delete this relation
   playlistVideo   PlaylistVideo? @relation(fields: [playlistVideoId], references: [id])
   playlistVideoId String?
 

@@ -20,7 +20,7 @@ import { LoaderCircle } from 'lucide-react';
 import { z } from 'zod';
 import { extractVideoId } from '@/lib/utils';
 import { VideoData } from '@/types';
-import { getVideoData } from '@/lib/actions/youtube';
+import { fetchVideoData } from '@/lib/actions/video';
 
 interface SearchYouTubeVideoFormProps {
   onVideoSelect: (video: VideoData) => void;
@@ -65,13 +65,12 @@ const SearchYouTubeVideoForm = ({
         }
 
         // get the video data from YouTube api
-        const videoData = await getVideoData(videoId);
+        const videoData = await fetchVideoData(videoId);
         if (!videoData) {
           toast.error('Video not found or is private');
           return;
         }
 
-        console.log('videoData:', videoData);
 
         onVideoSelect(videoData);
 

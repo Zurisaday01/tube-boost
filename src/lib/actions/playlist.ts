@@ -171,3 +171,57 @@ export const getPlaylistById = async (
     };
   }
 };
+
+// Delete a playlist and all its associated playlist videos. If any videos become orphaned (not referenced in any other playlist), delete those videos as well
+export const deletePlaylist = async (
+  playlistId: string
+): Promise<ActionResponse> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
+    // Fetch playlist with videos
+    const playlist = await prisma.playlist.findFirst({
+      where: { id: playlistId, userId: user.userId },
+      include: { videos: { select: { videoId: true } } }
+    });
+
+    if (!playlist) {
+      throw new Error('Playlist not found or unauthorized.');
+    }
+
+    // Start transaction: delete playlist and playlist videos
+    await prisma.$transaction(async (tx) => {
+      // Delete the playlist (this cascades PlaylistVideos via schema)
+      await tx.playlist.delete({ where: { id: playlistId } });
+
+      // Collect all videoIds from deleted playlist videos
+      const videoIds = playlist.videos.map((pv) => pv.videoId);
+
+      if (videoIds.length > 0) {
+        // Find orphaned videos (videos with no remaining PlaylistVideos)
+        const orphanedVideos = await tx.video.findMany({
+          where: { id: { in: videoIds }, playlistVideos: { none: {} } }
+        });
+
+        if (orphanedVideos.length > 0) {
+          await tx.video.deleteMany({
+            where: { id: { in: orphanedVideos.map((v) => v.id) } }
+          });
+        }
+      }
+    });
+
+    revalidatePath('/dashboard/playlists');
+
+    return { status: 'success', message: 'Playlist deleted successfully.' };
+  } catch (err) {
+    devLog.error('Error deleting playlist:', err);
+    return {
+      status: 'error',
+      message: (err as Error).message || 'Failed to delete playlist.'
+    };
+  }
+};

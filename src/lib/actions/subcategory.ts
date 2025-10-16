@@ -212,31 +212,45 @@ export const deleteSubcategory = async (
 ): Promise<DeleteActionResponse> => {
   try {
     const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) throw new Error('User not authenticated.');
 
-    if (!isUserAuthenticated(user)) {
-      throw new Error('User not authenticated.');
-    }
-    // Find the subcategory to get its playlistId before deletion
-    const subcategory = await prisma.subcategory.findUnique({
-      where: { id },
-      select: { playlistId: true }
+    // Get the subcategory and all playlist videos
+    const subcategory = await prisma.subcategory.findFirst({
+      where: { id, playlist: { userId: user.userId } }, // ensure user owns the playlist
+      include: {
+        videos: { select: { videoId: true } }
+      }
     });
 
     if (!subcategory) throw new Error('Subcategory not found.');
 
-    // Delete the subcategory
-    const deletedSubcategory = await prisma.subcategory.delete({
-      where: { id }
+    // the videos (Video model) attached to the PlaylistVideos
+    const playlistVideoIds = subcategory.videos.map((v) => v.videoId);
+
+    await prisma.$transaction(async (tx) => {
+      // Delete all PlaylistVideo entries for this subcategory
+      await tx.playlistVideo.deleteMany({ where: { subcategoryId: id } });
+
+      // For each video, delete it if it has no remaining playlistVideo references (orphaned videos)
+      if (playlistVideoIds.length > 0) {
+        await tx.$executeRaw`
+          DELETE FROM "Video"
+          WHERE id = ANY(${playlistVideoIds}::uuid[])
+          AND NOT EXISTS (
+            SELECT 1 FROM "PlaylistVideo"
+            WHERE "PlaylistVideo"."videoId" = "Video".id
+          )
+        `;
+      }
+
+      // Delete the subcategory itself
+      await tx.subcategory.delete({ where: { id } });
     });
 
-    // Revalidate the path where the subcategories are displayed.
     revalidatePath('/dashboard/playlists');
     revalidatePath(`/dashboard/playlists/${subcategory.playlistId}`);
 
-    return {
-      status: 'success',
-      message: `Subcategory '${deletedSubcategory.name}' deleted successfully.`
-    };
+    return { status: 'success', message: `Subcategory deleted successfully.` };
   } catch (error) {
     devLog.error('Error deleting subcategory:', error);
     return {

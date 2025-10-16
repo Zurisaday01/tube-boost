@@ -109,10 +109,10 @@ enum PlaylistSource {
  * 2 → "React Hooks"
  * 3 → "UX Patterns"
  */
-
+// Transfers ownership to the playlist, so accessing user is possible through playlist
 model Subcategory {
   id         String          @id @default(uuid())
-  playlist   Playlist        @relation(fields: [playlistId], references: [id])
+  playlist   Playlist        @relation(fields: [playlistId], references: [id], onDelete: Cascade) // if playlist is deleted, delete this subcategory
   playlistId String
   name       String // e.g. "UX Videos", "Web Inspiration"
   orderIndex Int // order of subcategories inside playlist

@@ -233,17 +233,14 @@ export const deleteSubcategory = async (
 
       // For each video, delete it if it has no remaining playlistVideo references (orphaned videos)
       if (playlistVideoIds.length > 0) {
-        await tx.$executeRawUnsafe(
-          `
+        await tx.$executeRaw`
           DELETE FROM "Video"
-          WHERE id = ANY($1::uuid[])
+          WHERE id = ANY(${playlistVideoIds}::uuid[])
           AND NOT EXISTS (
             SELECT 1 FROM "PlaylistVideo"
             WHERE "PlaylistVideo"."videoId" = "Video".id
           )
-          `,
-          playlistVideoIds
-        );
+        `;
       }
 
       // Delete the subcategory itself

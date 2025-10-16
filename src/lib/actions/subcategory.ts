@@ -221,25 +221,29 @@ export const deleteSubcategory = async (
         playlist: { select: { userId: true } } // to verify ownership
       }
     });
-    
+
+    if (!subcategory) throw new Error('Subcategory not found.');
+
     // Verify ownership
     if (subcategory?.playlist.userId !== user.userId)
       throw new Error('User does not own this playlist.');
 
-    if (!subcategory) throw new Error('Subcategory not found.');
-
+    // the videos (PlaylistVideo model) attached to this subcategory
     const playlistVideoIds = subcategory.videos.map((v) => v.videoId);
 
     await prisma.$transaction(async (tx) => {
       // Delete all PlaylistVideo entries for this subcategory
       await tx.playlistVideo.deleteMany({ where: { subcategoryId: id } });
 
-      // For each video, delete it if it has no remaining playlistVideo references
       for (const videoId of playlistVideoIds) {
-        const count = await tx.playlistVideo.count({ where: { videoId } });
-        if (count === 0) {
-          await tx.video.delete({ where: { id: videoId } });
-        }
+        await tx.$executeRaw`
+          DELETE FROM "Video" 
+          WHERE id = ${videoId}::uuid
+          AND NOT EXISTS (
+            SELECT 1 FROM "PlaylistVideo" 
+            WHERE "videoId" = ${videoId}::uuid
+          )
+        `;
       }
 
       // Delete the subcategory itself

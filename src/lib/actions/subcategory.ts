@@ -206,6 +206,7 @@ export const updateColor = async (
     };
   }
 };
+
 export const deleteSubcategory = async (
   id: string
 ): Promise<DeleteActionResponse> => {
@@ -214,36 +215,35 @@ export const deleteSubcategory = async (
     if (!isUserAuthenticated(user)) throw new Error('User not authenticated.');
 
     // Get the subcategory and all playlist videos
-    const subcategory = await prisma.subcategory.findUnique({
-      where: { id },
+    const subcategory = await prisma.subcategory.findFirst({
+      where: { id, playlist: { userId: user.userId } }, // ensure user owns the playlist
       include: {
-        videos: { select: { videoId: true } },
-        playlist: { select: { userId: true } } // to verify ownership
+        videos: { select: { videoId: true } }
       }
     });
 
     if (!subcategory) throw new Error('Subcategory not found.');
 
-    // Verify ownership
-    if (subcategory?.playlist.userId !== user.userId)
-      throw new Error('User does not own this playlist.');
-
-    // the videos (PlaylistVideo model) attached to this subcategory
+    // the videos (Video model) attached to the PlaylistVideos
     const playlistVideoIds = subcategory.videos.map((v) => v.videoId);
 
     await prisma.$transaction(async (tx) => {
       // Delete all PlaylistVideo entries for this subcategory
       await tx.playlistVideo.deleteMany({ where: { subcategoryId: id } });
 
-      for (const videoId of playlistVideoIds) {
-        await tx.$executeRaw`
-          DELETE FROM "Video" 
-          WHERE id = ${videoId}::uuid
+      // For each video, delete it if it has no remaining playlistVideo references (orphaned videos)
+      if (playlistVideoIds.length > 0) {
+        await tx.$executeRawUnsafe(
+          `
+          DELETE FROM "Video"
+          WHERE id = ANY($1::uuid[])
           AND NOT EXISTS (
-            SELECT 1 FROM "PlaylistVideo" 
-            WHERE "videoId" = ${videoId}::uuid
+            SELECT 1 FROM "PlaylistVideo"
+            WHERE "PlaylistVideo"."videoId" = "Video".id
           )
-        `;
+          `,
+          playlistVideoIds
+        );
       }
 
       // Delete the subcategory itself

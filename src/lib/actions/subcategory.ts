@@ -206,37 +206,45 @@ export const updateColor = async (
     };
   }
 };
-
 export const deleteSubcategory = async (
   id: string
 ): Promise<DeleteActionResponse> => {
   try {
     const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) throw new Error('User not authenticated.');
 
-    if (!isUserAuthenticated(user)) {
-      throw new Error('User not authenticated.');
-    }
-    // Find the subcategory to get its playlistId before deletion
+    // Get the subcategory and all playlist videos
     const subcategory = await prisma.subcategory.findUnique({
       where: { id },
-      select: { playlistId: true }
+      include: {
+        videos: { select: { videoId: true } }
+      }
     });
 
     if (!subcategory) throw new Error('Subcategory not found.');
 
-    // Delete the subcategory
-    const deletedSubcategory = await prisma.subcategory.delete({
-      where: { id }
+    const playlistVideoIds = subcategory.videos.map((v) => v.videoId);
+
+    await prisma.$transaction(async (tx) => {
+      // Delete all PlaylistVideo entries for this subcategory
+      await tx.playlistVideo.deleteMany({ where: { subcategoryId: id } });
+
+      // For each video, delete it if it has no remaining playlistVideo references
+      for (const videoId of playlistVideoIds) {
+        const count = await tx.playlistVideo.count({ where: { videoId } });
+        if (count === 0) {
+          await tx.video.delete({ where: { id: videoId } });
+        }
+      }
+
+      // Delete the subcategory itself
+      await tx.subcategory.delete({ where: { id } });
     });
 
-    // Revalidate the path where the subcategories are displayed.
     revalidatePath('/dashboard/playlists');
     revalidatePath(`/dashboard/playlists/${subcategory.playlistId}`);
 
-    return {
-      status: 'success',
-      message: `Subcategory '${deletedSubcategory.name}' deleted successfully.`
-    };
+    return { status: 'success', message: `Subcategory deleted successfully.` };
   } catch (error) {
     devLog.error('Error deleting subcategory:', error);
     return {

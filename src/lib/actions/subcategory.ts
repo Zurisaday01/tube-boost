@@ -217,9 +217,14 @@ export const deleteSubcategory = async (
     const subcategory = await prisma.subcategory.findUnique({
       where: { id },
       include: {
-        videos: { select: { videoId: true } }
+        videos: { select: { videoId: true } },
+        playlist: { select: { userId: true } } // to verify ownership
       }
     });
+    
+    // Verify ownership
+    if (subcategory?.playlist.userId !== user.userId)
+      throw new Error('User does not own this playlist.');
 
     if (!subcategory) throw new Error('Subcategory not found.');
 

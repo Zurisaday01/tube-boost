@@ -9,12 +9,16 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getPlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import { BlockNoteEditor } from '@blocknote/core';
+import SelectTagOptions from '../tag/select-tag-options';
+import { ComboboxDataItem } from '@/types';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
   title: string;
   channelTitle: string;
   playlistVideoId: string;
+  tagOptions: Record<string, ComboboxDataItem[]>;
+  videoTags: any[];
 }
 
 const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
@@ -33,7 +37,9 @@ const VideoPageClient = ({
   playlistVideoId,
   youtubeVideoId, // NOTE: External YouTube video ID from YouTube API
   title,
-  channelTitle
+  channelTitle,
+  tagOptions,
+  videoTags
 }: VideoPageClientProps) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [initialEditorContent, setInitialEditorContent] = useState<
@@ -101,6 +107,22 @@ const VideoPageClient = ({
             videoId={youtubeVideoId}
             onVideoLoad={handleVideoLoad}
           />
+        </div>
+
+        <SelectTagOptions
+          tagOptions={tagOptions}
+          playlistVideoId={playlistVideoId}
+        />
+
+        <div>
+          {videoTags.map((vt: any) => (
+            <span
+              key={vt.tag.id}
+              className='bg-muted inline-block rounded-full px-2 py-1 text-sm font-medium'
+            >
+              {vt.tag.name}
+            </span>
+          ))}
         </div>
       </section>
     </PageContainer>

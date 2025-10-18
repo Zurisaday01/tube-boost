@@ -211,7 +211,12 @@ export const getPlaylistVideoById = async (
         }
       },
       include: {
-        video: true
+        video: true,
+        videoTags: {
+          include: {
+            tag: true
+          }
+        }
       }
     });
 

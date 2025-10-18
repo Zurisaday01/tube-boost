@@ -134,7 +134,6 @@ model Video {
   videoMetadatas VideoMetadata[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  VideoTag       VideoTag[]
 }
 /*
 Video → PlaylistVideo[] = one-to-many (a video can appear in multiple playlists or subcategories).
@@ -204,12 +203,11 @@ model Tag {
 model VideoTag {
   videoId         String
   tagId           String
-  video           Video          @relation(fields: [videoId], references: [id], onDelete: Cascade) // if video is deleted, delete this relation
   tag             Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade) // if tag is deleted, delete this relation
-  playlistVideo   PlaylistVideo? @relation(fields: [playlistVideoId], references: [id])
-  playlistVideoId String?
+  playlistVideo   PlaylistVideo @relation(fields: [playlistVideoId], references: [id])
+  playlistVideoId String
 
-  @@id([videoId, tagId])
+  @@id([playlistVideoId, tagId])
 }
 
 // ----------------------------------------------------------------

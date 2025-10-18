@@ -1,4 +1,4 @@
-import { Video, PlaylistVideo } from '@prisma/client';
+import { Video, PlaylistVideo, Tag, VideoTag } from '@prisma/client';
 
 // Use a generic type T to allow flexibility in the data returned
 export interface ActionResponse<T = unknown> {
@@ -41,12 +41,26 @@ export interface SubcategoryWithStats {
   totalVideos: number;
 }
 
+export interface VideoTagWithTags extends VideoTag {
+  tag: Tag;
+}
+
 export interface PlaylistVideoWithVideo extends PlaylistVideo {
   video: Video;
+  videoTags: VideoTagWithTags[];
 }
 
 export interface ReorderVideosInput {
   playlistId: string;
   subcategoryId?: string;
   videoIds: string[]; // ordered array of playlistVideo IDs
+}
+
+// Tags
+export interface TagWithCount extends Tag {
+  totalVideos: number; // number of VideoTags associated with this tag
+}
+
+export interface VideoTagResponse extends VideoTag {
+  tag: Tag;
 }

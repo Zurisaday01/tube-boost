@@ -176,6 +176,37 @@ export const getAllTagGroups = cache(
   }
 );
 
+export const getTagGroupById = async (
+  id: string
+): Promise<ActionResponse<TagGroup>> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
+    const tagGroup = await prisma.tagGroup.findFirst({
+      where: { id, userId: user.userId }
+    });
+
+    if (!tagGroup) {
+      throw new Error('Tag group not found.');
+    }
+
+    return {
+      status: 'success',
+      message: 'Tag group fetched successfully.',
+      data: tagGroup
+    };
+  } catch (error) {
+    devLog.error('Error fetching tag group:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch tag group.'
+    };
+  }
+};
+
 export const deleteTagGroup = async (
   id: string
 ): Promise<DeleteActionResponse> => {

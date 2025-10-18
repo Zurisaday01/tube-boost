@@ -1,5 +1,8 @@
 'use client';
 
+import '@blocknote/mantine/blocknoteStyles.css';
+import '@mantine/core/styles.css';
+
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 

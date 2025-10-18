@@ -60,8 +60,6 @@ const VideoPageClient = ({
     setIsVideoLoading(false);
   };
 
-  console.log('videoTags:', videoTags);
-
   const handleTagRemove = (tagId: string) => {
     setSelectedTagId(tagId);
     startTransition(async () => {

@@ -149,12 +149,8 @@ export const addTagToVideo = async (
     // Create VideoTag relation
     const createdVideoTag = await prisma.videoTag.create({
       data: {
-        playlistVideo: {
-          connect: { id: playlistVideoId }
-        },
-        tag: {
-          connect: { id: tagId }
-        }
+        tagId: tagId,
+        playlistVideoId: playlistVideoId
       },
       include: {
         tag: true

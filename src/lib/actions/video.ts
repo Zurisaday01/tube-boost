@@ -214,7 +214,15 @@ export const getPlaylistVideoById = async (
         video: true,
         videoTags: {
           include: {
-            tag: true
+            tag: {
+              include: {
+                group: {
+                  select: {
+                    color: true
+                  }
+                }
+              }
+            }
           }
         }
       }

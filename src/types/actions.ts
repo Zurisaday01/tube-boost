@@ -41,13 +41,21 @@ export interface SubcategoryWithStats {
   totalVideos: number;
 }
 
+// To get the parent color of a tag's group
+export interface TagWithGroupColor extends Tag {
+  group: {
+    color: string;
+  };
+}
+
 export interface VideoTagWithTags extends VideoTag {
-  tag: Tag;
+  tag: TagWithGroupColor;
 }
 
 export interface PlaylistVideoWithVideo extends PlaylistVideo {
   video: Video;
   videoTags: VideoTagWithTags[];
+  
 }
 
 export interface ReorderVideosInput {

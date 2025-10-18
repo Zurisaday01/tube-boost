@@ -131,6 +131,19 @@ export const addTagToVideo = async (
       throw new Error('Video not found or access denied.');
     }
 
+    // Check if the VideoTag relation already exists
+    const existingRelation = await prisma.videoTag.findFirst({
+      where: {
+        videoId: playlistVideoId,
+        tagId: tagId
+      },
+      include: { tag: true }
+    });
+
+    if (existingRelation) {
+      throw new Error(`Tag '${existingRelation.tag.name}' is already associated with this video.`);
+    }
+
     // Create VideoTag relation
     const createdVideoTag = await prisma.videoTag.create({
       data: {
@@ -151,7 +164,7 @@ export const addTagToVideo = async (
 
     return {
       status: 'success',
-      message: 'Tag added to video successfully.',
+      message: `Tag '${createdVideoTag.tag.name}' added to video successfully.`,
       data: createdVideoTag
     };
   } catch (error) {
@@ -159,6 +172,61 @@ export const addTagToVideo = async (
     return {
       status: 'error',
       message: (error as Error).message || 'Failed to add tag to video.'
+    };
+  }
+};
+
+
+export const removeTagFromVideo = async (
+  tagId: string,
+  playlistVideoId: string
+): Promise<ActionResponse> => {
+  try {
+    // Verify user is authenticated
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated');
+    }
+
+    // Verify ownership of the tag and video
+    const tag = await prisma.tag.findFirst({
+      where: { id: tagId, group: { userId: user.userId } }
+    });
+    const video = await prisma.playlistVideo.findFirst({
+      where: {
+        id: playlistVideoId,
+        playlist: {
+          userId: user.userId
+        }
+      }
+    });
+
+    if (!tag) {
+      throw new Error('Tag not found or access denied.');
+    }
+    if (!video) {
+      throw new Error('Video not found or access denied.');
+    }
+
+    // Delete the VideoTag relation
+    await prisma.videoTag.deleteMany({
+      where: {
+        videoId: playlistVideoId,
+        tagId: tagId
+      }
+    });
+
+    revalidatePath(`/dashboard/videos/${playlistVideoId}`);
+
+    return {
+      status: 'success',
+      message: `Tag '${tag.name}' removed from video successfully.`
+    };
+  } catch (error) {
+    devLog.error('Error removing tag from video:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to remove tag from video.'
     };
   }
 };

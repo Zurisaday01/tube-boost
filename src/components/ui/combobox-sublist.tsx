@@ -60,9 +60,10 @@ export function ComboboxSublist({
   React.useEffect(() => {
     if (isClearing) {
       setValue('');
+      onSelect(''); // notify parent of clearing
       setClearing(false);
     }
-  }, [isClearing, setClearing]);
+  }, [isClearing, onSelect, setClearing]);
 
   const handleCategoryClick = (category: string) => {
     setSearch(''); // clear search when switching category

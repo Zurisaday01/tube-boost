@@ -1,16 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { CircleX, ExternalLink, Loader2, Tag } from 'lucide-react';
 import PageContainer from '../layout/page-container';
 import YouTubeNotes from '../notes/youtube-notes';
-import { useEffect, useState, useCallback } from 'react';
-import { cn } from '@/lib/utils';
+import { useEffect, useState, useCallback, useTransition } from 'react';
+import {
+  cn,
+  getLuminance,
+  handleActionResponse,
+  hexToRgb,
+  lighten,
+  rgba
+} from '@/lib/utils';
 import { toast } from 'sonner';
 import { getPlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import { BlockNoteEditor } from '@blocknote/core';
 import SelectTagOptions from '../tag/select-tag-options';
 import { ComboboxDataItem } from '@/types';
+import { removeTagFromVideo } from '@/lib/actions/tag';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
@@ -42,12 +50,32 @@ const VideoPageClient = ({
   videoTags
 }: VideoPageClientProps) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
   const [initialEditorContent, setInitialEditorContent] = useState<
     BlockNoteEditor['document'] | null
   >(null);
+  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
 
   const handleVideoLoad = () => {
     setIsVideoLoading(false);
+  };
+
+  console.log('videoTags:', videoTags);
+
+  const handleTagRemove = (tagId: string) => {
+    setSelectedTagId(tagId);
+    startTransition(async () => {
+      try {
+        const response = await removeTagFromVideo(tagId, playlistVideoId);
+
+        handleActionResponse(response, () => {
+          // To clear the selected tag after removal
+          setSelectedTagId(null);
+        });
+      } catch (err) {
+        toast.error('Failed to remove tag from video.');
+      }
+    });
   };
 
   const loadNote = useCallback(async () => {
@@ -114,15 +142,45 @@ const VideoPageClient = ({
           playlistVideoId={playlistVideoId}
         />
 
-        <div>
-          {videoTags.map((vt: any) => (
-            <span
-              key={vt.tag.id}
-              className='bg-muted inline-block rounded-full px-2 py-1 text-sm font-medium'
-            >
-              {vt.tag.name}
-            </span>
-          ))}
+        <div className='flex items-center gap-2'>
+          {videoTags.map((vt: any) => {
+            const color = vt.tag.group?.color || '#888'; // fallback
+            const rgb = hexToRgb(color);
+            const luminance = getLuminance(rgb);
+            const bgColor =
+              luminance < 128 ? lighten(rgb, 0.95) : rgba(rgb, 0.2);
+
+            return (
+              <div
+                key={vt.tag.id}
+                className='flex rounded-full bg-neutral-100 p-1'
+              >
+                <span
+                  className='flex w-fit items-center gap-1 rounded-full pl-2 pr-3  py-1 text-sm font-medium transition-colors'
+                  style={{
+                    border: `1px solid ${color}`,
+                    backgroundColor: bgColor,
+                    color // or set text color same as the group
+                  }}
+                >
+                  <Tag className='size-4' />
+                  {vt.tag.name}
+                </span>
+
+                <button
+                  disabled={isPending}
+                  className='cursor-pointer rounded-full px-1 hover:bg-transparent'
+                  onClick={() => handleTagRemove(vt.tag.id)}
+                >
+                  {isPending && vt.tag.id === selectedTagId ? (
+                    <Loader2 className='size-4 animate-spin text-neutral-500' />
+                  ) : (
+                    <CircleX className='size-4 text-neutral-500 transition-all duration-100 hover:text-red-500' />
+                  )}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
     </PageContainer>

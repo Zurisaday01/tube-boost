@@ -29,9 +29,10 @@ const SelectTagOptions = ({
 
         handleActionResponse(response, () => {
           setIsClearing(true);
+          setSelectedTagId(null);
         });
       } catch (err) {
-        toast.error('Failed to create playlist.');
+        toast.error('Failed to add tag to video.');
       }
     });
   };

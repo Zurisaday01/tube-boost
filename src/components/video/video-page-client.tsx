@@ -144,7 +144,10 @@ const VideoPageClient = ({
 
         <div className='flex items-center gap-2'>
           {videoTags.map((vt: any) => {
-            const color = vt.tag.group?.color || '#888'; // fallback
+            const rawColor = vt?.tag?.group?.color ?? '#888888';
+            const color = /^#([0-9a-fA-F]{6})$/.test(rawColor)
+              ? rawColor
+              : '#888888';
             const rgb = hexToRgb(color);
             const luminance = getLuminance(rgb);
             const bgColor =
@@ -156,7 +159,7 @@ const VideoPageClient = ({
                 className='flex rounded-full bg-neutral-100 p-1'
               >
                 <span
-                  className='flex w-fit items-center gap-1 rounded-full pl-2 pr-3  py-1 text-sm font-medium transition-colors'
+                  className='flex w-fit items-center gap-1 rounded-full py-1 pr-3 pl-2 text-sm font-medium transition-colors'
                   style={{
                     border: `1px solid ${color}`,
                     backgroundColor: bgColor,

@@ -20,7 +20,7 @@ const TagGroupPage = async ({ params }: PageProps) => {
     return <div>Failed to load data.</div>;
   }
 
-  // Destructure the playlist video data
+  // Destructure the tag data
   const tags = tagsData.data;
   const tagGroup = tagGroupData.data;
 

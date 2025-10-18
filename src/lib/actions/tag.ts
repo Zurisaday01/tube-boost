@@ -237,6 +237,12 @@ export const createTag = async (
   groupId: string
 ): Promise<ActionResponse<Tag>> => {
   try {
+    // Verify user is authenticated
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated');
+    }
+
     // Validate server side
     const parsed = createTagSchema.safeParse(data);
 
@@ -246,8 +252,8 @@ export const createTag = async (
     const { name } = parsed.data;
 
     // Validate groupId
-    const group = await prisma.tagGroup.findUnique({
-      where: { id: groupId }
+    const group = await prisma.tagGroup.findFirst({
+      where: { id: groupId, userId: user.userId }
     });
 
     if (!group) throw new Error('Tag group not found.');

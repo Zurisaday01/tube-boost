@@ -24,8 +24,6 @@ const VideoDetailsPage = async ({ params }: PageProps) => {
   // Destructure necessary fields from the video object
   const { youtubeVideoId, channelTitle, title } = video;
 
-  console.log('Video Tags:', videoTags);
-
   return (
     <VideoPageClient
       playlistVideoId={playlistVideoId}

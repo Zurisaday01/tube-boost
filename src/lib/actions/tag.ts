@@ -134,7 +134,7 @@ export const addTagToVideo = async (
     // Check if the VideoTag relation already exists
     const existingRelation = await prisma.videoTag.findFirst({
       where: {
-        videoId: playlistVideoId,
+        playlistVideoId: playlistVideoId,
         tagId: tagId
       },
       include: { tag: true }
@@ -149,7 +149,6 @@ export const addTagToVideo = async (
     // Create VideoTag relation
     const createdVideoTag = await prisma.videoTag.create({
       data: {
-        videoId: playlistVideoId,
         playlistVideo: {
           connect: { id: playlistVideoId }
         },
@@ -212,7 +211,7 @@ export const removeTagFromVideo = async (
     // Delete the VideoTag relation
     await prisma.videoTag.deleteMany({
       where: {
-        videoId: playlistVideoId,
+        playlistVideoId: playlistVideoId,
         tagId: tagId
       }
     });

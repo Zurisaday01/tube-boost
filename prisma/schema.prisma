@@ -201,7 +201,6 @@ model Tag {
 }
 
 model VideoTag {
-  videoId         String
   tagId           String
   tag             Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade) // if tag is deleted, delete this relation
   playlistVideo   PlaylistVideo @relation(fields: [playlistVideoId], references: [id])

@@ -7,6 +7,7 @@ import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import createTimestamp from './timestamp';
 import type { RichNoteEditor as RichNoteEditorProps } from '@/types/notes';
+import { MantineProvider } from '@mantine/core';
 
 function RichNoteEditor({
   timestampsNotes,
@@ -99,13 +100,15 @@ function RichNoteEditor({
 
   return (
     <div className='rounded-md border border-gray-300'>
-      <BlockNoteView
-        theme='light'
-        className='min-h-[200px] p-3'
-        editor={editor as BlockNoteEditor}
-        onChange={handleEditorChange}
-        editable={editable}
-      />
+      <MantineProvider>
+        <BlockNoteView
+          theme='light'
+          className='min-h-[200px] p-3'
+          editor={editor as BlockNoteEditor}
+          onChange={handleEditorChange}
+          editable={editable}
+        />
+      </MantineProvider>
     </div>
   );
 }

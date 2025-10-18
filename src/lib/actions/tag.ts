@@ -141,7 +141,9 @@ export const addTagToVideo = async (
     });
 
     if (existingRelation) {
-      throw new Error(`Tag '${existingRelation.tag.name}' is already associated with this video.`);
+      throw new Error(
+        `Tag '${existingRelation.tag.name}' is already associated with this video.`
+      );
     }
 
     // Create VideoTag relation
@@ -175,7 +177,6 @@ export const addTagToVideo = async (
     };
   }
 };
-
 
 export const removeTagFromVideo = async (
   tagId: string,
@@ -282,6 +283,12 @@ export const updateTag = async (
   data: z.infer<typeof updateTagSchema>
 ): Promise<ActionResponse<Tag>> => {
   try {
+    // Verify user is authenticated
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated');
+    }
+
     // Validate server side
     const parsed = updateTagSchema.safeParse(data);
 
@@ -290,7 +297,15 @@ export const updateTag = async (
     // Destructure the parsed data
     const { name } = parsed.data;
 
-    // Update tag
+    // Ensure ownership
+    const existing = await prisma.tag.findFirst({
+      where: { id, group: { userId: user.userId } }
+    });
+
+    if (!existing) {
+      throw new Error('Tag not found or access denied.');
+    }
+
     const tag = await prisma.tag.update({
       where: { id },
       data: {

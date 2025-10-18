@@ -10,13 +10,10 @@ type PageProps = { params: Promise<{ id: string }> };
 const TagGroupPage = async ({ params }: PageProps) => {
   const { id } = await params;
 
-  const tagsByGroupAction = await getTagsByTagGroup(id);
-  const tagGroupByIdAction = await getTagGroupById(id);
-
   // Initiate both requests in parallel
   const [tagsData, tagGroupData] = await Promise.all([
-    tagsByGroupAction,
-    tagGroupByIdAction
+    getTagsByTagGroup(id),
+    getTagGroupById(id)
   ]);
 
   if (!isSuccess(tagsData) || !isSuccess(tagGroupData)) {

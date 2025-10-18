@@ -8,13 +8,10 @@ type PageProps = { params: Promise<{ id: string }> };
 const VideoDetailsPage = async ({ params }: PageProps) => {
   const { id } = await params;
 
-  const getPlaylistVideoAction = await getPlaylistVideoById(id);
-  const getAllTagsOptionsAction = await getAllTagsOptions();
-
   // Initiate both requests in parallel
   const [playlistVideoData, allTagsOptionsData] = await Promise.all([
-    getPlaylistVideoAction,
-    getAllTagsOptionsAction
+    getPlaylistVideoById(id),
+    getAllTagsOptions()
   ]);
 
   if (!isSuccess(playlistVideoData) || !isSuccess(allTagsOptionsData)) {
@@ -25,7 +22,7 @@ const VideoDetailsPage = async ({ params }: PageProps) => {
   const { id: playlistVideoId, video, videoTags } = playlistVideoData.data;
 
   // Destructure necessary fields from the video object
-  const { youtubeVideoId, channelTitle, title, } = video;
+  const { youtubeVideoId, channelTitle, title } = video;
 
   console.log('Video Tags:', videoTags);
 

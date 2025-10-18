@@ -15,12 +15,11 @@ const PlaylistPage = async ({
   // asynchronous access of `params.id`.
   const { id } = await params;
 
-  // Fetch playlist details using the ID
-  const playlistAction = await getPlaylistById(id);
-  const subcategoriesAction = await getAllSubcategories(id);
-
   // Initiate both requests in parallel
-  const [playlistResponse, subcategoriesResponse] = await Promise.all([playlistAction, subcategoriesAction]);
+  const [playlistResponse, subcategoriesResponse] = await Promise.all([
+    getPlaylistById(id),
+    getAllSubcategories(id)
+  ]);
 
   if (!isSuccess(playlistResponse)) {
     return <div>Failed to load playlist.</div>;

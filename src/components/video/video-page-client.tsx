@@ -1,20 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { CircleX, ExternalLink, Loader2, Tag } from 'lucide-react';
 import PageContainer from '../layout/page-container';
 import YouTubeNotes from '../notes/youtube-notes';
-import { useEffect, useState, useCallback } from 'react';
-import { cn } from '@/lib/utils';
+import { useEffect, useState, useCallback, useTransition } from 'react';
+import {
+  cn,
+  getLuminance,
+  handleActionResponse,
+  hexToRgb,
+  lighten,
+  rgba
+} from '@/lib/utils';
 import { toast } from 'sonner';
 import { getPlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import { BlockNoteEditor } from '@blocknote/core';
+import SelectTagOptions from '../tag/select-tag-options';
+import { ComboboxDataItem } from '@/types';
+import { removeTagFromVideo } from '@/lib/actions/tag';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
   title: string;
   channelTitle: string;
   playlistVideoId: string;
+  tagOptions: Record<string, ComboboxDataItem[]>;
+  videoTags: any[];
 }
 
 const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (
@@ -33,15 +45,35 @@ const VideoPageClient = ({
   playlistVideoId,
   youtubeVideoId, // NOTE: External YouTube video ID from YouTube API
   title,
-  channelTitle
+  channelTitle,
+  tagOptions,
+  videoTags
 }: VideoPageClientProps) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
   const [initialEditorContent, setInitialEditorContent] = useState<
     BlockNoteEditor['document'] | null
   >(null);
+  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
 
   const handleVideoLoad = () => {
     setIsVideoLoading(false);
+  };
+
+  const handleTagRemove = (tagId: string) => {
+    setSelectedTagId(tagId);
+    startTransition(async () => {
+      try {
+        const response = await removeTagFromVideo(tagId, playlistVideoId);
+
+        handleActionResponse(response, () => {
+          // To clear the selected tag after removal
+          setSelectedTagId(null);
+        });
+      } catch (err) {
+        toast.error('Failed to remove tag from video.');
+      }
+    });
   };
 
   const loadNote = useCallback(async () => {
@@ -101,6 +133,55 @@ const VideoPageClient = ({
             videoId={youtubeVideoId}
             onVideoLoad={handleVideoLoad}
           />
+        </div>
+
+        <SelectTagOptions
+          tagOptions={tagOptions}
+          playlistVideoId={playlistVideoId}
+        />
+
+        <div className='flex items-center gap-2'>
+          {videoTags.map((vt: any) => {
+            const rawColor = vt?.tag?.group?.color ?? '#888888';
+            const color = /^#([0-9a-fA-F]{6})$/.test(rawColor)
+              ? rawColor
+              : '#888888';
+            const rgb = hexToRgb(color);
+            const luminance = getLuminance(rgb);
+            const bgColor =
+              luminance < 128 ? lighten(rgb, 0.95) : rgba(rgb, 0.2);
+
+            return (
+              <div
+                key={vt.tag.id}
+                className='flex rounded-full bg-neutral-100 p-1'
+              >
+                <span
+                  className='flex w-fit items-center gap-1 rounded-full py-1 pr-3 pl-2 text-sm font-medium transition-colors'
+                  style={{
+                    border: `1px solid ${color}`,
+                    backgroundColor: bgColor,
+                    color // or set text color same as the group
+                  }}
+                >
+                  <Tag className='size-4' />
+                  {vt.tag.name}
+                </span>
+
+                <button
+                  disabled={isPending}
+                  className='cursor-pointer rounded-full px-1 hover:bg-transparent'
+                  onClick={() => handleTagRemove(vt.tag.id)}
+                >
+                  {isPending && vt.tag.id === selectedTagId ? (
+                    <Loader2 className='size-4 animate-spin text-neutral-500' />
+                  ) : (
+                    <CircleX className='size-4 text-neutral-500 transition-all duration-100 hover:text-red-500' />
+                  )}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
     </PageContainer>

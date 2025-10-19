@@ -1,7 +1,8 @@
 'use client';
-
+import '@blocknote/core/fonts/inter.css';
+import { BlockNoteView } from '@blocknote/shadcn';
 import { useCreateBlockNote } from '@blocknote/react';
-import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/shadcn/style.css';
 
 import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useRef, useState, useCallback } from 'react';

@@ -1,7 +1,5 @@
 'use client';
 
-import '@blocknote/mantine/blocknoteStyles.css';
-
 import React, { useRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
@@ -10,6 +8,7 @@ import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/types/notes';
 import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
+
 
 interface YouTubeNotesProps {
   playlistVideoId: string;

@@ -104,3 +104,15 @@ export const getPlaylistMenuItems = ({
     onClick: onDelete
   }
 ];
+
+// Playlist Video Menu Items
+export const getPlaylistVideoMenuItems = ({
+  onDelete
+}: SubcategoryMenuItemsProps): MenuAction[] => [
+  {
+    type: 'button',
+    label: 'Delete',
+    icon: 'trash-2',
+    onClick: onDelete
+  }
+];

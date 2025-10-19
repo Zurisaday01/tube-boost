@@ -90,6 +90,23 @@ export const createVideoAndAttach = async (
         }
       });
     }
+
+    // Make sure the video is not already linked to the uncategorized (playlist-level) or subcategory group
+    const existingLink = await prisma.playlistVideo.findFirst({
+      where: {
+        playlistId,
+        videoId: video.id,
+        subcategoryId: subcategoryId ?? null
+      }
+    });
+
+    if (existingLink) {
+      return {
+        status: 'error',
+        message: `Video is already in this ${subcategoryId ? 'subcategory' : 'playlist'}.`
+      };
+    }
+
     // Get the current max orderIndex in the right scope
     const lastVideo = await prisma.playlistVideo.findFirst({
       where: {
@@ -312,6 +329,27 @@ export const deletePlaylistVideo = async (
     // Delete the playlist video
     await prisma.playlistVideo.delete({ where: { id: playlistVideoId } });
 
+    //  Reindex remaining videos in the same subcategory or uncategorized group
+    const remainingVideos = await prisma.playlistVideo.findMany({
+      where: {
+        playlistId,
+        // If the video was in a subcategory, reindex within that subcategory.
+        // If it was uncategorized (subcategoryId = null), reindex uncategorized videos.
+        subcategoryId: target.subcategoryId ?? null // handle both categorized and uncategorized
+      },
+      orderBy: { orderIndex: 'asc' }
+    });
+
+    // Reset orderIndex to be sequential
+    await Promise.all(
+      remainingVideos.map((video, i) =>
+        prisma.playlistVideo.update({
+          where: { id: video.id },
+          data: { orderIndex: i }
+        })
+      )
+    );
+
     // Check if the video is now orphaned
     const remainingRefs = await prisma.playlistVideo.count({
       where: { videoId: target.video.id }
@@ -321,6 +359,11 @@ export const deletePlaylistVideo = async (
     }
 
     revalidatePath(`/dashboard/playlists/${playlistId}`);
+    if (target.subcategoryId) {
+      revalidatePath(
+        `/dashboard/playlists/${playlistId}/subcategory/${target.subcategoryId}`
+      );
+    }
     return { status: 'success', message: 'Video deleted successfully.' };
   } catch (err) {
     console.error('Error deleting playlist video:', err);

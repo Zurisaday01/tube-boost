@@ -27,7 +27,7 @@ const PlaylistCard = ({
           <Music className='size-20 text-gray-400' />
         </div>
         <div className='flex flex-col pt-4'>
-          <header className='flex items-center'>
+          <header className='flex items-center gap-2'>
             <h3 className='group-hover:text-primary text-lg font-semibold transition-colors duration-150'>
               {title}
             </h3>

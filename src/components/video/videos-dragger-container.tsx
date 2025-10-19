@@ -12,7 +12,7 @@ import { handleActionResponse } from '@/lib/utils';
 
 interface VideosDraggerContainerProps {
   videos: PlaylistVideo[];
-  subcategoryId?: string; // it stays null when uncategorized videos
+  subcategoryId?: string; // stays null when uncategorized videos
 }
 
 const VideosDraggerContainer = ({
@@ -20,10 +20,25 @@ const VideosDraggerContainer = ({
   subcategoryId
 }: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
+  const [currentVideos, setCurrentVideos] = useState(videos);
+  const [originalVideos, setOriginalVideos] = useState<PlaylistVideo[]>([]);
 
   const toggleReorderMode = async () => {
     if (reorderMode) {
-      // We're finishing reordering, save changes
+      // finishing reorder
+      const originalOrder = originalVideos.map((v) => v.id);
+      const currentOrder = currentVideos.map((v) => v.id);
+
+      const hasChanged = !originalOrder.every(
+        (id, i) => id === currentOrder[i]
+      );
+
+      if (!hasChanged) {
+        toast.info('No changes detected.');
+        setReorderMode(false);
+        return;
+      }
+
       try {
         const response = subcategoryId
           ? await reorderPlaylistVideos({
@@ -40,40 +55,39 @@ const VideosDraggerContainer = ({
         console.error('Failed to save new order', err);
         toast.error('Failed to reorder videos.');
       }
+    } else {
+      // entering reorder mode
+      setOriginalVideos(currentVideos);
     }
 
-    // Toggle mode after saving (or just enter mode)
     setReorderMode((prev) => !prev);
   };
 
-  const [currentVideos, setCurrentVideos] = useState(videos);
-
-  const handleReorder = async (newOrder: PlaylistVideo[]) => {
-    // reorder the videos locally
+  const handleReorder = (newOrder: PlaylistVideo[]) => {
     const reordered = newOrder.map((v, index) => ({
       ...v,
       orderIndex: index
     }));
-    // update state
     setCurrentVideos(reordered);
   };
 
   return (
     <div>
-      {/* disable the button if there are no videos or only one video */}
       <Button
         onClick={toggleReorderMode}
-        disabled={videos.length === 0 || videos.length === 1}
+        disabled={videos.length <= 1}
         className='mb-4'
       >
         {reorderMode ? 'Finish Reordering' : 'Reorder Videos'}
       </Button>
+
       <VideoList
-        videos={currentVideos as PlaylistVideo[]}
+        videos={currentVideos}
         reorderMode={reorderMode}
         onReorder={handleReorder}
       />
     </div>
   );
 };
+
 export default VideosDraggerContainer;

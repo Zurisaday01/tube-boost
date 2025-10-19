@@ -2,6 +2,7 @@ import { cn, formatDuration, formatLocalDate } from '@/lib/utils';
 import { VideoThumbnails } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
+import PlaylistVideoOptionsMenu from './playlist-video-options-menu';
 
 interface VideoCardProps {
   id: string;
@@ -34,7 +35,13 @@ const VideoCard = ({
           className='object-cover'
         />
       </div>
-      <h2 className='font-bold'>{title}</h2>
+      <header className='flex items-center gap-2'>
+        <h2 className='font-bold'>{title}</h2>
+        {!reorderMode ? (
+          <PlaylistVideoOptionsMenu id={id} title={title} />
+        ) : null}
+      </header>
+
       <p className='text-muted-foreground text-sm'>{channelTitle}</p>
       <p className='text-muted-foreground text-sm'>
         Duration: {formatDuration(duration)}

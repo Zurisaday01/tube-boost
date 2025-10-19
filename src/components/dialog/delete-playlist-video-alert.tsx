@@ -8,27 +8,27 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
-import { deletePlaylist } from '@/lib/actions/playlist';
+import { deletePlaylistVideo } from '@/lib/actions/video';
 import { handleActionResponse } from '@/lib/utils';
 import { toast } from 'sonner';
 
-interface DeletePlaylistAlertProps {
+interface DeletePlaylistVideoAlertProps {
   id: string;
   title: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const DeletePlaylistAlert = ({
+const DeletePlaylistVideoAlert = ({
   id,
   title,
   open,
   onOpenChange
-}: DeletePlaylistAlertProps) => {
+}: DeletePlaylistVideoAlertProps) => {
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); // <- Stop Link navigation
     try {
-      const result = await deletePlaylist(id, title);
+      const result = await deletePlaylistVideo(id, title);
       handleActionResponse(result, () => {
         onOpenChange(false);
       });
@@ -46,14 +46,11 @@ const DeletePlaylistAlert = ({
       >
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Delete <span className='text-primary'>{title}</span> Playlist
+            Delete <span className='text-primary'>{title}</span> Playlist Video
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this playlist? This action cannot be
-            undone.{' '}
-            <span className='text-red-500'>
-              This will delete all playlist videos within this playlist.
-            </span>
+            Are you sure you want to delete this playlist video?{' '}
+            <span className='text-red-500'>This action cannot be undone. </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -64,4 +61,4 @@ const DeletePlaylistAlert = ({
     </AlertDialog>
   );
 };
-export default DeletePlaylistAlert;
+export default DeletePlaylistVideoAlert;

@@ -121,6 +121,7 @@ model Subcategory {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 }
+
 // Videos are the source data (YouTube)
 model Video {
   id             String          @id @default(uuid())
@@ -135,10 +136,11 @@ model Video {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 }
-/*
-Video → PlaylistVideo[] = one-to-many (a video can appear in multiple playlists or subcategories).
-PlaylistVideo → Video = many-to-one (each playlist entry points to exactly one video).
-*/
+
+/**
+ * Video → PlaylistVideo[] = one-to-many (a video can appear in multiple playlists or subcategories).
+ * PlaylistVideo → Video = many-to-one (each playlist entry points to exactly one video).
+ */
 
 // PlaylistVideo is the wrapper with app-specific info
 model PlaylistVideo {
@@ -202,8 +204,8 @@ model Tag {
 
 model VideoTag {
   tagId           String
-  tag             Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade) // if tag is deleted, delete this relation
-  playlistVideo   PlaylistVideo @relation(fields: [playlistVideoId], references: [id])
+  tag             Tag           @relation(fields: [tagId], references: [id], onDelete: Cascade) // if tag is deleted, delete this relation
+  playlistVideo   PlaylistVideo @relation(fields: [playlistVideoId], references: [id], onDelete: Cascade) // if the playlist video is deleted, delete this relation
   playlistVideoId String
 
   @@id([playlistVideoId, tagId])

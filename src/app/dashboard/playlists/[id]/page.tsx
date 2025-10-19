@@ -56,13 +56,15 @@ const PlaylistPage = async ({
         />
         <SubcategoriesList subcategories={subcategories} />
 
-        <div className='mt-10'>
-          <VideosDraggerContainer
-            videos={
-              playlist.uncategorizedPlaylistVideos as unknown as PlaylistVideo[]
-            }
-          />
-        </div>
+        {playlist.uncategorizedPlaylistVideos.length > 0 && (
+          <div className='mt-10'>
+            <VideosDraggerContainer
+              videos={
+                playlist.uncategorizedPlaylistVideos as unknown as PlaylistVideo[]
+              }
+            />
+          </div>
+        )}
       </section>
     </PageContainer>
   );

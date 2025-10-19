@@ -1,10 +1,8 @@
 'use client';
-
-import '@blocknote/mantine/blocknoteStyles.css';
-import '@mantine/core/styles.css';
-
+import '@blocknote/core/fonts/inter.css';
+import { BlockNoteView } from '@blocknote/shadcn';
 import { useCreateBlockNote } from '@blocknote/react';
-import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/shadcn/style.css';
 
 import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -103,6 +101,7 @@ function RichNoteEditor({
   return (
     <div className='rounded-md border border-gray-300'>
       <BlockNoteView
+        key='note-editor'
         theme='light'
         className='min-h-[200px] p-3'
         editor={editor as BlockNoteEditor}

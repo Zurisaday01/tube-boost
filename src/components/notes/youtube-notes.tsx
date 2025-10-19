@@ -1,8 +1,5 @@
 'use client';
 
-import '@blocknote/mantine/blocknoteStyles.css';
-import '@mantine/core/styles.css';
-
 import React, { useRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';

@@ -5,7 +5,6 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { requireSession } from '@/lib/auth-check';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { MantineProvider } from '@mantine/core';
 
 export const metadata: Metadata = {
   title: 'TubeBoost',
@@ -26,7 +25,6 @@ export default async function DashboardLayout({
 
   return (
     <KBar>
-      <MantineProvider>
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
         <SidebarInset>
@@ -36,7 +34,6 @@ export default async function DashboardLayout({
           {/* page main content ends */}
         </SidebarInset>
       </SidebarProvider>
-      </MantineProvider>
     </KBar>
   );
 }

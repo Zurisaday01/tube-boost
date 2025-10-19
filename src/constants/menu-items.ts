@@ -4,9 +4,9 @@ import { ReactNode } from 'react';
 interface SubcategoryMenuItemsProps {
   id: string;
   playlistId?: string;
-  onRename: (e: React.MouseEvent<HTMLDivElement>) => void;
-  onDelete: (e: React.MouseEvent<HTMLDivElement>) => void;
-  infoComponent: ReactNode;
+  onRename?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onDelete?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  infoComponent?: ReactNode;
   changeColorComponent?: ReactNode;
 }
 
@@ -85,6 +85,18 @@ export const getTagGroupMenuItems = ({
   {
     type: 'separator'
   },
+  {
+    type: 'button',
+    label: 'Delete',
+    icon: 'trash-2',
+    onClick: onDelete
+  }
+];
+
+// Playlist Menu Items
+export const getPlaylistMenuItems = ({
+  onDelete
+}: SubcategoryMenuItemsProps): MenuAction[] => [
   {
     type: 'button',
     label: 'Delete',

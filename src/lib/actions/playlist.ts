@@ -6,7 +6,12 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
-import { ActionResponse, PlaylistWithStats, PlaylistWithStatsAndUncategorizedVideos, UncategorizedVideo } from '@/types/actions';
+import {
+  ActionResponse,
+  PlaylistWithStats,
+  PlaylistWithStatsAndUncategorizedVideos,
+  UncategorizedVideo
+} from '@/types/actions';
 import { Playlist } from '@prisma/client';
 
 export const createPlaylist = async (
@@ -154,8 +159,6 @@ export const getPlaylistById = async (
       (v) => v.subcategoryId === null
     );
 
- 
-
     if (!playlist) {
       throw new Error('Playlist not found');
     }
@@ -187,7 +190,8 @@ export const getPlaylistById = async (
 
 // Delete a playlist and all its associated playlist videos. If any videos become orphaned (not referenced in any other playlist), delete those videos as well
 export const deletePlaylist = async (
-  playlistId: string
+  playlistId: string,
+  playlistTitle: string // For better user feedback
 ): Promise<ActionResponse> => {
   try {
     const user = await getSessionUser();
@@ -229,12 +233,17 @@ export const deletePlaylist = async (
 
     revalidatePath('/dashboard/playlists');
 
-    return { status: 'success', message: 'Playlist deleted successfully.' };
+    return {
+      status: 'success',
+      message: `Playlist '${playlistTitle}' deleted successfully.`
+    };
   } catch (err) {
     devLog.error('Error deleting playlist:', err);
     return {
       status: 'error',
-      message: (err as Error).message || 'Failed to delete playlist.'
+      message:
+        (err as Error).message ||
+        `Failed to delete playlist '${playlistTitle}'.`
     };
   }
 };

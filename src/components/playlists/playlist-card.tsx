@@ -1,6 +1,7 @@
 import { formatLocalDate } from '@/lib/utils';
 import { Music } from 'lucide-react';
 import Link from 'next/link';
+import PlaylistOptionsMenu from './playlist-options-menu';
 
 interface PlaylistCardProps {
   id: string;
@@ -26,9 +27,13 @@ const PlaylistCard = ({
           <Music className='size-20 text-gray-400' />
         </div>
         <div className='flex flex-col pt-4'>
-          <h3 className='group-hover:text-primary text-lg font-semibold transition-colors duration-150'>
-            {title}
-          </h3>
+          <header className='flex items-center'>
+            <h3 className='group-hover:text-primary text-lg font-semibold transition-colors duration-150'>
+              {title}
+            </h3>
+            <PlaylistOptionsMenu id={id} title={title} />
+          </header>
+
           <p>
             Created at: {formatLocalDate(createdAt.toISOString().slice(0, 10))}
           </p>

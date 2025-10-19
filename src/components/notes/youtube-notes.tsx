@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
+import YouTube, {
+  YouTubeEvent,
+  YouTubePlayer,
+  YouTubeProps
+} from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
 import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/types/notes';
 import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
-
+import ResizableYouTubePlayer from './resizable-youtube-player';
 
 interface YouTubeNotesProps {
   playlistVideoId: string;
@@ -145,19 +149,26 @@ export default function YouTubeNotes({
     }
   };
 
+  const opts: YouTubeProps['opts'] = {
+    width: '640',
+    height: '360',
+    playerVars: { modestbranding: 1 }
+  };
+
   return (
     <div className='flex w-full flex-col gap-4 md:flex-row'>
       <div>
         {/* YouTube Player */}
-        <YouTube
+        {/* <YouTube
           videoId={videoId}
           onReady={onReady}
           onStateChange={onStateChange}
-          opts={{
-            width: '640',
-            height: '360',
-            playerVars: { modestbranding: 1 }
-          }}
+          opts={opts}
+        /> */}
+        <ResizableYouTubePlayer
+          videoId={videoId}
+          onReady={onReady}
+          onStateChange={onStateChange}
         />
       </div>
 

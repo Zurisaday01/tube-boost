@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
-import { ActionResponse, PlaylistWithStats } from '@/types/actions';
+import { ActionResponse, PlaylistWithStats, PlaylistWithStatsAndUncategorizedVideos, UncategorizedVideo } from '@/types/actions';
 import { Playlist } from '@prisma/client';
 
 export const createPlaylist = async (
@@ -113,15 +113,16 @@ export const getAllPlaylists = async (): Promise<
   }
 };
 
+// Get playlist by ID along with stats and the uncategorized videos payload
 export const getPlaylistById = async (
   id: string
-): Promise<ActionResponse<PlaylistWithStats>> => {
+): Promise<ActionResponse<PlaylistWithStatsAndUncategorizedVideos>> => {
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
       throw new Error('User not authenticated');
     }
-
+    // TODO: Display uncategorized videos that are directly in the playlist as well
     const playlist = await prisma.playlist.findUnique({
       where: { id, userId: user.userId },
       select: {
@@ -130,6 +131,10 @@ export const getPlaylistById = async (
         source: true,
         createdAt: true,
         updatedAt: true,
+        videos: {
+          // include the playlist videos
+          include: { video: true }
+        },
         _count: {
           select: {
             videos: true,
@@ -144,18 +149,26 @@ export const getPlaylistById = async (
       }
     });
 
+    // Group the uncategorized videos (subcategoryId is null)
+    const uncategorizedVideos = playlist?.videos.filter(
+      (v) => v.subcategoryId === null
+    );
+
+ 
+
     if (!playlist) {
       throw new Error('Playlist not found');
     }
 
-    const playlistWithStats: PlaylistWithStats = {
+    const playlistWithStats: PlaylistWithStatsAndUncategorizedVideos = {
       id: playlist.id,
       title: playlist.title,
       source: playlist.source,
       createdAt: playlist.createdAt,
       updatedAt: playlist.updatedAt,
       totalCategories: playlist._count.subcategories,
-      totalVideos: playlist._count.videos // TODO: Review how the logic is handling this since 1 video is getting counted twice
+      totalVideos: playlist._count.videos, // TODO: Review how the logic is handling this since 1 video is getting counted twice
+      uncategorizedPlaylistVideos: uncategorizedVideos as UncategorizedVideo[]
     };
 
     return {

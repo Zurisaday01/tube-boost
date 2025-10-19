@@ -6,6 +6,8 @@ import { getPlaylistById } from '@/lib/actions/playlist';
 import { getAllSubcategories } from '@/lib/actions/subcategory';
 import { Music } from 'lucide-react';
 import { isSuccess } from '@/lib/utils/actions';
+import VideoCard from '@/components/video/video-card';
+import { VideoThumbnails } from '@/types';
 
 const PlaylistPage = async ({
   params
@@ -53,6 +55,22 @@ const PlaylistPage = async ({
           playlistId={playlist.id}
         />
         <SubcategoriesList subcategories={subcategories} />
+
+        <div className='mt-8 grid grid-cols-[repeat(auto-fit,350px)] gap-x-3 gap-y-8'>
+          {playlist.uncategorizedPlaylistVideos.map((video) => (
+            <VideoCard
+              key={video.id}
+              id={video.id}
+              title={video.video.title}
+              channelTitle={video.video.channelTitle}
+              youtubeVideoId={video.video.youtubeVideoId}
+              duration={video.video.duration as number}
+              thumbnails={video.video.thumbnails as unknown as VideoThumbnails}
+              addedAt={video.addedAt as Date}
+              reorderMode={false}
+            />
+          ))}
+        </div>
       </section>
     </PageContainer>
   );

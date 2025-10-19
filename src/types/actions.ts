@@ -29,6 +29,15 @@ export interface PlaylistWithStats {
   totalVideos: number;
 }
 
+export interface UncategorizedVideo extends PlaylistVideo {
+  video: Video;
+}
+
+export interface PlaylistWithStatsAndUncategorizedVideos
+  extends PlaylistWithStats {
+  uncategorizedPlaylistVideos: UncategorizedVideo[];
+}
+
 // Subcategory with additional stats
 export interface SubcategoryWithStats {
   id: string;
@@ -55,7 +64,6 @@ export interface VideoTagWithTags extends VideoTag {
 export interface PlaylistVideoWithVideo extends PlaylistVideo {
   video: Video;
   videoTags: VideoTagWithTags[];
-  
 }
 
 export interface ReorderVideosInput {

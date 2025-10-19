@@ -73,15 +73,11 @@ export type Subcategory = {
   playlist?: { title: string };
 };
 
-export interface SubcategoryInformation {
-  modified: Date;
-  created: Date;
-  location: string;
-}
 
-export interface TagGroupInformation {
+export interface InformationSheetDetails {
   modified: Date;
   created: Date;
+  location?: string;
 }
 
 export interface PlaylistVideo {

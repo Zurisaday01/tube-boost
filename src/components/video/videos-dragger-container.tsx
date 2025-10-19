@@ -3,26 +3,37 @@ import { PlaylistVideo } from '@/types';
 import VideoList from './video-list';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import { reorderPlaylistVideos } from '@/lib/actions/video';
+import {
+  reorderPlaylistVideos,
+  reorderUncategorizedVideos
+} from '@/lib/actions/video';
 import { toast } from 'sonner';
 import { handleActionResponse } from '@/lib/utils';
 
 interface VideosDraggerContainerProps {
   videos: PlaylistVideo[];
-  subcategoryId?: string;
+  subcategoryId?: string; // it stays null when uncategorized videos
 }
 
-const VideosDraggerContainer = ({ videos }: VideosDraggerContainerProps) => {
+const VideosDraggerContainer = ({
+  videos,
+  subcategoryId
+}: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
 
   const toggleReorderMode = async () => {
     if (reorderMode) {
       // We're finishing reordering, save changes
       try {
-        const response = await reorderPlaylistVideos({
-          playlistId: currentVideos[0]?.playlistId,
-          videoIds: currentVideos.map((v) => v.id)
-        });
+        const response = subcategoryId
+          ? await reorderPlaylistVideos({
+              playlistId: currentVideos[0]?.playlistId,
+              videoIds: currentVideos.map((v) => v.id)
+            })
+          : await reorderUncategorizedVideos({
+              playlistId: currentVideos[0]?.playlistId,
+              videoIds: currentVideos.map((v) => v.id)
+            });
 
         handleActionResponse(response);
       } catch (err) {

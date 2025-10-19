@@ -193,6 +193,52 @@ export const reorderPlaylistVideos = async ({
   }
 };
 
+export const reorderUncategorizedVideos = async ({
+  playlistId,
+  videoIds
+}: ReorderVideosInput): Promise<ActionResponse> => {
+  try {
+    // Validate that all given IDs belong to this playlist and are uncategorized
+    const existingVideos = await prisma.playlistVideo.findMany({
+      where: {
+        id: { in: videoIds },
+        playlistId,
+        subcategoryId: null
+      },
+      select: { id: true }
+    });
+
+    if (existingVideos.length !== videoIds.length) {
+      throw new Error(
+        'Some videos are not uncategorized or do not belong to this playlist.'
+      );
+    }
+
+    // Update order safely in one transaction
+    await prisma.$transaction(
+      videoIds.map((id, index) =>
+        prisma.playlistVideo.update({
+          where: { id },
+          data: { orderIndex: index }
+        })
+      )
+    );
+
+    revalidatePath(`/dashboard/playlists/${playlistId}`);
+
+    return {
+      status: 'success',
+      message: 'Uncategorized videos reordered successfully.'
+    };
+  } catch (error) {
+    console.error('Error reordering uncategorized videos:', error);
+    return {
+      status: 'error',
+      message: 'Failed to reorder uncategorized videos.'
+    };
+  }
+};
+
 export const getPlaylistVideoById = async (
   id: string
 ): Promise<ActionResponse<PlaylistVideoWithVideo>> => {

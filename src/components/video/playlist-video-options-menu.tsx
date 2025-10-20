@@ -14,7 +14,6 @@ const PlaylistVideoOptionsMenu = ({
   id,
   title
 }: PlaylistVideoOptionsMenuProps) => {
-  const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const actions = getPlaylistVideoMenuItems({

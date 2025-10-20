@@ -95,8 +95,18 @@ export const getTagGroupMenuItems = ({
 
 // Playlist Menu Items
 export const getPlaylistMenuItems = ({
-  onDelete
+  onDelete,
+  onRename
 }: SubcategoryMenuItemsProps): MenuAction[] => [
+  {
+    type: 'button',
+    label: 'Rename',
+    icon: 'pen',
+    onClick: onRename
+  },
+  {
+    type: 'separator'
+  },
   {
     type: 'button',
     label: 'Delete',

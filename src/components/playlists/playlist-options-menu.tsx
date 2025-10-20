@@ -4,6 +4,7 @@ import { useState } from 'react';
 import DeletePlaylistAlert from '../dialog/delete-playlist-alert';
 import { EntityOptionsMenu } from '../options-menu/entity-options-menu';
 import { getPlaylistMenuItems } from '@/constants/menu-items';
+import RenamePlaylist from './rename-playlist';
 
 interface PlaylistOptionsMenuProps {
   id: string;
@@ -19,6 +20,10 @@ const PlaylistOptionsMenu = ({ id, title }: PlaylistOptionsMenuProps) => {
     onDelete: (e) => {
       e.stopPropagation();
       setIsDeleteOpen(true);
+    },
+    onRename: (e) => {
+      e.stopPropagation();
+      setIsRenameOpen(true);
     }
   });
 
@@ -27,6 +32,12 @@ const PlaylistOptionsMenu = ({ id, title }: PlaylistOptionsMenuProps) => {
       actions={actions}
       dialogs={
         <>
+          <RenamePlaylist
+            id={id}
+            title={title}
+            open={isRenameOpen}
+            onOpenChange={setIsRenameOpen}
+          />
           <DeletePlaylistAlert
             id={id}
             title={title}

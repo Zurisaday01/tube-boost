@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { createPlaylistSchema } from '@/lib/schemas';
+import { createUpdatePlaylistSchema } from '@/lib/schemas';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
@@ -15,7 +15,7 @@ import {
 import { Playlist } from '@prisma/client';
 
 export const createPlaylist = async (
-  data: z.infer<typeof createPlaylistSchema>
+  data: z.infer<typeof createUpdatePlaylistSchema>
 ): Promise<ActionResponse<Playlist>> => {
   try {
     const user = await getSessionUser();
@@ -23,7 +23,7 @@ export const createPlaylist = async (
       throw new Error('User not authenticated.');
     }
     // Validate server side
-    const parsed = createPlaylistSchema.safeParse(data);
+    const parsed = createUpdatePlaylistSchema.safeParse(data);
 
     if (!parsed.success) throw new Error('Validation was not successful.');
 
@@ -51,6 +51,44 @@ export const createPlaylist = async (
     return {
       status: 'error',
       message: (error as Error).message || 'Failed to create playlist.'
+    };
+  }
+};
+
+export const updatePlaylistTitle = async (
+  data: z.infer<typeof createUpdatePlaylistSchema>,
+  id: string
+): Promise<ActionResponse<Playlist>> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
+    // Validate server side
+    const parsed = createUpdatePlaylistSchema.safeParse(data);
+    if (!parsed.success) throw new Error('Validation was not successful.');
+
+    const { title } = parsed.data;
+
+    // Update playlist
+    const playlist = await prisma.playlist.update({
+      where: { id, userId: user.userId },
+      data: { title }
+    });
+
+    revalidatePath(`/dashboard/playlists/${playlist.id}`);
+
+    return {
+      status: 'success',
+      message: `'${playlist.title}' playlist title updated successfully!`,
+      data: playlist
+    };
+  } catch (error) {
+    devLog.error('Error updating playlist title:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to update playlist title.'
     };
   }
 };

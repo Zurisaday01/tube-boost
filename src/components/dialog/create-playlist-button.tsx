@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
 import { Plus } from 'lucide-react';
-import CreatePlaylistForm from '../forms/create-playlist-form';
+import ManagePlaylistForm from '../forms/manage-playlist-form';
 import { useState } from 'react';
 
 const CreatePlaylistButton = () => {
@@ -28,7 +28,7 @@ const CreatePlaylistButton = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className='mb-3'>Create a new playlist</DialogTitle>
-          <CreatePlaylistForm onClose={handleClose} />
+          <ManagePlaylistForm onClose={handleClose} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

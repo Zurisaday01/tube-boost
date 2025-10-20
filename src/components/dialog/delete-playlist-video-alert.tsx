@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { deletePlaylistVideo } from '@/lib/actions/video';
 import { handleActionResponse } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface DeletePlaylistVideoAlertProps {
@@ -25,12 +26,15 @@ const DeletePlaylistVideoAlert = ({
   open,
   onOpenChange
 }: DeletePlaylistVideoAlertProps) => {
+  const router = useRouter();
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); // <- Stop Link navigation
     try {
       const result = await deletePlaylistVideo(id, title);
       handleActionResponse(result, () => {
         onOpenChange(false);
+        // Refresh the page to reflect changes
+        router.refresh();
       });
     } catch (error) {
       toast.error('An unexpected error occurred.');

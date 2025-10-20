@@ -311,7 +311,7 @@ export const getPlaylistVideoById = async (
 // Delete a playlist video, and if the video is orphaned (not referenced in any other playlist), delete the video as well
 export const deletePlaylistVideo = async (
   playlistVideoId: string,
-  playlistId: string
+  title: string
 ): Promise<ActionResponse> => {
   try {
     const user = await getSessionUser();
@@ -332,7 +332,7 @@ export const deletePlaylistVideo = async (
     //  Reindex remaining videos in the same subcategory or uncategorized group
     const remainingVideos = await prisma.playlistVideo.findMany({
       where: {
-        playlistId,
+        id: { not: playlistVideoId },
         // If the video was in a subcategory, reindex within that subcategory.
         // If it was uncategorized (subcategoryId = null), reindex uncategorized videos.
         subcategoryId: target.subcategoryId ?? null // handle both categorized and uncategorized
@@ -357,16 +357,22 @@ export const deletePlaylistVideo = async (
     if (remainingRefs === 0) {
       await prisma.video.delete({ where: { id: target.video.id } });
     }
-
-    revalidatePath(`/dashboard/playlists/${playlistId}`);
+    // Revalidate relevant path for the playlist
+    revalidatePath(`/dashboard/playlists/${target.playlistId}`);
     if (target.subcategoryId) {
       revalidatePath(
-        `/dashboard/playlists/${playlistId}/subcategory/${target.subcategoryId}`
+        `/dashboard/playlists/${target.playlistId}/subcategory/${target.subcategoryId}`
       );
     }
-    return { status: 'success', message: 'Video deleted successfully.' };
+    return {
+      status: 'success',
+      message: `Deleted playlist video "${title}" successfully.`
+    };
   } catch (err) {
     console.error('Error deleting playlist video:', err);
-    return { status: 'error', message: 'Failed to delete video.' };
+    return {
+      status: 'error',
+      message: `Failed to delete playlist video "${title}".`
+    };
   }
 };

@@ -56,11 +56,11 @@ const ManageSubcategoryForm = ({
   const onSubmit = (values: z.infer<typeof createSubcategorySchema>) => {
     startTransition(async () => {
       try {
-        const action = isEditMode
+        // Unify await call
+        const response = await (subcategory
           ? updateSubcategoryAction(subcategory.id, values)
-          : createSubcategoryAction(values);
+          : createSubcategoryAction(values));
 
-        const response = await action;
         handleActionResponse(response, () => {
           form.reset();
           onClose();

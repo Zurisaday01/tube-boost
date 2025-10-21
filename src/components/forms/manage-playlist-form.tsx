@@ -15,7 +15,10 @@ import { Button } from '@/components/ui/button';
 
 import { createUpdatePlaylistSchema } from '@/lib/schemas';
 import { useTransition } from 'react';
-import { createPlaylist as createPlaylistAction, updatePlaylistTitle as  updatePlaylistTitleAction} from '@/lib/actions/playlist';
+import {
+  createPlaylist as createPlaylistAction,
+  updatePlaylistTitle as updatePlaylistTitleAction
+} from '@/lib/actions/playlist';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
@@ -27,7 +30,7 @@ interface ManagePlaylistFormProps {
   playlist?: {
     id: string;
     title: string;
-  }
+  };
 }
 
 const ManagePlaylistForm = ({ onClose, playlist }: ManagePlaylistFormProps) => {
@@ -46,15 +49,15 @@ const ManagePlaylistForm = ({ onClose, playlist }: ManagePlaylistFormProps) => {
   function onSubmit(values: z.infer<typeof createUpdatePlaylistSchema>) {
     startTransition(async () => {
       try {
-       const action = isEditMode
-                 ? updatePlaylistTitleAction(values, playlist.id)
-                 : createPlaylistAction(values);
-       
-               const response = await action;
-               handleActionResponse(response, () => {
-                 form.reset();
-                 onClose();
-               });
+        // Unify await call
+        const response = await (playlist
+          ? updatePlaylistTitleAction(values, playlist.id)
+          : createPlaylistAction(values));
+
+        handleActionResponse(response, () => {
+          form.reset();
+          onClose();
+        });
       } catch (err) {
         toast.error('Failed to create playlist.');
       }

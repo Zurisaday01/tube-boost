@@ -53,11 +53,11 @@ const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
   const onSubmit = (values: z.infer<typeof createTagGroupSchema>) => {
     startTransition(async () => {
       try {
-        const action = isEditMode
+        // Unify await call
+        const response = await (tagGroup
           ? updateTagGroupAction(tagGroup!.id, values)
-          : createTagGroupAction(values);
+          : createTagGroupAction(values));
 
-        const response = await action;
         handleActionResponse(response, () => {
           form.reset();
           onClose();

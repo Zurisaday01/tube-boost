@@ -1,4 +1,5 @@
 // Utility functions for server actions
+import { VideoThumbnails } from '@/types';
 import { ActionResponse } from '@/types/actions';
 import { auth } from 'auth';
 import { headers } from 'next/headers';
@@ -23,7 +24,6 @@ export const isUserAuthenticated = (
   return user.isAuthenticated && !!user.userId;
 };
 
-
 // Type guard to check if action response is successful
 export const isSuccess = <T>(
   response: ActionResponse<T>
@@ -31,5 +31,12 @@ export const isSuccess = <T>(
   return response.status === 'success';
 };
 
-
-
+// Function to parse video thumbnails from JSON
+export function parseVideoThumbnails<T extends { thumbnails: unknown }>(
+  video: T
+): Omit<T, 'thumbnails'> & { thumbnails: VideoThumbnails } {
+  return {
+    ...video,
+    thumbnails: video.thumbnails as VideoThumbnails
+  };
+}

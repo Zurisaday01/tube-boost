@@ -5,13 +5,18 @@ import { createUpdatePlaylistSchema } from '@/lib/schemas';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
-import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
+import {
+  getSessionUser,
+  isUserAuthenticated,
+  parseVideoThumbnails
+} from '@/lib/utils/actions';
 import {
   ActionResponse,
   PlaylistWithStats,
-  PlaylistWithStatsAndUncategorizedVideos,
+  PlaylistWithStatsAndUncategorizedVideos
 } from '@/types/actions';
 import { Playlist } from '@prisma/client';
+
 
 export const createPlaylist = async (
   data: z.infer<typeof createUpdatePlaylistSchema>
@@ -208,7 +213,11 @@ export const getPlaylistById = async (
       updatedAt: playlist.updatedAt,
       totalCategories: playlist._count.subcategories,
       totalVideos: playlist._count.videos, // TODO: Review how the logic is handling this since 1 video is getting counted twice
-      uncategorizedPlaylistVideos: uncategorizedVideos || []
+      uncategorizedPlaylistVideos:
+        uncategorizedVideos?.map((pv) => ({
+          ...pv,
+          video: parseVideoThumbnails(pv.video) // Parse thumbnails JSON
+        })) || []
     };
 
     return {

@@ -47,8 +47,8 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
             title={video.video.title}
             channelTitle={video.video.channelTitle}
             youtubeVideoId={video.video.youtubeVideoId}
-            duration={video.video.duration as number}
-            thumbnails={video.video.thumbnails as unknown as VideoThumbnails}
+            duration={Number(video.video.duration)}
+            thumbnails={video.video.thumbnails}
             addedAt={video.addedAt as Date}
             reorderMode={reorderMode}
           />
@@ -76,7 +76,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
                 title={video.video.title}
                 channelTitle={video.video.channelTitle}
                 youtubeVideoId={video.video.youtubeVideoId}
-                duration={video.video.duration as number}
+                duration={Number(video.video.duration)}
                 thumbnails={video.video.thumbnails as unknown as VideoThumbnails}
                 addedAt={video.addedAt as Date}
                 reorderMode={reorderMode}

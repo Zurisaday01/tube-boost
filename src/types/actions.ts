@@ -1,4 +1,11 @@
-import { Video, Tag, VideoTag, PlaylistVideo as PlaylistVideoDB } from '@prisma/client';
+import {
+  Video,
+  Tag,
+  VideoTag,
+  PlaylistVideo as PlaylistVideoDB,
+  Prisma
+} from '@prisma/client';
+import { VideoThumbnails } from '.';
 
 // Use a generic type T to allow flexibility in the data returned
 export interface ActionResponse<T = unknown> {
@@ -29,9 +36,17 @@ export interface PlaylistWithStats {
   totalVideos: number;
 }
 
-export interface PlaylistVideoIncludeVideo extends PlaylistVideoDB {
-  video: Video;
+// -----------------------------------------------------------------------------------
+// This type represents a video record from the database and components are using it so we need to strong type the json hanced we define VideoWithParsedThumbnails
+type VideoDB = Prisma.VideoGetPayload<{}>;
+export interface VideoWithParsedThumbnails extends Omit<VideoDB, 'thumbnails'> {
+  // Parse thumbnails JSON string into an object
+  thumbnails: VideoThumbnails;
 }
+export interface PlaylistVideoIncludeVideo extends PlaylistVideoDB {
+  video: VideoWithParsedThumbnails;
+}
+// -----------------------------------------------------------------------------------
 
 export interface PlaylistWithStatsAndUncategorizedVideos
   extends PlaylistWithStats {

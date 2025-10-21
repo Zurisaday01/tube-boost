@@ -13,7 +13,11 @@ import {
   SubcategoryWithStats
 } from '@/types/actions';
 import { Subcategory } from '@prisma/client';
-import { getSessionUser, isUserAuthenticated } from '../utils/actions';
+import {
+  getSessionUser,
+  isUserAuthenticated,
+  parseVideoThumbnails
+} from '../utils/actions';
 
 export const createSubcategory = async (
   data: z.infer<typeof createSubcategorySchema>
@@ -120,7 +124,10 @@ export const getSubcategoryById = async (
       color: subcategory.color,
       createdAt: subcategory.createdAt,
       updatedAt: subcategory.updatedAt,
-      videos: subcategory.videos,
+      videos: subcategory.videos.map((v) => ({
+        ...v,
+        video: parseVideoThumbnails(v.video)
+      })),
       totalVideos: subcategory?._count.videos || 0
     };
 

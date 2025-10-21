@@ -6,8 +6,9 @@ import { getPlaylistById } from '@/lib/actions/playlist';
 import { getAllSubcategories } from '@/lib/actions/subcategory';
 import { Music } from 'lucide-react';
 import { isSuccess } from '@/lib/utils/actions';
-import { PlaylistVideo } from '@/types';
+
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
+import { formatUncategorizedVideosToPlaylistVideos } from '@/lib/utils/formatting';
 
 const PlaylistPage = async ({
   params
@@ -59,9 +60,9 @@ const PlaylistPage = async ({
         {playlist.uncategorizedPlaylistVideos.length > 0 && (
           <div className='mt-10'>
             <VideosDraggerContainer
-              videos={
-                playlist.uncategorizedPlaylistVideos as unknown as PlaylistVideo[]
-              }
+              videos={formatUncategorizedVideosToPlaylistVideos(
+                playlist.uncategorizedPlaylistVideos
+              )}
             />
           </div>
         )}

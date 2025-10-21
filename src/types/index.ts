@@ -85,7 +85,7 @@ export interface PlaylistVideo {
   playlistId: string;
   videoId: string;
   youtubeVideoId: string;
-  subcategoryId: string;
+  subcategoryId: string | null; 
   orderIndex: number;
   addedAt: Date;
   video: VideoData;

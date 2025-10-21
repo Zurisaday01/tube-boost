@@ -1,4 +1,4 @@
-import { Video, PlaylistVideo, Tag, VideoTag } from '@prisma/client';
+import { Video, Tag, VideoTag, PlaylistVideo as PlaylistVideoDB } from '@prisma/client';
 
 // Use a generic type T to allow flexibility in the data returned
 export interface ActionResponse<T = unknown> {
@@ -29,13 +29,13 @@ export interface PlaylistWithStats {
   totalVideos: number;
 }
 
-export interface UncategorizedVideo extends PlaylistVideo {
+export interface PlaylistVideoIncludeVideo extends PlaylistVideoDB {
   video: Video;
 }
 
 export interface PlaylistWithStatsAndUncategorizedVideos
   extends PlaylistWithStats {
-  uncategorizedPlaylistVideos: UncategorizedVideo[];
+  uncategorizedPlaylistVideos: PlaylistVideoIncludeVideo[];
 }
 
 // Subcategory with additional stats
@@ -46,7 +46,7 @@ export interface SubcategoryWithStats {
   color: string | null;
   createdAt: Date;
   updatedAt: Date;
-  videos: PlaylistVideo[];
+  videos: PlaylistVideoIncludeVideo[];
   totalVideos: number;
 }
 
@@ -61,7 +61,7 @@ export interface VideoTagWithTags extends VideoTag {
   tag: TagWithGroupColor;
 }
 
-export interface PlaylistVideoWithVideo extends PlaylistVideo {
+export interface PlaylistVideoWithVideo extends PlaylistVideoDB {
   video: Video;
   videoTags: VideoTagWithTags[];
 }

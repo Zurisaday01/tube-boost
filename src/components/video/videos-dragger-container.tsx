@@ -1,5 +1,5 @@
 'use client';
-import { PlaylistVideo } from '@/types';
+
 import VideoList from './video-list';
 import { Button } from '../ui/button';
 import { useState } from 'react';
@@ -9,9 +9,10 @@ import {
 } from '@/lib/actions/video';
 import { toast } from 'sonner';
 import { handleActionResponse } from '@/lib/utils';
+import { PlaylistVideoIncludeVideo } from '@/types/actions';
 
 interface VideosDraggerContainerProps {
-  videos: PlaylistVideo[];
+  videos: PlaylistVideoIncludeVideo[];
   subcategoryId?: string; // stays null when uncategorized videos
 }
 
@@ -20,8 +21,8 @@ const VideosDraggerContainer = ({
   subcategoryId
 }: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
-  const [currentVideos, setCurrentVideos] = useState(videos);
-  const [originalVideos, setOriginalVideos] = useState<PlaylistVideo[]>([]);
+  const [currentVideos, setCurrentVideos] = useState<PlaylistVideoIncludeVideo[]>(videos);
+  const [originalVideos, setOriginalVideos] = useState<PlaylistVideoIncludeVideo[]>([]);
 
   const toggleReorderMode = async () => {
     if (reorderMode) {
@@ -63,7 +64,7 @@ const VideosDraggerContainer = ({
     setReorderMode((prev) => !prev);
   };
 
-  const handleReorder = (newOrder: PlaylistVideo[]) => {
+  const handleReorder = (newOrder: PlaylistVideoIncludeVideo[]) => {
     const reordered = newOrder.map((v, index) => ({
       ...v,
       orderIndex: index

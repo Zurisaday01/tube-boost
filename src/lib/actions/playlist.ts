@@ -10,7 +10,6 @@ import {
   ActionResponse,
   PlaylistWithStats,
   PlaylistWithStatsAndUncategorizedVideos,
-  UncategorizedVideo
 } from '@/types/actions';
 import { Playlist } from '@prisma/client';
 
@@ -209,7 +208,7 @@ export const getPlaylistById = async (
       updatedAt: playlist.updatedAt,
       totalCategories: playlist._count.subcategories,
       totalVideos: playlist._count.videos, // TODO: Review how the logic is handling this since 1 video is getting counted twice
-      uncategorizedPlaylistVideos: uncategorizedVideos as UncategorizedVideo[]
+      uncategorizedPlaylistVideos: uncategorizedVideos || []
     };
 
     return {

@@ -8,7 +8,6 @@ import { Music } from 'lucide-react';
 import { isSuccess } from '@/lib/utils/actions';
 
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
-import { formatUncategorizedVideosToPlaylistVideos } from '@/lib/utils/formatting';
 
 const PlaylistPage = async ({
   params
@@ -60,9 +59,7 @@ const PlaylistPage = async ({
         {playlist.uncategorizedPlaylistVideos.length > 0 && (
           <div className='mt-10'>
             <VideosDraggerContainer
-              videos={formatUncategorizedVideosToPlaylistVideos(
-                playlist.uncategorizedPlaylistVideos
-              )}
+              videos={playlist.uncategorizedPlaylistVideos}
             />
           </div>
         )}

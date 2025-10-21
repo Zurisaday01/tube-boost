@@ -1,4 +1,4 @@
-import { PlaylistVideo } from '@/types';
+
 import VideoCard from './video-card';
 import {
   closestCenter,
@@ -13,11 +13,13 @@ import {
   SortableContext
 } from '@dnd-kit/sortable';
 import SortableVideoCard from './sortable-video-card';
+import { PlaylistVideoIncludeVideo } from '@/types/actions';
+import { VideoThumbnails } from '@/types';
 
 interface VideoListProps {
-  videos: PlaylistVideo[];
+  videos: PlaylistVideoIncludeVideo[];
   reorderMode: boolean;
-  onReorder: (newOrder: PlaylistVideo[]) => void;
+  onReorder: (newOrder: PlaylistVideoIncludeVideo[]) => void;
 }
 
 const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
@@ -45,9 +47,9 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
             title={video.video.title}
             channelTitle={video.video.channelTitle}
             youtubeVideoId={video.video.youtubeVideoId}
-            duration={video.video.duration}
-            thumbnails={video.video.thumbnails}
-            addedAt={video.addedAt}
+            duration={video.video.duration as number}
+            thumbnails={video.video.thumbnails as unknown as VideoThumbnails}
+            addedAt={video.addedAt as Date}
             reorderMode={reorderMode}
           />
         ))}
@@ -74,9 +76,9 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
                 title={video.video.title}
                 channelTitle={video.video.channelTitle}
                 youtubeVideoId={video.video.youtubeVideoId}
-                duration={video.video.duration}
-                thumbnails={video.video.thumbnails}
-                addedAt={video.addedAt}
+                duration={video.video.duration as number}
+                thumbnails={video.video.thumbnails as unknown as VideoThumbnails}
+                addedAt={video.addedAt as Date}
                 reorderMode={reorderMode}
               />
             </div>

@@ -2,7 +2,6 @@ import PageContainer from '@/components/layout/page-container';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
 import { getSubcategoryById } from '@/lib/actions/subcategory';
 import { isSuccess } from '@/lib/utils/actions';
-import { PlaylistVideo } from '@/types';
 import { Folder } from 'lucide-react';
 import { hasher } from 'node-object-hash';
 
@@ -39,7 +38,7 @@ const SubcategoryPage = async ({ params }: PageProps) => {
         </header>
         <VideosDraggerContainer
           key={videoHashKey}
-          videos={subcategory.videos as unknown as PlaylistVideo[]}
+          videos={subcategory.videos}
           subcategoryId={subcategory.id}
         />
       </section>

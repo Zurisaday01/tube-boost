@@ -58,6 +58,10 @@ export const createTagSchema = z.object({
   })
 });
 
+export const assignUpdatePlaylistTypeSchema = z.object({
+  playlistTypeId: z.string()
+});
+
 export const updateTagSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.'
@@ -88,6 +92,14 @@ export const updateSubcategorySchema = z.object({
 });
 
 export const createTagGroupSchema = z.object({
+  name: z.string().min(2, {
+    message: 'Name must be at least 2 characters.'
+  }),
+  description: z.string().optional()
+});
+
+
+export const createUpdatePlaylistTypeSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.'
   }),

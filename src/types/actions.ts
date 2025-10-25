@@ -3,7 +3,8 @@ import {
   Tag,
   VideoTag,
   PlaylistVideo as PlaylistVideoDB,
-  Prisma
+  Prisma,
+  PlaylistType
 } from '@prisma/client';
 import { VideoThumbnails } from '.';
 
@@ -34,7 +35,9 @@ export interface PlaylistWithStats {
   updatedAt: Date;
   totalCategories: number;
   totalVideos: number;
+  playlistType: null | PlaylistType;
 }
+
 
 // -----------------------------------------------------------------------------------
 // This type represents a video record from the database and components are using it so we need to strong type the json hanced we define VideoWithParsedThumbnails

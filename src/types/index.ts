@@ -90,3 +90,9 @@ export interface PlaylistVideo {
   addedAt: Date;
   video: VideoData;
 }
+
+
+export interface PlaylistTypeOptions {
+  value: string;
+  label: string;
+}

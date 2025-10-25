@@ -32,7 +32,7 @@ import {
   IconLayoutKanban,
   IconBrandGithub
 } from '@tabler/icons-react';
-import { Eye, Info, Pen, Tags, Trash2 } from 'lucide-react';
+import { Eye, Info, Pen, Tag, Tags, Trash2 } from 'lucide-react';
 
 export type Icon = React.ComponentType<IconProps>;
 
@@ -72,5 +72,6 @@ export const Icons = {
   eye: Eye,
   pen: Pen,
   info: Info,
-  'trash-2': Trash2
+  'trash-2': Trash2,
+  types: Tag
 };

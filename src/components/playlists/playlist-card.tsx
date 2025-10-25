@@ -2,6 +2,7 @@ import { formatLocalDate } from '@/lib/utils';
 import { Music } from 'lucide-react';
 import Link from 'next/link';
 import PlaylistOptionsMenu from './playlist-options-menu';
+import { PlaylistType } from '@prisma/client';
 
 interface PlaylistCardProps {
   id: string;
@@ -10,6 +11,7 @@ interface PlaylistCardProps {
   updatedAt: Date;
   totalVideos: number;
   totalCategories: number;
+  playlistType: null | PlaylistType;
 }
 
 const PlaylistCard = ({
@@ -18,7 +20,8 @@ const PlaylistCard = ({
   createdAt,
   updatedAt,
   totalVideos,
-  totalCategories
+  totalCategories,
+  playlistType
 }: PlaylistCardProps) => {
   return (
     <Link href={`/dashboard/playlists/${id}`}>
@@ -31,7 +34,11 @@ const PlaylistCard = ({
             <h3 className='group-hover:text-primary text-lg font-semibold transition-colors duration-150'>
               {title}
             </h3>
-            <PlaylistOptionsMenu id={id} title={title} />
+            <PlaylistOptionsMenu
+              id={id}
+              title={title}
+              playlistType={playlistType}
+            />
           </header>
 
           <p>

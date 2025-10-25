@@ -27,6 +27,7 @@ const PlaylistsPage = async () => {
               key={playlist.id}
               id={playlist.id}
               title={playlist.title}
+              playlistType={playlist.playlistType}
               createdAt={playlist.createdAt}
               updatedAt={playlist.updatedAt}
               totalVideos={playlist.totalVideos}

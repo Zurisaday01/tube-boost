@@ -17,7 +17,6 @@ import {
 } from '@/types/actions';
 import { Playlist } from '@prisma/client';
 
-
 export const createPlaylist = async (
   data: z.infer<typeof createUpdatePlaylistSchema>
 ): Promise<ActionResponse<Playlist>> => {
@@ -114,6 +113,7 @@ export const getAllPlaylists = async (): Promise<
         source: true,
         createdAt: true,
         updatedAt: true,
+        playlistType: true,
         _count: {
           select: {
             videos: true, // videos directly in playlist
@@ -142,9 +142,11 @@ export const getAllPlaylists = async (): Promise<
         createdAt: playlist.createdAt,
         updatedAt: playlist.updatedAt,
         totalCategories: playlist._count.subcategories,
+        playlistType: playlist.playlistType,
         totalVideos
       };
     });
+
 
     return {
       status: 'success',
@@ -178,6 +180,7 @@ export const getPlaylistById = async (
         source: true,
         createdAt: true,
         updatedAt: true,
+        playlistType: true,
         videos: {
           // include the playlist videos
           include: { video: true }
@@ -212,6 +215,7 @@ export const getPlaylistById = async (
       createdAt: playlist.createdAt,
       updatedAt: playlist.updatedAt,
       totalCategories: playlist._count.subcategories,
+      playlistType: playlist.playlistType,
       totalVideos: playlist._count.videos, // TODO: Review how the logic is handling this since 1 video is getting counted twice
       uncategorizedPlaylistVideos:
         uncategorizedVideos?.map((pv) => ({

@@ -1,12 +1,16 @@
-import { getLuminance, hexToRgb, lighten, rgba } from '@/lib/utils';
+import { cn, getLuminance, hexToRgb, lighten, rgba } from '@/lib/utils';
 import { PlaylistType } from '@prisma/client';
 import { CircleSmall } from 'lucide-react';
 
 interface PlaylistTypeTagProps {
   playlistType: null | PlaylistType;
+  isCard?: boolean;
 }
 
-const PlaylistTypeTag = ({ playlistType }: PlaylistTypeTagProps) => {
+const PlaylistTypeTag = ({
+  playlistType,
+  isCard = true
+}: PlaylistTypeTagProps) => {
   const rawColor = playlistType?.color ?? '#888888';
   const color = /^#([0-9a-fA-F]{6})$/.test(rawColor) ? rawColor : '#888888';
   const rgb = hexToRgb(color);
@@ -16,7 +20,7 @@ const PlaylistTypeTag = ({ playlistType }: PlaylistTypeTagProps) => {
   if (!playlistType) return null;
 
   return (
-    <div className='rounded-full bg-white'>
+    <div className={cn('w-fit rounded-full', isCard ? 'bg-white' : '')}>
       <span
         className='flex w-fit items-center gap-1 rounded-full py-1 pr-3 pl-2 text-sm font-medium transition-colors'
         style={{

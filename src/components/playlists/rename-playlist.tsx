@@ -24,7 +24,9 @@ const RenamePlaylist = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        isPropagationStopped
         onClick={(e) => e.stopPropagation()} // stop Radix dropdown from interfering
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <DialogHeader>
           <DialogTitle className='mb-3'>Rename playlist</DialogTitle>

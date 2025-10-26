@@ -166,7 +166,6 @@ export const fetchVideoData = async (
   }
 
   if (existing.data) {
-    console.log('Video found in DB:', existing.data.title);
     // Already in DB, return it
     return {
       youtubeVideoId: existing.data.youtubeVideoId,

@@ -4,7 +4,8 @@ import {
   VideoTag,
   PlaylistVideo as PlaylistVideoDB,
   Prisma,
-  PlaylistType
+  PlaylistType,
+  TagGroup
 } from '@prisma/client';
 import { VideoThumbnails } from '.';
 
@@ -97,4 +98,12 @@ export interface TagWithCount extends Tag {
 
 export interface VideoTagResponse extends VideoTag {
   tag: Tag;
+}
+
+export interface TagWithGroup extends Tag {
+  group: TagGroup
+}
+
+export interface VideoTagWithTag extends VideoTag {
+  tag: TagWithGroup;
 }

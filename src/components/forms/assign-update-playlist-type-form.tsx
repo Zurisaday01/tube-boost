@@ -88,11 +88,11 @@ const AssignUpdatePlaylistTypeForm = ({
     form.reset();
   };
 
-  const isLoading = isPending || form.formState.isSubmitting;
+  const isLoading = isPending || form.formState.isSubmitting || isFetching;
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
         {error && (
           <div className='text-red-500'>Failed to load playlist types.</div>
         )}
@@ -100,12 +100,18 @@ const AssignUpdatePlaylistTypeForm = ({
           control={form.control}
           name='playlistTypeId'
           render={({ field }) => (
-            <FormItem className='w-full'>
+            <FormItem>
               <FormLabel>Playlist Type</FormLabel>
               <FormControl>
-                <Select {...field} disabled={isFetching}>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select a playlist type' />
+                <Select  value={field.value} onValueChange={field.onChange} disabled={isFetching}>
+                  <SelectTrigger className='w-full'>
+                    <SelectValue
+                      placeholder={
+                        isFetching
+                          ? 'Loading options...'
+                          : 'Select a playlist type'
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent className='w-full'>
                     {data?.map((type: PlaylistTypeOptions) => (

@@ -21,8 +21,11 @@ const VideosDraggerContainer = ({
   subcategoryId
 }: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
-  const [currentVideos, setCurrentVideos] = useState<PlaylistVideoIncludeVideo[]>(videos);
-  const [originalVideos, setOriginalVideos] = useState<PlaylistVideoIncludeVideo[]>([]);
+  const [currentVideos, setCurrentVideos] =
+    useState<PlaylistVideoIncludeVideo[]>(videos);
+  const [originalVideos, setOriginalVideos] = useState<
+    PlaylistVideoIncludeVideo[]
+  >([]);
 
   const toggleReorderMode = async () => {
     if (reorderMode) {
@@ -30,9 +33,10 @@ const VideosDraggerContainer = ({
       const originalOrder = originalVideos.map((v) => v.id);
       const currentOrder = currentVideos.map((v) => v.id);
 
-      const hasChanged = !originalOrder.every(
-        (id, i) => id === currentOrder[i]
-      );
+      // check if order has changed by comparing original and current orders
+      const hasChanged =
+        originalOrder.length !== currentOrder.length ||
+        !originalOrder.every((id, i) => id === currentOrder[i]);
 
       if (!hasChanged) {
         toast.info('No changes detected.');

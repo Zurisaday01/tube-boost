@@ -94,6 +94,11 @@ export default function ResizableYouTubePlayer({
       {/* Resize handle (bottom-right corner) */}
       <div
         onMouseDown={handleResize}
+        role='separator'
+        aria-label='Resize video player'
+        aria-valuenow={size.width}
+        aria-valuemin={320}
+        tabIndex={0}
         style={{
           width: 20,
           height: 20,

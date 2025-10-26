@@ -7,6 +7,9 @@ import { getAllSubcategories } from '@/lib/actions/subcategory';
 import { Music } from 'lucide-react';
 import { isSuccess } from '@/lib/utils/actions';
 
+import VideosDraggerContainer from '@/components/video/videos-dragger-container';
+import PlaylistTypeTag from '@/components/playlist-type/playlist-type-tag';
+
 const PlaylistPage = async ({
   params
 }: {
@@ -46,6 +49,7 @@ const PlaylistPage = async ({
             <div>
               <CreateSubcategoryButton playlistId={playlist.id} />
             </div>
+            <PlaylistTypeTag playlistType={playlist.playlistType} isCard={false} />
           </div>
         </header>
         <SearchVideoToAdd
@@ -53,6 +57,14 @@ const PlaylistPage = async ({
           playlistId={playlist.id}
         />
         <SubcategoriesList subcategories={subcategories} />
+
+        {playlist.uncategorizedPlaylistVideos.length > 0 && (
+          <div className='mt-10'>
+            <VideosDraggerContainer
+              videos={playlist.uncategorizedPlaylistVideos}
+            />
+          </div>
+        )}
       </section>
     </PageContainer>
   );

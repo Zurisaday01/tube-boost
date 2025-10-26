@@ -30,6 +30,14 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Playlist Types',
+    url: '/dashboard/playlist-types',
+    icon: 'types',
+    shortcut: ['r', 'r'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
     title: 'Product',
     url: '/dashboard/product',
     icon: 'product',

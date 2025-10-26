@@ -1,16 +1,23 @@
 'use client';
 import { Folder } from 'lucide-react';
 import SubcategoryOptionsMenu from './subcategory-options-menu';
-import { SubcategoryInformation } from '@/types';
+
 import { useMemo, useState } from 'react';
-import { getLuminance, handleActionResponse, hexToRgb, lighten, rgba } from '@/lib/utils';
+import {
+  getLuminance,
+  handleActionResponse,
+  hexToRgb,
+  lighten,
+  rgba
+} from '@/lib/utils';
 import { updateColor } from '@/lib/actions/subcategory';
 import { toast } from 'sonner';
+import { InformationSheetDetails } from '@/types';
 
 interface SubcategoryCardProps {
   id: string; // needed for color update
   name: string;
-  details: SubcategoryInformation;
+  details: InformationSheetDetails;
   color: string;
   playlistId: string; // needed for rename subcategory
 }
@@ -26,12 +33,12 @@ const SubcategoryCard = ({
 
   const handleColorChange = async (newColor: string) => {
     try {
-         const response = await updateColor(id, newColor, name);
-         handleActionResponse(response, () => setColor(newColor));
-       } catch (err) {
-         console.error('Unexpected error:', err);
-         toast.error('Something went wrong while updating the color.');
-       }
+      const response = await updateColor(id, newColor, name);
+      handleActionResponse(response, () => setColor(newColor));
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error('Something went wrong while updating the color.');
+    }
   };
 
   // lighter/opaque version (e.g. 20% opacity background)

@@ -30,10 +30,22 @@ function DialogClose({
   return <DialogPrimitive.Close data-slot='dialog-close' {...props} />;
 }
 
+interface DialogOverlayProps
+  extends React.ComponentProps<typeof DialogPrimitive.Overlay> {
+  isPropagationStopped?: boolean;
+}
+
 function DialogOverlay({
   className,
+  isPropagationStopped,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+}: DialogOverlayProps) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isPropagationStopped) {
+      e.stopPropagation(); // <-- prevents parent link navigation
+    }
+    props.onClick?.(e);
+  };
   return (
     <DialogPrimitive.Overlay
       data-slot='dialog-overlay'
@@ -42,18 +54,25 @@ function DialogOverlay({
         className
       )}
       {...props}
+      onClick={handleClick}
     />
   );
+}
+
+interface DialogContentProps
+  extends React.ComponentProps<typeof DialogPrimitive.Content> {
+  isPropagationStopped?: boolean;
 }
 
 function DialogContent({
   className,
   children,
+  isPropagationStopped,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+}: DialogContentProps) {
   return (
     <DialogPortal data-slot='dialog-portal'>
-      <DialogOverlay />
+      <DialogOverlay isPropagationStopped={isPropagationStopped} />
       <DialogPrimitive.Content
         data-slot='dialog-content'
         className={cn(

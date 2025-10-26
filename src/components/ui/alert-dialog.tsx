@@ -28,10 +28,23 @@ function AlertDialogPortal({
   );
 }
 
+interface AlertDialogOverlayProps
+  extends React.ComponentProps<typeof AlertDialogPrimitive.Overlay> {
+  isPropagationStopped?: boolean;
+}
+
 function AlertDialogOverlay({
   className,
+  isPropagationStopped,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
+}: AlertDialogOverlayProps) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isPropagationStopped) {
+      e.stopPropagation(); // <-- prevents parent link navigation
+    }
+    props.onClick?.(e);
+  };
+
   return (
     <AlertDialogPrimitive.Overlay
       data-slot='alert-dialog-overlay'
@@ -40,17 +53,24 @@ function AlertDialogOverlay({
         className
       )}
       {...props}
+      onClick={handleClick}
     />
   );
 }
 
+interface AlertDialogContentProps
+  extends React.ComponentProps<typeof AlertDialogPrimitive.Content> {
+  isPropagationStopped?: boolean;
+}
+
 function AlertDialogContent({
+  isPropagationStopped,
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Content>) {
+}: AlertDialogContentProps) {
   return (
     <AlertDialogPortal>
-      <AlertDialogOverlay />
+      <AlertDialogOverlay isPropagationStopped={isPropagationStopped} />
       <AlertDialogPrimitive.Content
         data-slot='alert-dialog-content'
         className={cn(

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 
 export default function ResizableYouTubePlayer({
@@ -15,6 +15,26 @@ export default function ResizableYouTubePlayer({
   const [size, setSize] = useState({ width: 640, height: 360 });
   const [resizing, setResizing] = useState(false);
   const playerRef = useRef<HTMLDivElement>(null);
+
+  const handlersRef = useRef<{
+    handleMouseMove?: (e: MouseEvent) => void;
+    handleMouseUp?: () => void;
+  }>({});
+
+  useEffect(() => {
+    const handlersSnapshot = { ...handlersRef.current };
+    return () => {
+      if (handlersSnapshot.handleMouseMove) {
+        document.removeEventListener(
+          'mousemove',
+          handlersSnapshot.handleMouseMove
+        );
+      }
+      if (handlersSnapshot.handleMouseUp) {
+        document.removeEventListener('mouseup', handlersSnapshot.handleMouseUp);
+      }
+    };
+  }, []);
 
   const handleResize = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,8 +58,10 @@ export default function ResizableYouTubePlayer({
       setResizing(false);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      handlersRef.current = {};
     };
 
+    handlersRef.current = { handleMouseMove, handleMouseUp };
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   };

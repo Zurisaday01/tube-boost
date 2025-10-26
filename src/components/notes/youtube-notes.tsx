@@ -149,12 +149,6 @@ export default function YouTubeNotes({
     }
   };
 
-  const opts: YouTubeProps['opts'] = {
-    width: '640',
-    height: '360',
-    playerVars: { modestbranding: 1 }
-  };
-
   return (
     <div className='flex w-full flex-col gap-4 md:flex-row'>
       <div>

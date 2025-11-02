@@ -74,18 +74,26 @@ export const updatePlaylistTitle = async (
 
     const { title } = parsed.data;
 
-    // Update playlist
-    const playlist = await prisma.playlist.update({
+    // Update playlist (returns a list of the updated playlists - should be only one)
+    const playlist = await prisma.playlist.updateManyAndReturn({
       where: { id, userId: user.userId },
       data: { title }
     });
 
-    revalidatePath(`/dashboard/playlists/${playlist.id}`);
+    if (playlist.length === 0)
+      throw new Error('Playlist not found or unauthorized.');
+
+    const [updatedPlaylist] = playlist;
+
+    if (!updatedPlaylist)
+      throw new Error('Unexpected error fetching updated playlist.');
+
+    revalidatePath(`/dashboard/playlists/${updatedPlaylist.id}`);
 
     return {
       status: 'success',
-      message: `'${playlist.title}' playlist title updated successfully!`,
-      data: playlist
+      message: `'${updatedPlaylist.title}' playlist title updated successfully!`,
+      data: updatedPlaylist
     };
   } catch (error) {
     devLog.error('Error updating playlist title:', error);
@@ -146,7 +154,6 @@ export const getAllPlaylists = async (): Promise<
         totalVideos
       };
     });
-
 
     return {
       status: 'success',

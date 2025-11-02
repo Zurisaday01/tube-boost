@@ -59,7 +59,9 @@ export const createTagSchema = z.object({
 });
 
 export const assignUpdatePlaylistTypeSchema = z.object({
-  playlistTypeId: z.string()
+  playlistTypeId: z.string().min(1, {
+    message: 'Playlist type is required.'
+  })
 });
 
 export const updateTagSchema = z.object({
@@ -97,7 +99,6 @@ export const createTagGroupSchema = z.object({
   }),
   description: z.string().optional()
 });
-
 
 export const createUpdatePlaylistTypeSchema = z.object({
   name: z.string().min(2, {

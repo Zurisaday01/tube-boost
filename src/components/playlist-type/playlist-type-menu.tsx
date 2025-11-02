@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import DeleteSubcategoryAlert from '../dialog/delete-subcategory-alert';
 import ChangeColorMenuItem from '../options-menu/change-color-menu-item';
 import { EntityOptionsMenu } from '../options-menu/entity-options-menu';
 import { getPlaylistTypeMenuItems } from '@/constants/menu-items';
 import InformationSheetMenuItem from '../options-menu/information-sheet-menu-item';
 import { InformationSheetDetails } from '@/types';
 import UpdatePlaylistType from './update-playlist-type';
+import DeletePlaylistTypeAlert from '../dialog/delete-playlist-type-alert';
 
 interface SubcategoryTypeOptionsMenuProps {
   id: string;
@@ -67,7 +67,7 @@ const PlaylistTypeOptionsMenu = ({
             open={isRenameOpen}
             onOpenChange={setIsRenameOpen}
           />
-          <DeleteSubcategoryAlert
+          <DeletePlaylistTypeAlert
             id={id}
             open={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}

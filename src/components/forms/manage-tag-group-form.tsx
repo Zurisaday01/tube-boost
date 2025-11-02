@@ -102,7 +102,7 @@ const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
           name='description'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description </FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder='Enter description (optional)'

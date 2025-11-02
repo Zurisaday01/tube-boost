@@ -31,7 +31,7 @@ interface PlaylistTypeFormProps {
   playlistType?: {
     id: string;
     name: string;
-    description: string;
+    description?: string;
   };
 }
 

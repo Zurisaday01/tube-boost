@@ -79,7 +79,7 @@ model Verification {
 // Playlist types
 model PlaylistType {
   id          String     @id @default(uuid())
-  name        String     @unique // e.g. "Tutorials", "Music", "Documentaries"
+  name        String // e.g. "Tutorials", "Music", "Documentaries"
   description String? // optional description
   color       String     @default("#000000")
   createdAt   DateTime   @default(now())
@@ -87,6 +87,9 @@ model PlaylistType {
   user        User       @relation(fields: [userId], references: [id])
   userId      String
   playlists   Playlist[]
+
+  @@unique([name, userId])
+  @@index([userId, createdAt])
 }
 
 // app tables and relations
@@ -102,7 +105,8 @@ model Playlist {
   subcategories     Subcategory[]
   notes             PlaylistNote[]
   playlistTypeId    String?
-  playlistType      PlaylistType?   @relation(fields: [playlistTypeId], references: [id])
+  // deleting a type does not delete the playlist, just sets to null
+  playlistType      PlaylistType?   @relation(fields: [playlistTypeId], references: [id], onDelete: SetNull)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   lastSyncedAt      DateTime?

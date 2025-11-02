@@ -33,7 +33,7 @@ const CreateTagForm = ({ onClose, groupId }: CreateTagFormProps) => {
   const form = useForm<z.infer<typeof createTagSchema>>({
     resolver: zodResolver(createTagSchema),
     defaultValues: {
-      name: '',
+      name: ''
     }
   });
 
@@ -52,10 +52,9 @@ const CreateTagForm = ({ onClose, groupId }: CreateTagFormProps) => {
     });
   }
 
-  console.log('Form errors:', form.formState.errors, groupId);
-
   const onCancel = () => {
     form.reset();
+    onClose();
   };
 
   const isLoading = isPending || form.formState.isSubmitting;

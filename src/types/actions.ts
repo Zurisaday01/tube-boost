@@ -1,4 +1,13 @@
-import { Video, PlaylistVideo, Tag, VideoTag } from '@prisma/client';
+import {
+  Video,
+  Tag,
+  VideoTag,
+  PlaylistVideo as PlaylistVideoDB,
+  Prisma,
+  PlaylistType,
+  TagGroup
+} from '@prisma/client';
+import { VideoThumbnails } from '.';
 
 // Use a generic type T to allow flexibility in the data returned
 export interface ActionResponse<T = unknown> {
@@ -27,6 +36,24 @@ export interface PlaylistWithStats {
   updatedAt: Date;
   totalCategories: number;
   totalVideos: number;
+  playlistType: null | PlaylistType;
+}
+
+// -----------------------------------------------------------------------------------
+// This type represents a video record from the database and components are using it so we need to strong type the json hence we define VideoWithParsedThumbnails
+type VideoDB = Prisma.VideoGetPayload<{}>;
+export interface VideoWithParsedThumbnails extends Omit<VideoDB, 'thumbnails'> {
+  // Parse thumbnails JSON string into an object
+  thumbnails: VideoThumbnails;
+}
+export interface PlaylistVideoIncludeVideo extends PlaylistVideoDB {
+  video: VideoWithParsedThumbnails;
+}
+// -----------------------------------------------------------------------------------
+
+export interface PlaylistWithStatsAndUncategorizedVideos
+  extends PlaylistWithStats {
+  uncategorizedPlaylistVideos: PlaylistVideoIncludeVideo[];
 }
 
 // Subcategory with additional stats
@@ -37,25 +64,13 @@ export interface SubcategoryWithStats {
   color: string | null;
   createdAt: Date;
   updatedAt: Date;
-  videos: PlaylistVideo[];
+  videos: PlaylistVideoIncludeVideo[];
   totalVideos: number;
 }
 
-// To get the parent color of a tag's group
-export interface TagWithGroupColor extends Tag {
-  group: {
-    color: string;
-  };
-}
-
-export interface VideoTagWithTags extends VideoTag {
-  tag: TagWithGroupColor;
-}
-
-export interface PlaylistVideoWithVideo extends PlaylistVideo {
+export interface PlaylistVideoWithVideo extends PlaylistVideoDB {
   video: Video;
   videoTags: VideoTagWithTags[];
-  
 }
 
 export interface ReorderVideosInput {
@@ -71,4 +86,23 @@ export interface TagWithCount extends Tag {
 
 export interface VideoTagResponse extends VideoTag {
   tag: Tag;
+}
+
+export interface TagWithGroup extends Tag {
+  group: TagGroup;
+}
+
+export interface VideoTagWithTag extends VideoTag {
+  tag: TagWithGroup;
+}
+
+// To get the parent color of a tag's group
+export interface TagWithGroupColor extends Tag {
+  group: {
+    color: string;
+  };
+}
+
+export interface VideoTagWithTags extends VideoTag {
+  tag: TagWithGroupColor;
 }

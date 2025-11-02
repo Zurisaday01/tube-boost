@@ -1,7 +1,7 @@
 'use client';
 import { Folder } from 'lucide-react';
 import SubcategoryOptionsMenu from './tag-group-options-menu';
-import { TagGroupInformation } from '@/types';
+import { InformationSheetDetails } from '@/types';
 import { useMemo, useState } from 'react';
 import {
   getLuminance,
@@ -16,7 +16,7 @@ import { updateTagGroupColor } from '@/lib/actions/tag-group';
 interface TagGroupCardProps {
   id: string; // needed for color update
   name: string;
-  details: TagGroupInformation;
+  details: InformationSheetDetails;
   color: string;
   description: string;
 }

@@ -1,68 +1,98 @@
 'use client';
-import { PlaylistVideo } from '@/types';
+
 import VideoList from './video-list';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import { reorderPlaylistVideos } from '@/lib/actions/video';
+import {
+  reorderPlaylistVideos,
+  reorderUncategorizedVideos
+} from '@/lib/actions/video';
 import { toast } from 'sonner';
 import { handleActionResponse } from '@/lib/utils';
+import { PlaylistVideoIncludeVideo } from '@/types/actions';
 
 interface VideosDraggerContainerProps {
-  videos: PlaylistVideo[];
-  subcategoryId?: string;
+  videos: PlaylistVideoIncludeVideo[];
+  subcategoryId?: string; // stays null when uncategorized videos
 }
 
-const VideosDraggerContainer = ({ videos }: VideosDraggerContainerProps) => {
+const VideosDraggerContainer = ({
+  videos,
+  subcategoryId
+}: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
+  const [currentVideos, setCurrentVideos] =
+    useState<PlaylistVideoIncludeVideo[]>(videos);
+  const [originalVideos, setOriginalVideos] = useState<
+    PlaylistVideoIncludeVideo[]
+  >([]);
 
   const toggleReorderMode = async () => {
     if (reorderMode) {
-      // We're finishing reordering, save changes
-      try {
-        const response = await reorderPlaylistVideos({
-          playlistId: currentVideos[0]?.playlistId,
-          videoIds: currentVideos.map((v) => v.id)
-        });
+      // finishing reorder
+      const originalOrder = originalVideos.map((v) => v.id);
+      const currentOrder = currentVideos.map((v) => v.id);
 
-        handleActionResponse(response);
+      // check if order has changed by comparing original and current orders
+      const hasChanged =
+        originalOrder.length !== currentOrder.length ||
+        !originalOrder.every((id, i) => id === currentOrder[i]);
+
+      if (!hasChanged) {
+        toast.info('No changes detected.');
+        setReorderMode(false);
+        return;
+      }
+
+      try {
+        const response = subcategoryId
+          ? await reorderPlaylistVideos({
+              playlistId: currentVideos[0]?.playlistId,
+              videoIds: currentVideos.map((v) => v.id)
+            })
+          : await reorderUncategorizedVideos({
+              playlistId: currentVideos[0]?.playlistId,
+              videoIds: currentVideos.map((v) => v.id)
+            });
+
+        handleActionResponse(response)
       } catch (err) {
         console.error('Failed to save new order', err);
         toast.error('Failed to reorder videos.');
       }
+    } else {
+      // entering reorder mode
+      setOriginalVideos(currentVideos);
     }
 
-    // Toggle mode after saving (or just enter mode)
     setReorderMode((prev) => !prev);
   };
 
-  const [currentVideos, setCurrentVideos] = useState(videos);
-
-  const handleReorder = async (newOrder: PlaylistVideo[]) => {
-    // reorder the videos locally
+  const handleReorder = (newOrder: PlaylistVideoIncludeVideo[]) => {
     const reordered = newOrder.map((v, index) => ({
       ...v,
       orderIndex: index
     }));
-    // update state
     setCurrentVideos(reordered);
   };
 
   return (
     <div>
-      {/* disable the button if there are no videos or only one video */}
       <Button
         onClick={toggleReorderMode}
-        disabled={videos.length === 0 || videos.length === 1}
+        disabled={videos.length <= 1}
         className='mb-4'
       >
         {reorderMode ? 'Finish Reordering' : 'Reorder Videos'}
       </Button>
+
       <VideoList
-        videos={currentVideos as PlaylistVideo[]}
+        videos={currentVideos}
         reorderMode={reorderMode}
         onReorder={handleReorder}
       />
     </div>
   );
 };
+
 export default VideosDraggerContainer;

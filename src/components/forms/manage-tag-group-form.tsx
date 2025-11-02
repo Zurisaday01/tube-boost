@@ -53,11 +53,11 @@ const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
   const onSubmit = (values: z.infer<typeof createTagGroupSchema>) => {
     startTransition(async () => {
       try {
-        const action = isEditMode
+        // Unify await call
+        const response = await (tagGroup
           ? updateTagGroupAction(tagGroup!.id, values)
-          : createTagGroupAction(values);
+          : createTagGroupAction(values));
 
-        const response = await action;
         handleActionResponse(response, () => {
           form.reset();
           onClose();
@@ -69,7 +69,10 @@ const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
     });
   };
 
-  const onCancel = () => form.reset();
+  const onCancel = () => {
+    form.reset();
+    onClose();
+  }
 
   const isLoading = isPending || form.formState.isSubmitting;
 
@@ -99,7 +102,7 @@ const ManageTagGroupForm = ({ onClose, tagGroup }: TagGroupFormProps) => {
           name='description'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description </FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder='Enter description (optional)'

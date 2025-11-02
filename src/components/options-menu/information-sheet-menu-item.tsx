@@ -1,3 +1,4 @@
+'use client';
 import {
   Sheet,
   SheetContent,
@@ -7,26 +8,33 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { formatLocalDate } from '@/lib/utils';
-import { SubcategoryInformation } from '@/types';
+import { InformationSheetDetails } from '@/types';
 import { Info } from 'lucide-react';
-const SubcategoryInformationSheet = ({
-  details
-}: {
-  details: SubcategoryInformation;
-}) => {
+
+interface InformationSheetMenuItemProps {
+  details: InformationSheetDetails;
+  label: string;
+  entityType: string; // e.g., "tag group" or "subcategory" (for the description)
+}
+
+const InformationSheetMenuItem = ({
+  details,
+  label,
+  entityType
+}: InformationSheetMenuItemProps) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <button className="focus:bg-accent hover:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
           <Info className='size-4' />
-          Subcategory Information
+          {label}
         </button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Subcategory Information</SheetTitle>
+          <SheetTitle>{label}</SheetTitle>
           <SheetDescription>
-            Here is some information about this subcategory.
+            Here is some information about this {entityType}.
           </SheetDescription>
           <ul>
             <li>
@@ -37,14 +45,16 @@ const SubcategoryInformationSheet = ({
               <span className='font-semibold'>Created:</span>{' '}
               {formatLocalDate(details.created.toISOString().slice(0, 10))}
             </li>
-            <li>
-              <span className='font-semibold'>Location:</span>{' '}
-              {details.location}
-            </li>
+            {details.location && (
+              <li>
+                <span className='font-semibold'>Location:</span>{' '}
+                {details.location}
+              </li>
+            )}
           </ul>
         </SheetHeader>
       </SheetContent>
     </Sheet>
   );
 };
-export default SubcategoryInformationSheet;
+export default InformationSheetMenuItem;

@@ -25,7 +25,7 @@ import {
 import { devLog, handleActionResponse } from '@/lib/utils';
 import { createSubcategorySchema } from '@/lib/schemas';
 
-interface SubcategoryFormProps {
+interface ManageSubcategoryFormProps {
   onClose: () => void;
   playlistId: string;
   subcategory?: {
@@ -39,7 +39,7 @@ const ManageSubcategoryForm = ({
   onClose,
   playlistId,
   subcategory
-}: SubcategoryFormProps) => {
+}: ManageSubcategoryFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   // Decide whether we're in "create" or "update" mode
@@ -56,11 +56,11 @@ const ManageSubcategoryForm = ({
   const onSubmit = (values: z.infer<typeof createSubcategorySchema>) => {
     startTransition(async () => {
       try {
-        const action = isEditMode
+        // Unify await call
+        const response = await (subcategory
           ? updateSubcategoryAction(subcategory.id, values)
-          : createSubcategoryAction(values);
+          : createSubcategoryAction(values));
 
-        const response = await action;
         handleActionResponse(response, () => {
           form.reset();
           onClose();
@@ -72,7 +72,12 @@ const ManageSubcategoryForm = ({
     });
   };
 
-  const onCancel = () => form.reset();
+  const onCancel = () => {
+    form.reset();
+    onClose();
+  };
+
+  const isLoading = isPending || form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -87,7 +92,7 @@ const ManageSubcategoryForm = ({
                 <Input
                   placeholder='Enter subcategory name'
                   autoComplete='off'
-                  disabled={isPending || form.formState.isSubmitting}
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -100,12 +105,12 @@ const ManageSubcategoryForm = ({
             type='button'
             variant='secondary'
             onClick={onCancel}
-            disabled={isPending || form.formState.isSubmitting}
+            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button type='submit'>
-            {isPending || form.formState.isSubmitting ? (
+            {isLoading ? (
               <LoaderCircle className='h-4 w-4 animate-spin' />
             ) : isEditMode ? (
               'Rename'

@@ -13,34 +13,46 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-import { createPlaylistSchema } from '@/lib/schemas';
+import { createUpdatePlaylistSchema } from '@/lib/schemas';
 import { useTransition } from 'react';
-import { createPlaylist as createPlaylistAction } from '@/lib/actions/playlist';
+import {
+  createPlaylist as createPlaylistAction,
+  updatePlaylistTitle as updatePlaylistTitleAction
+} from '@/lib/actions/playlist';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
 import { z } from 'zod';
 import { handleActionResponse } from '@/lib/utils';
 
-interface CreatePlaylistFormProps {
+interface ManagePlaylistFormProps {
   onClose: () => void;
+  playlist?: {
+    id: string;
+    title: string;
+  };
 }
 
-const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
+const ManagePlaylistForm = ({ onClose, playlist }: ManagePlaylistFormProps) => {
   const [isPending, startTransition] = useTransition();
   // 1. Define your form.
-  const form = useForm<z.infer<typeof createPlaylistSchema>>({
-    resolver: zodResolver(createPlaylistSchema),
+  const form = useForm<z.infer<typeof createUpdatePlaylistSchema>>({
+    resolver: zodResolver(createUpdatePlaylistSchema),
     defaultValues: {
-      title: ''
+      title: playlist?.title || ''
     }
   });
 
+  const isEditMode = !!playlist;
+
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof createPlaylistSchema>) {
+  function onSubmit(values: z.infer<typeof createUpdatePlaylistSchema>) {
     startTransition(async () => {
       try {
-        const response = await createPlaylistAction(values);
+        // Unify await call
+        const response = await (playlist
+          ? updatePlaylistTitleAction(values, playlist.id)
+          : createPlaylistAction(values));
 
         handleActionResponse(response, () => {
           form.reset();
@@ -54,6 +66,7 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
 
   const onCancel = () => {
     form.reset();
+    onClose();
   };
 
   const isLoading = isPending || form.formState.isSubmitting;
@@ -92,6 +105,8 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
           <Button type='submit'>
             {isLoading ? (
               <LoaderCircle className='h-4 w-4 animate-spin' />
+            ) : isEditMode ? (
+              'Rename'
             ) : (
               'Create'
             )}
@@ -101,4 +116,4 @@ const CreatePlaylistForm = ({ onClose }: CreatePlaylistFormProps) => {
     </Form>
   );
 };
-export default CreatePlaylistForm;
+export default ManagePlaylistForm;

@@ -1,16 +1,24 @@
 'use server';
 
 import { z } from 'zod';
-import { createPlaylistSchema } from '@/lib/schemas';
+import { createUpdatePlaylistSchema } from '@/lib/schemas';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
-import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
-import { ActionResponse, PlaylistWithStats } from '@/types/actions';
+import {
+  getSessionUser,
+  isUserAuthenticated,
+  parseVideoThumbnails
+} from '@/lib/utils/actions';
+import {
+  ActionResponse,
+  PlaylistWithStats,
+  PlaylistWithStatsAndUncategorizedVideos
+} from '@/types/actions';
 import { Playlist } from '@prisma/client';
 
 export const createPlaylist = async (
-  data: z.infer<typeof createPlaylistSchema>
+  data: z.infer<typeof createUpdatePlaylistSchema>
 ): Promise<ActionResponse<Playlist>> => {
   try {
     const user = await getSessionUser();
@@ -18,7 +26,7 @@ export const createPlaylist = async (
       throw new Error('User not authenticated.');
     }
     // Validate server side
-    const parsed = createPlaylistSchema.safeParse(data);
+    const parsed = createUpdatePlaylistSchema.safeParse(data);
 
     if (!parsed.success) throw new Error('Validation was not successful.');
 
@@ -50,6 +58,52 @@ export const createPlaylist = async (
   }
 };
 
+export const updatePlaylistTitle = async (
+  data: z.infer<typeof createUpdatePlaylistSchema>,
+  id: string
+): Promise<ActionResponse<Playlist>> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
+    // Validate server side
+    const parsed = createUpdatePlaylistSchema.safeParse(data);
+    if (!parsed.success) throw new Error('Validation was not successful.');
+
+    const { title } = parsed.data;
+
+    // Update playlist (returns a list of the updated playlists - should be only one)
+    const playlist = await prisma.playlist.updateManyAndReturn({
+      where: { id, userId: user.userId },
+      data: { title }
+    });
+
+    if (playlist.length === 0)
+      throw new Error('Playlist not found or unauthorized.');
+
+    const [updatedPlaylist] = playlist;
+
+    if (!updatedPlaylist)
+      throw new Error('Unexpected error fetching updated playlist.');
+
+    revalidatePath(`/dashboard/playlists/${updatedPlaylist.id}`);
+
+    return {
+      status: 'success',
+      message: `'${updatedPlaylist.title}' playlist title updated successfully!`,
+      data: updatedPlaylist
+    };
+  } catch (error) {
+    devLog.error('Error updating playlist title:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to update playlist title.'
+    };
+  }
+};
+
 export const getAllPlaylists = async (): Promise<
   ActionResponse<PlaylistWithStats[]>
 > => {
@@ -67,6 +121,7 @@ export const getAllPlaylists = async (): Promise<
         source: true,
         createdAt: true,
         updatedAt: true,
+        playlistType: true,
         _count: {
           select: {
             videos: true, // videos directly in playlist
@@ -95,6 +150,7 @@ export const getAllPlaylists = async (): Promise<
         createdAt: playlist.createdAt,
         updatedAt: playlist.updatedAt,
         totalCategories: playlist._count.subcategories,
+        playlistType: playlist.playlistType,
         totalVideos
       };
     });
@@ -113,15 +169,15 @@ export const getAllPlaylists = async (): Promise<
   }
 };
 
+// Get playlist by ID along with stats and the uncategorized videos payload
 export const getPlaylistById = async (
   id: string
-): Promise<ActionResponse<PlaylistWithStats>> => {
+): Promise<ActionResponse<PlaylistWithStatsAndUncategorizedVideos>> => {
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
       throw new Error('User not authenticated');
     }
-
     const playlist = await prisma.playlist.findUnique({
       where: { id, userId: user.userId },
       select: {
@@ -130,6 +186,11 @@ export const getPlaylistById = async (
         source: true,
         createdAt: true,
         updatedAt: true,
+        playlistType: true,
+        videos: {
+          // include the playlist videos
+          include: { video: true }
+        },
         _count: {
           select: {
             videos: true,
@@ -148,14 +209,25 @@ export const getPlaylistById = async (
       throw new Error('Playlist not found');
     }
 
-    const playlistWithStats: PlaylistWithStats = {
+    // Group the uncategorized videos (subcategoryId is null)
+    const uncategorizedVideos = playlist.videos.filter(
+      (v) => v.subcategoryId === null
+    );
+
+    const playlistWithStats: PlaylistWithStatsAndUncategorizedVideos = {
       id: playlist.id,
       title: playlist.title,
       source: playlist.source,
       createdAt: playlist.createdAt,
       updatedAt: playlist.updatedAt,
       totalCategories: playlist._count.subcategories,
-      totalVideos: playlist._count.videos // TODO: Review how the logic is handling this since 1 video is getting counted twice
+      playlistType: playlist.playlistType,
+      totalVideos: playlist._count.videos, // TODO: Review how the logic is handling this since 1 video is getting counted twice
+      uncategorizedPlaylistVideos:
+        uncategorizedVideos?.map((pv) => ({
+          ...pv,
+          video: parseVideoThumbnails(pv.video) // Parse thumbnails JSON
+        })) || []
     };
 
     return {
@@ -174,7 +246,8 @@ export const getPlaylistById = async (
 
 // Delete a playlist and all its associated playlist videos. If any videos become orphaned (not referenced in any other playlist), delete those videos as well
 export const deletePlaylist = async (
-  playlistId: string
+  playlistId: string,
+  playlistTitle: string // For better user feedback
 ): Promise<ActionResponse> => {
   try {
     const user = await getSessionUser();
@@ -216,12 +289,17 @@ export const deletePlaylist = async (
 
     revalidatePath('/dashboard/playlists');
 
-    return { status: 'success', message: 'Playlist deleted successfully.' };
+    return {
+      status: 'success',
+      message: `Playlist '${playlistTitle}' deleted successfully.`
+    };
   } catch (err) {
     devLog.error('Error deleting playlist:', err);
     return {
       status: 'error',
-      message: (err as Error).message || 'Failed to delete playlist.'
+      message:
+        (err as Error).message ||
+        `Failed to delete playlist '${playlistTitle}'.`
     };
   }
 };

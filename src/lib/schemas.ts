@@ -46,7 +46,7 @@ export const signUpSchema = z
     path: ['confirmPassword']
   });
 
-export const createPlaylistSchema = z.object({
+export const createUpdatePlaylistSchema = z.object({
   title: z.string().min(2, {
     message: 'Title must be at least 2 characters.'
   })
@@ -55,6 +55,12 @@ export const createPlaylistSchema = z.object({
 export const createTagSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.'
+  })
+});
+
+export const assignUpdatePlaylistTypeSchema = z.object({
+  playlistTypeId: z.string().min(1, {
+    message: 'Playlist type is required.'
   })
 });
 
@@ -88,6 +94,13 @@ export const updateSubcategorySchema = z.object({
 });
 
 export const createTagGroupSchema = z.object({
+  name: z.string().min(2, {
+    message: 'Name must be at least 2 characters.'
+  }),
+  description: z.string().optional()
+});
+
+export const createUpdatePlaylistTypeSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.'
   }),

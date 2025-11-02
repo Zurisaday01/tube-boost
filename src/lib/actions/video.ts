@@ -90,6 +90,23 @@ export const createVideoAndAttach = async (
         }
       });
     }
+
+    // Make sure the video is not already linked to the uncategorized (playlist-level) or subcategory group
+    const existingLink = await prisma.playlistVideo.findFirst({
+      where: {
+        playlistId,
+        videoId: video.id,
+        subcategoryId: subcategoryId ?? null
+      }
+    });
+
+    if (existingLink) {
+      return {
+        status: 'error',
+        message: `Video is already in this ${subcategoryId ? 'subcategory' : 'playlist'}.`
+      };
+    }
+
     // Get the current max orderIndex in the right scope
     const lastVideo = await prisma.playlistVideo.findFirst({
       where: {
@@ -149,7 +166,6 @@ export const fetchVideoData = async (
   }
 
   if (existing.data) {
-    console.log('Video found in DB:', existing.data.title);
     // Already in DB, return it
     return {
       youtubeVideoId: existing.data.youtubeVideoId,
@@ -190,6 +206,52 @@ export const reorderPlaylistVideos = async ({
   } catch (error) {
     console.error('Error reordering videos:', error);
     return { status: 'error', message: 'Failed to reorder videos.' };
+  }
+};
+
+export const reorderUncategorizedVideos = async ({
+  playlistId,
+  videoIds
+}: ReorderVideosInput): Promise<ActionResponse> => {
+  try {
+    // Validate that all given IDs belong to this playlist and are uncategorized
+    const existingVideos = await prisma.playlistVideo.findMany({
+      where: {
+        id: { in: videoIds },
+        playlistId,
+        subcategoryId: null
+      },
+      select: { id: true }
+    });
+
+    if (existingVideos.length !== videoIds.length) {
+      throw new Error(
+        'Some videos are not uncategorized or do not belong to this playlist.'
+      );
+    }
+
+    // Update order safely in one transaction
+    await prisma.$transaction(
+      videoIds.map((id, index) =>
+        prisma.playlistVideo.update({
+          where: { id },
+          data: { orderIndex: index }
+        })
+      )
+    );
+
+    revalidatePath(`/dashboard/playlists/${playlistId}`);
+
+    return {
+      status: 'success',
+      message: 'Uncategorized videos reordered successfully.'
+    };
+  } catch (error) {
+    console.error('Error reordering uncategorized videos:', error);
+    return {
+      status: 'error',
+      message: 'Failed to reorder uncategorized videos.'
+    };
   }
 };
 
@@ -248,7 +310,7 @@ export const getPlaylistVideoById = async (
 // Delete a playlist video, and if the video is orphaned (not referenced in any other playlist), delete the video as well
 export const deletePlaylistVideo = async (
   playlistVideoId: string,
-  playlistId: string
+  title: string
 ): Promise<ActionResponse> => {
   try {
     const user = await getSessionUser();
@@ -266,6 +328,28 @@ export const deletePlaylistVideo = async (
     // Delete the playlist video
     await prisma.playlistVideo.delete({ where: { id: playlistVideoId } });
 
+    //  Reindex remaining videos in the same subcategory or uncategorized group
+    const remainingVideos = await prisma.playlistVideo.findMany({
+      where: {
+        playlistId: target.playlistId, // same playlist
+        id: { not: playlistVideoId },
+        // If the video was in a subcategory, reindex within that subcategory.
+        // If it was uncategorized (subcategoryId = null), reindex uncategorized videos.
+        subcategoryId: target.subcategoryId ?? null // handle both categorized and uncategorized
+      },
+      orderBy: { orderIndex: 'asc' }
+    });
+
+    // Reset orderIndex to be sequential (transactional)
+    await prisma.$transaction(
+      remainingVideos.map((video, i) =>
+        prisma.playlistVideo.update({
+          where: { id: video.id },
+          data: { orderIndex: i }
+        })
+      )
+    );
+
     // Check if the video is now orphaned
     const remainingRefs = await prisma.playlistVideo.count({
       where: { videoId: target.video.id }
@@ -273,11 +357,22 @@ export const deletePlaylistVideo = async (
     if (remainingRefs === 0) {
       await prisma.video.delete({ where: { id: target.video.id } });
     }
-
-    revalidatePath(`/dashboard/playlists/${playlistId}`);
-    return { status: 'success', message: 'Video deleted successfully.' };
+    // Revalidate relevant path for the playlist
+    revalidatePath(`/dashboard/playlists/${target.playlistId}`);
+    if (target.subcategoryId) {
+      revalidatePath(
+        `/dashboard/playlists/${target.playlistId}/subcategory/${target.subcategoryId}`
+      );
+    }
+    return {
+      status: 'success',
+      message: `Deleted playlist video "${title}" successfully.`
+    };
   } catch (err) {
     console.error('Error deleting playlist video:', err);
-    return { status: 'error', message: 'Failed to delete video.' };
+    return {
+      status: 'error',
+      message: `Failed to delete playlist video "${title}".`
+    };
   }
 };

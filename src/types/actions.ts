@@ -39,9 +39,8 @@ export interface PlaylistWithStats {
   playlistType: null | PlaylistType;
 }
 
-
 // -----------------------------------------------------------------------------------
-// This type represents a video record from the database and components are using it so we need to strong type the json hanced we define VideoWithParsedThumbnails
+// This type represents a video record from the database and components are using it so we need to strong type the json hence we define VideoWithParsedThumbnails
 type VideoDB = Prisma.VideoGetPayload<{}>;
 export interface VideoWithParsedThumbnails extends Omit<VideoDB, 'thumbnails'> {
   // Parse thumbnails JSON string into an object
@@ -69,9 +68,6 @@ export interface SubcategoryWithStats {
   totalVideos: number;
 }
 
-
-
-
 export interface PlaylistVideoWithVideo extends PlaylistVideoDB {
   video: Video;
   videoTags: VideoTagWithTags[];
@@ -93,7 +89,7 @@ export interface VideoTagResponse extends VideoTag {
 }
 
 export interface TagWithGroup extends Tag {
-  group: TagGroup
+  group: TagGroup;
 }
 
 export interface VideoTagWithTag extends VideoTag {
@@ -106,7 +102,6 @@ export interface TagWithGroupColor extends Tag {
     color: string;
   };
 }
-
 
 export interface VideoTagWithTags extends VideoTag {
   tag: TagWithGroupColor;

@@ -22,16 +22,18 @@ export default function ResizableYouTubePlayer({
   }>({});
 
   useEffect(() => {
-    const handlersSnapshot = { ...handlersRef.current };
     return () => {
-      if (handlersSnapshot.handleMouseMove) {
+      if (handlersRef.current.handleMouseMove) {
         document.removeEventListener(
           'mousemove',
-          handlersSnapshot.handleMouseMove
+          handlersRef.current.handleMouseMove
         );
       }
-      if (handlersSnapshot.handleMouseUp) {
-        document.removeEventListener('mouseup', handlersSnapshot.handleMouseUp);
+      if (handlersRef.current.handleMouseUp) {
+        document.removeEventListener(
+          'mouseup',
+          handlersRef.current.handleMouseUp
+        );
       }
     };
   }, []);
@@ -98,6 +100,7 @@ export default function ResizableYouTubePlayer({
         aria-label='Resize video player'
         aria-valuenow={size.width}
         aria-valuemin={320}
+        aria-valuemax={1920}
         tabIndex={0}
         style={{
           width: 20,
@@ -108,7 +111,8 @@ export default function ResizableYouTubePlayer({
           right: 0,
           bottom: 0,
           cursor: 'se-resize',
-          transition: 'background 0.2s'
+          transition: 'background 0.2s',
+          outline: 'none'
         }}
       />
     </div>

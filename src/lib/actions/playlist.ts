@@ -206,14 +206,14 @@ export const getPlaylistById = async (
       }
     });
 
-    // Group the uncategorized videos (subcategoryId is null)
-    const uncategorizedVideos = playlist?.videos.filter(
-      (v) => v.subcategoryId === null
-    );
-
     if (!playlist) {
       throw new Error('Playlist not found');
     }
+
+    // Group the uncategorized videos (subcategoryId is null)
+    const uncategorizedVideos = playlist.videos.filter(
+      (v) => v.subcategoryId === null
+    );
 
     const playlistWithStats: PlaylistWithStatsAndUncategorizedVideos = {
       id: playlist.id,

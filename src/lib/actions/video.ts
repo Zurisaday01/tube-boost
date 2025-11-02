@@ -331,6 +331,7 @@ export const deletePlaylistVideo = async (
     //  Reindex remaining videos in the same subcategory or uncategorized group
     const remainingVideos = await prisma.playlistVideo.findMany({
       where: {
+        playlistId: target.playlistId, // same playlist
         id: { not: playlistVideoId },
         // If the video was in a subcategory, reindex within that subcategory.
         // If it was uncategorized (subcategoryId = null), reindex uncategorized videos.
@@ -339,8 +340,8 @@ export const deletePlaylistVideo = async (
       orderBy: { orderIndex: 'asc' }
     });
 
-    // Reset orderIndex to be sequential
-    await Promise.all(
+    // Reset orderIndex to be sequential (transactional)
+    await prisma.$transaction(
       remainingVideos.map((video, i) =>
         prisma.playlistVideo.update({
           where: { id: video.id },

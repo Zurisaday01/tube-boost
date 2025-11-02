@@ -1,3 +1,4 @@
+'use client';
 import { VideoTagWithTag } from '@/types/actions';
 import VideoTagOption from './video-tag-option';
 

@@ -28,7 +28,7 @@ const VideoTagOption = ({
         style={{
           border: `1px solid ${color}`,
           backgroundColor: bgColor,
-          color // or set text color same as the group
+          color
         }}
       >
         <Tag className='size-4' />

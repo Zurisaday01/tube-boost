@@ -26,7 +26,7 @@ const PlaylistTypeTag = ({
         style={{
           border: `1px solid ${color}`,
           backgroundColor: bgColor,
-          color // or set text color same as the group
+          color
         }}
       >
         <CircleSmall className='size-4' />

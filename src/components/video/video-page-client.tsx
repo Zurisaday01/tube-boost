@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {  ExternalLink, Loader2, Tag } from 'lucide-react';
+import {  ExternalLink, Loader2 } from 'lucide-react';
 import PageContainer from '../layout/page-container';
 import YouTubeNotes from '../notes/youtube-notes';
 import { useEffect, useState, useCallback, useTransition } from 'react';

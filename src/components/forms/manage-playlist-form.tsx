@@ -66,6 +66,7 @@ const ManagePlaylistForm = ({ onClose, playlist }: ManagePlaylistFormProps) => {
 
   const onCancel = () => {
     form.reset();
+    onClose();
   };
 
   const isLoading = isPending || form.formState.isSubmitting;

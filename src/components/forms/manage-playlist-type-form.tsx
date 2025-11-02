@@ -36,7 +36,10 @@ interface PlaylistTypeFormProps {
 }
 
 // Form component for creating or updating a playlist type
-const ManagePlaylistTypeForm = ({ onClose, playlistType }: PlaylistTypeFormProps) => {
+const ManagePlaylistTypeForm = ({
+  onClose,
+  playlistType
+}: PlaylistTypeFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   // Decide whether we're in "create" or "update" mode
@@ -69,7 +72,10 @@ const ManagePlaylistTypeForm = ({ onClose, playlistType }: PlaylistTypeFormProps
     });
   };
 
-  const onCancel = () => form.reset();
+  const onCancel = () => {
+    form.reset();
+    onClose();
+  };
 
   const isLoading = isPending || form.formState.isSubmitting;
 

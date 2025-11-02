@@ -178,7 +178,6 @@ export const getPlaylistById = async (
     if (!isUserAuthenticated(user)) {
       throw new Error('User not authenticated');
     }
-    // TODO: Display uncategorized videos that are directly in the playlist as well
     const playlist = await prisma.playlist.findUnique({
       where: { id, userId: user.userId },
       select: {

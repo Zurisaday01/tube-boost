@@ -54,6 +54,7 @@ const CreateTagForm = ({ onClose, groupId }: CreateTagFormProps) => {
 
   const onCancel = () => {
     form.reset();
+    onClose();
   };
 
   const isLoading = isPending || form.formState.isSubmitting;

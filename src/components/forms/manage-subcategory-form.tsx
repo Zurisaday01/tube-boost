@@ -72,7 +72,10 @@ const ManageSubcategoryForm = ({
     });
   };
 
-  const onCancel = () => form.reset();
+  const onCancel = () => {
+    form.reset();
+    onClose();
+  };
 
   const isLoading = isPending || form.formState.isSubmitting;
 

@@ -9,7 +9,7 @@ import InformationSheetMenuItem from '../options-menu/information-sheet-menu-ite
 import { InformationSheetDetails } from '@/types';
 import UpdatePlaylistType from './update-playlist-type';
 
-interface SubcategoryOptionsMenuProps {
+interface SubcategoryTypeOptionsMenuProps {
   id: string;
   name: string;
   description: string;
@@ -25,7 +25,7 @@ const PlaylistTypeOptionsMenu = ({
   id,
   name,
   description,
-}: SubcategoryOptionsMenuProps) => {
+}: SubcategoryTypeOptionsMenuProps) => {
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 

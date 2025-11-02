@@ -72,19 +72,25 @@ export const updatePlaylistTypeColor = async (
     }
 
     // Update playlist type color
-    const playlistType = await prisma.playlistType.update({
-      where: { id },
+    const playlistType = await prisma.playlistType.updateManyAndReturn({
+      where: { id, userId: user.userId },
       data: { color }
     });
 
+    if (playlistType.length === 0) {
+      throw new Error('Playlist type not found.');
+    }
+
+    const [updatedPlaylistType] = playlistType;
+
     // Revalidate the path where the playlist types are displayed.
     revalidatePath('/dashboard/playlist-types');
-    revalidatePath(`/dashboard/playlist-types/${playlistType.id}`);
+    revalidatePath(`/dashboard/playlist-types/${updatedPlaylistType.id}`);
 
     return {
       status: 'success',
-      message: `Color updated to ${color} for '${playlistType.name}' playlist type`,
-      data: playlistType
+      message: `Color updated to ${color} for '${updatedPlaylistType.name}' playlist type`,
+      data: updatedPlaylistType
     };
   } catch (error) {
     devLog.error('Error updating playlist type color:', error);
@@ -148,11 +154,12 @@ export const updatePlaylistType = async (
   }
 };
 
+// Use void return type since no data is needed, only success/error message
 export const assignUpdatePlaylistType = async (
   data: z.infer<typeof assignUpdatePlaylistTypeSchema>,
   playlistId: string,
   actionType: 'Assign' | 'Update'
-): Promise<ActionResponse<null>> => {
+): Promise<ActionResponse<void>> => {
   // Determine past tense for messages
   const actionTypePastTense = actionType === 'Assign' ? 'assigned' : 'updated';
 

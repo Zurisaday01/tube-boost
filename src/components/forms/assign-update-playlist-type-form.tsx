@@ -30,7 +30,7 @@ import { handleActionResponse } from '@/lib/utils';
 import useSWR from 'swr';
 import { PlaylistTypeOptions } from '@/types';
 
-interface CreateTagFormProps {
+interface AssignUpdatePlaylistTypeFormProps {
   onClose: () => void;
   actionType: 'Assign' | 'Update';
   playlistId: string;
@@ -48,7 +48,7 @@ const AssignUpdatePlaylistTypeForm = ({
   onClose,
   playlistId,
   actionType
-}: CreateTagFormProps) => {
+}: AssignUpdatePlaylistTypeFormProps) => {
   // Fetch playlist types options
   const {
     data,
@@ -103,7 +103,11 @@ const AssignUpdatePlaylistTypeForm = ({
             <FormItem>
               <FormLabel>Playlist Type</FormLabel>
               <FormControl>
-                <Select  value={field.value} onValueChange={field.onChange} disabled={isFetching}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={isFetching}
+                >
                   <SelectTrigger className='w-full'>
                     <SelectValue
                       placeholder={

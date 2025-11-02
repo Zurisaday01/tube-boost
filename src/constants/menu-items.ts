@@ -75,7 +75,7 @@ export const getSubcategoryMenuItems = ({
   }
 ];
 
-// Tag Group Menu Items
+// Playlist Type Menu Items
 export const getTagGroupMenuItems = ({
   id,
   onRename,

@@ -1,9 +1,9 @@
-import { VideoTagWithTag } from '@/types/actions';
+import { VideoTagWithTags } from '@/types/actions';
 import { hexToRgb, getLuminance, lighten, rgba } from '@/lib/utils';
 import { CircleX, Loader2, Tag } from 'lucide-react';
 
 interface VideoTagOptionProps {
-  videoTag: VideoTagWithTag;
+  videoTag: VideoTagWithTags;
   isPending: boolean;
   selectedTagId: string | null;
   onTagRemove: (tagId: string) => void;

@@ -1,9 +1,9 @@
 'use client';
-import { VideoTagWithTag } from '@/types/actions';
+import { VideoTagWithTags } from '@/types/actions';
 import VideoTagOption from './video-tag-option';
 
 interface VideoTagsListProps {
-  videoTags: VideoTagWithTag[];
+  videoTags: VideoTagWithTags[];
   selectedTagId: string | null;
   isPending: boolean;
   onTagRemove: (tagId: string) => void;
@@ -17,7 +17,7 @@ const VideoTagsList = ({
 }: VideoTagsListProps) => {
   return (
     <div className='flex items-center gap-2'>
-      {videoTags.map((vt: VideoTagWithTag) => (
+      {videoTags.map((vt: VideoTagWithTags) => (
         <VideoTagOption
           key={vt.tag.id}
           videoTag={vt}

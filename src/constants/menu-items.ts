@@ -1,16 +1,37 @@
 import { MenuAction } from '@/types/menu-items';
 import { ReactNode } from 'react';
 
-interface SubcategoryMenuItemsProps {
+interface MenuItemsProps {
   id: string;
-  playlistId?: string;
-  onRename?: (e: React.MouseEvent<HTMLDivElement>) => void;
-  onDelete?: (e: React.MouseEvent<HTMLDivElement>) => void;
-  onAssignUpdateType?: (e: React.MouseEvent<HTMLDivElement>) => void;
-  assignUpdateLabel?: string;
-  infoComponent?: ReactNode;
-  changeColorComponent?: ReactNode;
+  playlistId: string;
+  onRename: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onDelete: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onAssignUpdateType: (e: React.MouseEvent<HTMLDivElement>) => void;
+  assignUpdateLabel: string;
+  infoComponent: ReactNode;
+  changeColorComponent: ReactNode;
 }
+
+type SubcategoryMenuItemsProps = Omit<
+  MenuItemsProps,
+  'onAssignUpdateType' | 'assignUpdateLabel'
+>;
+
+type TagGroupMenuItemsProps = Omit<
+  MenuItemsProps,
+  'playlistId' | 'onAssignUpdateType' | 'assignUpdateLabel'
+>;
+
+type PlaylistMenuItemsProps = Pick<
+  MenuItemsProps,
+  'id' | 'onDelete' | 'onRename' | 'assignUpdateLabel' | 'onAssignUpdateType'
+>;
+
+type PlaylistVideoMenuItemsProps = Pick<MenuItemsProps, 'id' | 'onDelete'>;
+type PlaylistTypeMenuItemsProps = Omit<
+  MenuItemsProps,
+  'onAssignUpdateType' | 'assignUpdateLabel' | 'playlistId'
+>;
 
 // Subcategory Menu Items
 export const getSubcategoryMenuItems = ({
@@ -61,7 +82,7 @@ export const getTagGroupMenuItems = ({
   onDelete,
   changeColorComponent,
   infoComponent
-}: SubcategoryMenuItemsProps): MenuAction[] => [
+}: TagGroupMenuItemsProps): MenuAction[] => [
   {
     type: 'link',
     label: 'See',
@@ -100,8 +121,8 @@ export const getPlaylistMenuItems = ({
   onDelete,
   onRename,
   assignUpdateLabel,
-  onAssignUpdateType,
-}: SubcategoryMenuItemsProps): MenuAction[] => [
+  onAssignUpdateType
+}: PlaylistMenuItemsProps): MenuAction[] => [
   {
     type: 'button',
     label: 'Rename',
@@ -128,7 +149,7 @@ export const getPlaylistMenuItems = ({
 // Playlist Video Menu Items
 export const getPlaylistVideoMenuItems = ({
   onDelete
-}: SubcategoryMenuItemsProps): MenuAction[] => [
+}: PlaylistVideoMenuItemsProps): MenuAction[] => [
   {
     type: 'button',
     label: 'Delete',
@@ -144,7 +165,7 @@ export const getPlaylistTypeMenuItems = ({
   onDelete,
   changeColorComponent,
   infoComponent
-}: SubcategoryMenuItemsProps): MenuAction[] => [
+}: PlaylistTypeMenuItemsProps): MenuAction[] => [
   {
     type: 'link',
     label: 'See',

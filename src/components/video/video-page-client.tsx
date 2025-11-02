@@ -16,7 +16,7 @@ import SelectTagOptions from '../tag/select-tag-options';
 import { ComboboxDataItem } from '@/types';
 import { removeTagFromVideo } from '@/lib/actions/tag';
 import VideoTagsList from '../tag/video-tags-list';
-import { VideoTagWithTag } from '@/types/actions';
+import { VideoTagWithTags } from '@/types/actions';
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
@@ -24,7 +24,7 @@ interface VideoPageClientProps {
   channelTitle: string;
   playlistVideoId: string;
   tagOptions: Record<string, ComboboxDataItem[]>;
-  videoTags: VideoTagWithTag[];
+  videoTags: VideoTagWithTags[];
 }
 
 const LoaderPage = ({ isVideoLoading }: { isVideoLoading: boolean }) => (

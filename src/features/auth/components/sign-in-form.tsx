@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { PasswordField } from './password-field';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { ErrorContext } from 'better-auth/react';
 
 const SignInForm = () => {
   // 1. Define your form.
@@ -34,19 +35,21 @@ const SignInForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signInSchema>) {
-    const res = await signIn.email({
-      email: values.email,
-      password: values.password
-    });
-
-    if (res.data && res.data.token) {
-      toast.success('Signed in successfully!');
-      window.location.href = '/dashboard/playlists'; // Redirect to dashboard on success
-    }
-
-    if (res.error) {
-      toast.error(res.error.statusText || 'Something went wrong.');
-    }
+    await signIn.email(
+      {
+        email: values.email,
+        password: values.password,
+        callbackURL: '/dashboard/playlists'
+      },
+      {
+        onError: (error: ErrorContext) => {
+          toast.error(error.error.message || 'Something went wrong.');
+        },
+        onSuccess: () => {
+          toast.success('Signed in successfully!');
+        }
+      }
+    );
   }
 
   return (

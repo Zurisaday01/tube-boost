@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { PasswordField } from './password-field';
 import { Loader2 } from 'lucide-react';
 import { signUp } from '@/lib/auth-client';
+import { ErrorContext } from 'better-auth/react';
 
 const SignUpForm = () => {
   const form = useForm<z.infer<typeof signUpSchema>>({
@@ -34,22 +35,24 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    const res = await signUp.email({
-      name: `${values.firstName} ${values.lastName}`,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      password: values.password
-    });
-
-    if (res.data && res.data.token) {
-      toast.success(`Welcome ${values.firstName}!`);
-      window.location.href = '/dashboard/playlists'; // Redirect to dashboard on success
-    }
-
-    if (res.error) {
-      toast.error(res.error.statusText || 'Something went wrong.');
-    }
+    await signUp.email(
+      {
+        name: `${values.firstName} ${values.lastName}`,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        callbackURL: '/dashboard/playlists'
+      },
+      {
+        onError: (error: ErrorContext) => {
+          toast.error(error.error.message || 'Something went wrong.');
+        },
+        onSuccess: () => {
+          toast.success(`Welcome ${values.firstName}!`);
+        }
+      }
+    );
   }
 
   return (

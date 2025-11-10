@@ -9,7 +9,7 @@ import arcjet, {
   slidingWindow,
   SlidingWindowRateLimitOptions
 } from '@arcjet/next';
-import findIp from '@arcjet/ip';
+import { findIp } from '@arcjet/ip';
 
 const aj = arcjet({
   key: process.env.ARCJET_API_KEY!,

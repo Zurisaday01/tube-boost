@@ -21,7 +21,11 @@ import { Loader2 } from 'lucide-react';
 import { signUp } from '@/lib/auth-client';
 import { ErrorContext } from 'better-auth/react';
 
-const SignUpForm = () => {
+interface SignUpFormProps {
+  onStoreEmail: (email: string) => void;
+}
+
+const SignUpForm = ({ onStoreEmail }: SignUpFormProps) => {
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
@@ -49,7 +53,16 @@ const SignUpForm = () => {
           toast.error(error.error.message || 'Something went wrong.');
         },
         onSuccess: () => {
-          toast.success(`Welcome ${values.firstName}!`);
+          toast.success(
+            'Account created! We have sent you a verification email, please check your inbox.'
+          );
+
+          // Store the email to show in the verify email section (after a couple of seconds)
+          setTimeout(() => {
+            // for now since we don't have a dns setup, we will just use a fixed email
+            // later we will change this to values.email
+            onStoreEmail('Zurisaday@hotmail.com');
+          }, 2000);
         }
       }
     );

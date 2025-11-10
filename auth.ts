@@ -1,3 +1,7 @@
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail
+} from '@/lib/actions/emails';
 import { PrismaClient } from '@prisma/client';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -9,8 +13,24 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql'
   }),
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      try {
+        await sendVerificationEmail(user.name, user.email, url);
+      } catch (error) {
+        console.error('Error in sendVerificationEmail auth config:', error);
+        throw error;
+      }
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true
+  },
   emailAndPassword: {
-    enabled: true
+    enabled: true,
+    requireEmailVerification: true, // Enforce email verification before sign-in
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await sendPasswordResetEmail(user.name, url);
+    }
   },
   // cache the session cookie for performance
   session: {

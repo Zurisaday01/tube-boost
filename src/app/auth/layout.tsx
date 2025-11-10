@@ -10,13 +10,13 @@ export default async function AuthLayout({
   // Redirecting if there is a session
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (session) {
+
+    if (session != null) {
       // If there is a session, redirect to the dashboard
       redirect('/dashboard');
     }
   } catch (error) {
-    console.error('Failed to check session:', error);
-    // Allow rendering auth pages on error
+    throw error;
   }
 
   return <>{children}</>;

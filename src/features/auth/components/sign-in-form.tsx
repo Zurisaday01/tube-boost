@@ -15,14 +15,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { signInSchema } from '@/lib/schemas';
-import { signIn } from '@/lib/auth-client';
+import { sendVerificationEmail, signIn } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { PasswordField } from './password-field';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { ErrorContext } from 'better-auth/react';
+import { useState } from 'react';
 
 const SignInForm = () => {
+  const [isResending, setIsResending] = useState(false);
   // 1. Define your form.
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -33,6 +35,41 @@ const SignInForm = () => {
     }
   });
 
+  const handleResend = async () => {
+    setIsResending(true);
+    try {
+      // Triggering manually Email Verification
+      await sendVerificationEmail(
+        {
+          email: 'zurisaday_01@hotmail.com', // later we will change this to form.getValues('email')
+          callbackURL: '/dashboard' // The redirect URL after verification
+        },
+        {
+          onRequest(context) {
+            console.log(
+              'Resend verification email request initiated.',
+              context
+            );
+          },
+          onSuccess: () => {
+            toast.success(
+              'Verification email resent! Please check your inbox.'
+            );
+          },
+          onError: (error) => {
+            toast.error(
+              error.error.message || 'Failed to resend verification email.'
+            );
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error resending verification email:', error);
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signInSchema>) {
     await signIn.email(
@@ -42,7 +79,21 @@ const SignInForm = () => {
         callbackURL: '/dashboard/playlists'
       },
       {
+        // TODO: dismiss toast after clicking resend
         onError: (error: ErrorContext) => {
+          // Specific handling for unverified email
+          if (error.error.message === 'Email not verified') {
+            toast.error('Email not verified', {
+              action: (
+                <Button className='ml-auto' onClick={handleResend} disabled={isResending} size='sm'>
+                  Resend
+                </Button>
+              )
+            });
+            return;
+          }
+
+          // Generic error handling
           toast.error(error.error.message || 'Something went wrong.');
         },
         onSuccess: () => {

@@ -35,18 +35,20 @@ export default function VerifyEmailSection({ email }: VerifyEmailSectionProps) {
   };
 
   const handleResend = async () => {
-    console.log('Resending verification email to:', email);
     // start the countdown again
     startEmailVerificationCountdown();
     setIsLoading(true);
     try {
       // Triggering manually Email Verification
-      const res = await sendVerificationEmail(
+      await sendVerificationEmail(
         {
           email,
           callbackURL: '/dashboard' // The redirect URL after verification
         },
         {
+          onRequest(context) {
+            console.log('Resend verification email request initiated.', context);
+          },
           onSuccess: () => {
             toast.success(
               'Verification email resent! Please check your inbox.'
@@ -60,7 +62,6 @@ export default function VerifyEmailSection({ email }: VerifyEmailSectionProps) {
         }
       );
 
-      console.log('Resend verification email response', res);
     } catch (error) {
       console.error('Error resending verification email:', error);
     } finally {

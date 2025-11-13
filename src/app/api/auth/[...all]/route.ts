@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   // Clone the request so we can read it multiple times
   // it is not allowed to read the body more than once, that is why we clone it
   const clonedRequest = request.clone();
-
+  
   const decision = await checkArcjet(request);
 
   if (decision.isDenied()) {

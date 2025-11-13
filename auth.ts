@@ -15,15 +15,11 @@ export const auth = betterAuth({
   }),
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      try {
-        await sendVerificationEmail(user.name, user.email, url);
-      } catch (error) {
-        console.error('Error in sendVerificationEmail auth config:', error);
-        throw error;
-      }
+      await sendVerificationEmail(user.name, user.email, url);
     },
     sendOnSignUp: true,
-    autoSignInAfterVerification: true
+    autoSignInAfterVerification: true,
+    expiresIn: 1000 * 60 * 60 * 24 // 24 hours
   },
   emailAndPassword: {
     enabled: true,

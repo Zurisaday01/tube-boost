@@ -44,9 +44,9 @@ const SignUpForm = ({ onStoreEmail }: SignUpFormProps) => {
         name: `${values.firstName} ${values.lastName}`,
         firstName: values.firstName,
         lastName: values.lastName,
-        email: values.email,
+        email: values.email.toLowerCase(), // normalize email to lowercase
         password: values.password,
-        callbackURL: '/dashboard/playlists'
+        callbackURL: '/'
       },
       {
         onError: (error: ErrorContext) => {
@@ -61,7 +61,7 @@ const SignUpForm = ({ onStoreEmail }: SignUpFormProps) => {
           setTimeout(() => {
             // for now since we don't have a dns setup, we will just use a fixed email
             // later we will change this to values.email
-            onStoreEmail('Zurisaday@hotmail.com');
+            onStoreEmail('zurisaday_01@hotmail.com');
           }, 2000);
         }
       }

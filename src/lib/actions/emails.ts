@@ -5,17 +5,14 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const sendPasswordResetEmail = async (
-  firstName: string,
-  url: string
-) => {
+export const sendPasswordResetEmail = async (name: string, url: string) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Acme <onboarding@resend.dev>',
-      to: ['delivered@resend.dev'],
-      subject: 'Hello world',
+      from: 'onboarding@resend.dev',
+      to: ['zurisaday_01@hotmail.com'],
+      subject: 'Password Recovery',
       react: RecoveryPasswordEmailTemplate({
-        firstName,
+        name,
         url
       })
     });

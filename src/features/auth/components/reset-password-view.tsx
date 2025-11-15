@@ -1,23 +1,8 @@
-'use client';
-import { Metadata } from 'next';
 import Link from 'next/link';
-import SignInForm from './sign-in-form';
 import Image from 'next/image';
-import VerifyEmailSection from './verify-email-section';
-import { useState } from 'react';
+import ResetPasswordForm from './reset-password-form';
 
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
-
-export default function SignInViewPage() {
-  const [email, setEmail] = useState<string | null>(null);
-
-  const handleStoreEmail = (email: string) => {
-    setEmail(email);
-  };
-
+export default function ResetPasswordViewPage() {
   return (
     <div className='relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
       {/* Left image section */}
@@ -45,46 +30,27 @@ export default function SignInViewPage() {
         {/* Center content */}
         <div className='relative flex flex-grow flex-col items-center justify-center space-y-6'>
           <div className='flex flex-col space-y-2 text-center'>
-            <h1 className='text-4xl font-bold'>Welcome Back</h1>
-            <p>Enter your email and password to access your account</p>
+            <h1 className='text-4xl font-bold'>Reset Your Password</h1>
+            <p>
+              Enter your new password below to reset your account password.
+            </p>
           </div>
 
           <div className='w-full max-w-[500px]'>
-            <SignInForm onStoreEmail={handleStoreEmail} />
+            <ResetPasswordForm />
           </div>
-
-          <p className='text-muted-foreground px-8 text-center text-sm'>
-            By clicking sign in, you agree to our{' '}
-            <Link
-              href='/terms'
-              className='hover:text-primary underline underline-offset-4'
-            >
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link
-              href='/privacy'
-              className='hover:text-primary underline underline-offset-4'
-            >
-              Privacy Policy
-            </Link>
-            .
-          </p>
         </div>
 
         {/* Bottom link */}
         <p className='text-center text-sm'>
-          Don&apos;t have an account?{' '}
+          Don’t need to reset it?{' '}
           <Link
-            href='/auth/sign-up'
+            href='/auth/sign-in'
             className='hover:text-primary font-medium transition-all duration-100'
           >
-            Sign Up
+            Sign In
           </Link>
         </p>
-
-        {/* Verify Email Section (position absolute needs to be in the relative container) */}
-        {email && <VerifyEmailSection email={email} shouldStartCountdown={false} />}
       </div>
     </div>
   );

@@ -7,6 +7,16 @@ export const signInSchema = z.object({
   })
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Invalid email address.')
+});
+
+export const resetPasswordSchema = z.object({
+  password: z.string().min(8, {
+    message: 'Password must be at least 8 characters.'
+  })
+});
+
 export const passwordSchema = z
   .string({
     required_error: 'Password can not be empty.'
@@ -106,3 +116,8 @@ export const createUpdatePlaylistTypeSchema = z.object({
   }),
   description: z.string().optional()
 });
+
+export type SignInSchema = z.infer<typeof signInSchema>;
+export type SignUpSchema = z.infer<typeof signUpSchema>;
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;

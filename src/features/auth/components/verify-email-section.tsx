@@ -6,16 +6,26 @@ import { toast } from 'sonner';
 
 interface VerifyEmailSectionProps {
   email: string;
+  shouldStartCountdown?: boolean;
 }
 
-export default function VerifyEmailSection({ email }: VerifyEmailSectionProps) {
-  const [timeToNextResend, setTimeToNextResend] = useState(30); // 30 seconds countdown
+export default function VerifyEmailSection({
+  email,
+  shouldStartCountdown = true
+}: VerifyEmailSectionProps) {
+  const [timeToNextResend, setTimeToNextResend] = useState(() => {
+    // Initialize countdown time based on prop
+    // when shouldStartCountdown is false, start at 0
+    return shouldStartCountdown ? 30 : 0;
+  }); // 30 seconds countdown
   const interval = useRef<NodeJS.Timeout>(undefined); // to store the interval ID
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    startEmailVerificationCountdown();
-  }, []);
+    if (shouldStartCountdown) {
+      startEmailVerificationCountdown();
+    }
+  }, [shouldStartCountdown]);
 
   const startEmailVerificationCountdown = (time = 30) => {
     setTimeToNextResend(time);
@@ -47,7 +57,10 @@ export default function VerifyEmailSection({ email }: VerifyEmailSectionProps) {
         },
         {
           onRequest(context) {
-            console.log('Resend verification email request initiated.', context);
+            console.log(
+              'Resend verification email request initiated.',
+              context
+            );
           },
           onSuccess: () => {
             toast.success(
@@ -61,7 +74,6 @@ export default function VerifyEmailSection({ email }: VerifyEmailSectionProps) {
           }
         }
       );
-
     } catch (error) {
       console.error('Error resending verification email:', error);
     } finally {

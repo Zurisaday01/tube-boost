@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +13,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signUpSchema } from '@/lib/schemas';
+import { SignUpSchema, signUpSchema } from '@/lib/schemas';
 import { toast } from 'sonner';
 import { PasswordField } from './password-field';
 import { Loader2 } from 'lucide-react';
@@ -26,7 +25,7 @@ interface SignUpFormProps {
 }
 
 const SignUpForm = ({ onStoreEmail }: SignUpFormProps) => {
-  const form = useForm<z.infer<typeof signUpSchema>>({
+  const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
     defaultValues: {
@@ -38,7 +37,7 @@ const SignUpForm = ({ onStoreEmail }: SignUpFormProps) => {
     }
   });
 
-  async function onSubmit(values: z.infer<typeof signUpSchema>) {
+  async function onSubmit(values: SignUpSchema) {
     await signUp.email(
       {
         name: `${values.firstName} ${values.lastName}`,

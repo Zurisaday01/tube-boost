@@ -11,12 +11,6 @@ export const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address.')
 });
 
-export const resetPasswordSchema = z.object({
-  password: z.string().min(8, {
-    message: 'Password must be at least 8 characters.'
-  })
-});
-
 export const passwordSchema = z
   .string({
     required_error: 'Password can not be empty.'
@@ -37,6 +31,10 @@ export const passwordSchema = z
     message: 'At least one special character.'
   });
 
+export const resetPasswordSchema = z.object({
+  password: passwordSchema
+});
+
 export const signUpSchema = z
   .object({
     firstName: z.string().min(2, {
@@ -52,6 +50,31 @@ export const signUpSchema = z
     })
   })
   .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword']
+  });
+
+export const updateProfileSchema = z.object({
+  firstName: z.string().min(2, {
+    message: 'First Name must be at least 2 characters.'
+  }),
+  lastName: z.string().min(2, {
+    message: 'Last Name must be at least 2 characters.'
+  }),
+  email: z.string().email('Invalid email address.')
+});
+
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(8, {
+      message: 'Password must be at least 8 characters.'
+    }),
+    newPassword: passwordSchema,
+    confirmNewPassword: z.string({
+      required_error: 'Confirm Password is required.'
+    })
+  })
+  .refine((data) => data.currentPassword === data.confirmNewPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword']
   });
@@ -121,3 +144,5 @@ export type SignInSchema = z.infer<typeof signInSchema>;
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
+export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;

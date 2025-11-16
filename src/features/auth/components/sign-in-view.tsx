@@ -1,15 +1,10 @@
 'use client';
-import { Metadata } from 'next';
+
 import Link from 'next/link';
 import SignInForm from './sign-in-form';
 import Image from 'next/image';
 import VerifyEmailSection from './verify-email-section';
 import { useState } from 'react';
-
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
 
 export default function SignInViewPage() {
   const [email, setEmail] = useState<string | null>(null);
@@ -84,7 +79,9 @@ export default function SignInViewPage() {
         </p>
 
         {/* Verify Email Section (position absolute needs to be in the relative container) */}
-        {email && <VerifyEmailSection email={email} shouldStartCountdown={false} />}
+        {email && (
+          <VerifyEmailSection email={email} shouldStartCountdown={false} />
+        )}
       </div>
     </div>
   );

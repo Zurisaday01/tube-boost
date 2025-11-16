@@ -1,15 +1,9 @@
 'use client';
-import { Metadata } from 'next';
 import Link from 'next/link';
 import SignUpForm from './sign-up-form';
 import Image from 'next/image';
 import VerifyEmailSection from './verify-email-section';
 import { useState } from 'react';
-
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
 
 export default function SignUpViewPage() {
   const [email, setEmail] = useState<string | null>(null);

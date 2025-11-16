@@ -30,9 +30,6 @@ const ResetPasswordForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: ResetPasswordSchema) {
-    // if no token in params, return
-    if (token == null) return;
-
     await resetPassword(
       {
         newPassword: values.password,

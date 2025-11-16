@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 interface UserAvatarProfileProps {
-  className?: string;
   image?: string | null | undefined;
   firstName?: string;
   lastName?: string;
@@ -12,7 +11,6 @@ interface UserAvatarProfileProps {
 }
 
 export function UserAvatarProfile({
-  className,
   image,
   firstName,
   lastName,

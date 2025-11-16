@@ -77,10 +77,13 @@ const UpdatePasswordForm = () => {
         <div>
           <h3 className='text-sm font-semibold'>Password Requirements</h3>
           <ul className='text-muted-foreground list-inside list-disc text-sm'>
-            <li>At least 8 characters long</li>
+            <li>Minimum 8 characters and maximum 20 characters</li>
             <li>Contains both uppercase and lowercase letters</li>
             <li>Includes at least one number</li>
-            <li>Has at least one special character (e.g., !@#$%^&*)</li>
+            <li>
+              Has at least one special character (e.g.,
+              $&+,:;=?@#|&apos;&lt;&gt;.^()%!-)
+            </li>
           </ul>
         </div>
         <Button

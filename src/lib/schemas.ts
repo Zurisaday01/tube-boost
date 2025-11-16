@@ -74,9 +74,9 @@ export const updatePasswordSchema = z
       required_error: 'Confirm Password is required.'
     })
   })
-  .refine((data) => data.currentPassword === data.confirmNewPassword, {
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: 'Passwords do not match',
-    path: ['confirmPassword']
+    path: ['confirmNewPassword']
   });
 
 export const createUpdatePlaylistSchema = z.object({

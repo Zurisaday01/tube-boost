@@ -15,6 +15,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { updateProfileSchema, UpdateProfileSchema } from '@/lib/schemas';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { updateUser } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { ErrorContext } from 'better-auth/react';
 
 interface UpdateProfileFormProps {
   firstName: string;
@@ -22,7 +26,12 @@ interface UpdateProfileFormProps {
   email: string;
 }
 
-const UpdateProfileForm = ({ firstName, lastName, email }: UpdateProfileFormProps) => {
+const UpdateProfileForm = ({
+  firstName,
+  lastName,
+  email
+}: UpdateProfileFormProps) => {
+  const router = useRouter();
   const form = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
     mode: 'onBlur',
@@ -35,13 +44,33 @@ const UpdateProfileForm = ({ firstName, lastName, email }: UpdateProfileFormProp
 
   // 2. Define a submit handler.
   async function onSubmit(values: UpdateProfileSchema) {
-    console.log(values);
+    await updateUser(
+      {
+        name: `${values.firstName} ${values.lastName}`,
+        firstName: values.firstName,
+        lastName: values.lastName
+      },
+      {
+        onError: (error: ErrorContext) => {
+          toast.error(error.error.message || 'Something went wrong.');
+        },
+        onSuccess: () => {
+          toast.success('Profile updated successfully!');
+
+          // Refresh the page to reflect updated profile information
+          router.refresh();
+        }
+      }
+    );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full flex flex-col gap-5'>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='flex w-full flex-col gap-5'
+      >
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <FormField
             control={form.control}
             name='firstName'
@@ -86,7 +115,8 @@ const UpdateProfileForm = ({ firstName, lastName, email }: UpdateProfileFormProp
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
-                    disabled={form.formState.isSubmitting}
+                    disabled
+                    readOnly
                     placeholder='you@example.com'
                     {...field}
                   />

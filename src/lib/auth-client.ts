@@ -12,7 +12,9 @@ export const {
   getSession,
   sendVerificationEmail,
   requestPasswordReset,
-  resetPassword
+  resetPassword,
+  updateUser,
+  changePassword
 } = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
   plugins: [nextCookies(), inferAdditionalFields<typeof auth>()]

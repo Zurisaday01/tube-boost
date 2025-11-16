@@ -8,6 +8,9 @@ import { Form } from '@/components/ui/form';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/lib/schemas';
 import { Loader2 } from 'lucide-react';
 import { PasswordField } from '@/features/auth/components/password-field';
+import { changePassword } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { ErrorContext } from 'better-auth/react';
 
 const UpdatePasswordForm = () => {
   const form = useForm<UpdatePasswordSchema>({
@@ -22,8 +25,26 @@ const UpdatePasswordForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: UpdatePasswordSchema) {
-    console.log(values);
+    await changePassword(
+      {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword
+      },
+      {
+        onError: (error: ErrorContext) => {
+          toast.error(error.error.message || 'Something went wrong.');
+        },
+        onSuccess: () => {
+          toast.success('Password changed successfully!');
+
+          // Reset the form fields
+          form.reset();
+        }
+      }
+    );
   }
+
+  console.log(form.formState.errors);
 
   return (
     <Form {...form}>
@@ -52,11 +73,10 @@ const UpdatePasswordForm = () => {
             label='Confirm New Password'
             disabled={form.formState.isSubmitting}
           />
-
         </div>
         <div>
           <h3 className='text-sm font-semibold'>Password Requirements</h3>
-          <ul className='list-disc list-inside text-sm text-muted-foreground'>
+          <ul className='text-muted-foreground list-inside list-disc text-sm'>
             <li>At least 8 characters long</li>
             <li>Contains both uppercase and lowercase letters</li>
             <li>Includes at least one number</li>

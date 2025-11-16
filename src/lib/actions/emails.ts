@@ -9,6 +9,7 @@ export const sendPasswordResetEmail = async (name: string, url: string) => {
   try {
     const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev',
+      // TODO: replace with the real user email once wired through
       to: ['zurisaday_01@hotmail.com'],
       subject: 'Password Recovery',
       react: RecoveryPasswordEmailTemplate({
@@ -18,12 +19,13 @@ export const sendPasswordResetEmail = async (name: string, url: string) => {
     });
 
     if (error) {
-      return Response.json({ error }, { status: 500 });
+      throw new Error(error.message);
     }
 
-    return Response.json(data);
+    return { success: true, data };
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    console.error('Unexpected error sending recovery email:', error);
+    throw new Error('Failed to send recovery email.');
   }
 };
 

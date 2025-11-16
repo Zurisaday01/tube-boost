@@ -38,7 +38,10 @@ export function UserAvatarProfile({
       <Avatar
         className={cn(styles[fullPage ? 'fullPage' : 'normal'].avatarFallback)}
       >
-        <AvatarImage src={image || ''} alt={`${firstName} ${lastName}` || ''} />
+        <AvatarImage
+          src={image || ''}
+          alt={firstName && lastName ? `${firstName} ${lastName}` : ''}
+        />
         <AvatarFallback className='rounded-lg'>
           {(firstName?.[0] || '') + (lastName?.[0] || '')?.toUpperCase() ||
             'CN'}

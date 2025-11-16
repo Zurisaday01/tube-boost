@@ -110,7 +110,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Your Playlists</SidebarGroupLabel>
           <SidebarMenu>
-            {navItems.slice(4).map((item) => {
+            {navItems.slice(3).map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible

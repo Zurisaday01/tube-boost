@@ -35,7 +35,6 @@ export const sendVerificationEmail = async (
   url: string
 ) => {
   try {
-    console.log('Sending verification email to:', email);
     const { data, error } = await resend.emails.send({
       // from: 'TubeBoost <account@tubeboost.dev>', // TODO: Set up dns records and change to this in the future
       from: 'onboarding@resend.dev',

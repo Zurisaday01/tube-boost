@@ -22,7 +22,7 @@ export function UserAvatarProfile({
     fullPage: {
       avatarFallback: 'size-16',
       fullName: 'text-2xl',
-      email: 'text-md'
+      email: 'text-base'
     },
     normal: {
       avatarFallback: '',

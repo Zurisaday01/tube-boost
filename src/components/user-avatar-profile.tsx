@@ -1,37 +1,69 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 interface UserAvatarProfileProps {
-  className?: string;
+  image?: string | null | undefined;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
   showInfo?: boolean;
-  user: {
-    id: string;
-    email: string;
-    emailVerified: boolean;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    image?: string | null | undefined;
-  };
+  fullPage?: boolean;
 }
 
 export function UserAvatarProfile({
-  className,
+  image,
+  firstName,
+  lastName,
+  email,
   showInfo = false,
-  user
+  fullPage = false
 }: UserAvatarProfileProps) {
+  const styles = {
+    fullPage: {
+      avatarFallback: 'size-16',
+      fullName: 'text-2xl',
+      email: 'text-base'
+    },
+    normal: {
+      avatarFallback: '',
+      fullName: 'text-sm',
+      email: 'text-xs'
+    }
+  };
+
   return (
     <div className='flex items-center gap-2'>
-      <Avatar className={className}>
-        <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
+      <Avatar
+        className={cn(styles[fullPage ? 'fullPage' : 'normal'].avatarFallback)}
+      >
+        <AvatarImage
+          src={image || ''}
+          alt={firstName && lastName ? `${firstName} ${lastName}` : ''}
+        />
         <AvatarFallback className='rounded-lg'>
-          {user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
+          {((firstName?.[0] || '') + (lastName?.[0] || '')).toUpperCase() ||
+            'CN'}
         </AvatarFallback>
       </Avatar>
 
       {showInfo && (
-        <div className='grid flex-1 text-left text-sm leading-tight'>
-          <span className='truncate font-semibold'>{user?.name || ''}</span>
-          <span className='truncate text-xs'>{user?.email}</span>
+        <div className='grid flex-1 text-left leading-tight'>
+          <span
+            className={cn(
+              styles[fullPage ? 'fullPage' : 'normal'].fullName,
+              'truncate font-semibold'
+            )}
+          >
+            {`${firstName} ${lastName}` || ''}
+          </span>
+          <span
+            className={cn(
+              styles[fullPage ? 'fullPage' : 'normal'].email,
+              'truncate'
+            )}
+          >
+            {email}
+          </span>
         </div>
       )}
     </div>

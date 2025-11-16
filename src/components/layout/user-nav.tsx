@@ -25,7 +25,12 @@ export function UserNav() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
-            <UserAvatarProfile user={session.user} />
+            <UserAvatarProfile
+              firstName={session.user.firstName}
+              lastName={session.user.lastName}
+              email={session.user.email}
+              image={session.user.image }
+            />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent

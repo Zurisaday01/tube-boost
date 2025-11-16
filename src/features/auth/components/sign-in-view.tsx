@@ -1,14 +1,18 @@
-import { Metadata } from 'next';
+'use client';
+
 import Link from 'next/link';
 import SignInForm from './sign-in-form';
 import Image from 'next/image';
-
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
+import VerifyEmailSection from './verify-email-section';
+import { useState } from 'react';
 
 export default function SignInViewPage() {
+  const [email, setEmail] = useState<string | null>(null);
+
+  const handleStoreEmail = (email: string) => {
+    setEmail(email);
+  };
+
   return (
     <div className='relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
       {/* Left image section */}
@@ -34,14 +38,14 @@ export default function SignInViewPage() {
         </div>
 
         {/* Center content */}
-        <div className='flex flex-grow flex-col items-center justify-center space-y-6'>
+        <div className='relative flex flex-grow flex-col items-center justify-center space-y-6'>
           <div className='flex flex-col space-y-2 text-center'>
             <h1 className='text-4xl font-bold'>Welcome Back</h1>
             <p>Enter your email and password to access your account</p>
           </div>
 
           <div className='w-full max-w-[500px]'>
-            <SignInForm />
+            <SignInForm onStoreEmail={handleStoreEmail} />
           </div>
 
           <p className='text-muted-foreground px-8 text-center text-sm'>
@@ -73,6 +77,11 @@ export default function SignInViewPage() {
             Sign Up
           </Link>
         </p>
+
+        {/* Verify Email Section (position absolute needs to be in the relative container) */}
+        {email && (
+          <VerifyEmailSection email={email} shouldStartCountdown={false} />
+        )}
       </div>
     </div>
   );

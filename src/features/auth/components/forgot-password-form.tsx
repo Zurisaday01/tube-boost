@@ -13,60 +13,35 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { SignInSchema, signInSchema } from '@/lib/schemas';
-import { signIn } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import { PasswordField } from './password-field';
-import Link from 'next/link';
+import { ForgotPasswordSchema, forgotPasswordSchema } from '@/lib/schemas';
 import { Loader2 } from 'lucide-react';
 import type { ErrorContext } from 'better-auth/react';
+import { toast } from 'sonner';
+import { requestPasswordReset } from '@/lib/auth-client';
 
-interface SignInFormProps {
-  onStoreEmail: (email: string) => void;
-}
-
-const SignInForm = ({ onStoreEmail }: SignInFormProps) => {
+const ForgotPasswordForm = () => {
   // 1. Define your form.
-  const form = useForm<SignInSchema>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<ForgotPasswordSchema>({
+    resolver: zodResolver(forgotPasswordSchema),
     mode: 'onBlur',
     defaultValues: {
-      email: '',
-      password: ''
+      email: ''
     }
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: SignInSchema) {
-    await signIn.email(
+  async function onSubmit(values: ForgotPasswordSchema) {
+    await requestPasswordReset(
       {
         email: values.email,
-        password: values.password,
-        callbackURL: '/dashboard/playlists'
+        redirectTo: '/auth/reset-password'
       },
       {
         onError: (error: ErrorContext) => {
-          // Specific handling for unverified email
-          if (error.error.message === 'Email not verified') {
-            toast.error('Email not verified', {
-              action: (
-                <Button
-                  className='ml-auto'
-                  onClick={() => onStoreEmail('zurisaday_01@hotmail.com')} // use values.email in production
-                  size='sm'
-                >
-                  Verify
-                </Button>
-              )
-            });
-            return;
-          }
-
-          // Generic error handling
           toast.error(error.error.message || 'Something went wrong.');
         },
         onSuccess: () => {
-          toast.success('Signed in successfully!');
+          toast.success('Password reset email sent successfully!');
         }
       }
     );
@@ -94,11 +69,6 @@ const SignInForm = ({ onStoreEmail }: SignInFormProps) => {
           )}
         />
 
-        <PasswordField
-          disabled={form.formState.isSubmitting}
-          description={<Link href='forgot-password'>Forgot your password?</Link>}
-        />
-
         <Button
           disabled={form.formState.isSubmitting}
           type='submit'
@@ -107,7 +77,7 @@ const SignInForm = ({ onStoreEmail }: SignInFormProps) => {
           {form.formState.isSubmitting ? (
             <Loader2 className='size-5 animate-spin' />
           ) : (
-            'Sign In'
+            'Reset Password'
           )}
         </Button>
       </form>
@@ -115,4 +85,4 @@ const SignInForm = ({ onStoreEmail }: SignInFormProps) => {
   );
 };
 
-export default SignInForm;
+export default ForgotPasswordForm;

@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,14 +13,19 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signUpSchema } from '@/lib/schemas';
+import { SignUpSchema, signUpSchema } from '@/lib/schemas';
 import { toast } from 'sonner';
 import { PasswordField } from './password-field';
 import { Loader2 } from 'lucide-react';
 import { signUp } from '@/lib/auth-client';
+import type { ErrorContext } from 'better-auth/react';
 
-const SignUpForm = () => {
-  const form = useForm<z.infer<typeof signUpSchema>>({
+interface SignUpFormProps {
+  onStoreEmail: (email: string) => void;
+}
+
+const SignUpForm = ({ onStoreEmail }: SignUpFormProps) => {
+  const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
     defaultValues: {
@@ -33,23 +37,34 @@ const SignUpForm = () => {
     }
   });
 
-  async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    const res = await signUp.email({
-      name: `${values.firstName} ${values.lastName}`,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      password: values.password
-    });
+  async function onSubmit(values: SignUpSchema) {
+    await signUp.email(
+      {
+        name: `${values.firstName} ${values.lastName}`,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email.toLowerCase(), // normalize email to lowercase
+        password: values.password,
+        callbackURL: '/'
+      },
+      {
+        onError: (error: ErrorContext) => {
+          toast.error(error.error.message || 'Something went wrong.');
+        },
+        onSuccess: () => {
+          toast.success(
+            'Account created! We have sent you a verification email, please check your inbox.'
+          );
 
-    if (res.data && res.data.token) {
-      toast.success(`Welcome ${values.firstName}!`);
-      window.location.href = '/dashboard/playlists'; // Redirect to dashboard on success
-    }
-
-    if (res.error) {
-      toast.error(res.error.statusText || 'Something went wrong.');
-    }
+          // Store the email to show in the verify email section (after a couple of seconds)
+          setTimeout(() => {
+            // for now since we don't have a dns setup, we will just use a fixed email
+            // later we will change this to values.email
+            onStoreEmail('zurisaday_01@hotmail.com');
+          }, 2000);
+        }
+      }
+    );
   }
 
   return (

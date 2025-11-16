@@ -14,7 +14,7 @@ export default function ProfileViewPage() {
 
   if (isPending) {
     return (
-      <div className='flex h-[80vh] w-full items-center justify-center'>
+      <div className='flex h-[90vh] w-full items-center justify-center'>
         <div className='flex flex-col items-center justify-center gap-1'>
           <Loader2 className='size-5 animate-spin' />
           <span className='ml-2'>Loading...</span>

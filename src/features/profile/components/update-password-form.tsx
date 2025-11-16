@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { PasswordField } from '@/features/auth/components/password-field';
 import { changePassword } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { ErrorContext } from 'better-auth/react';
+import type { ErrorContext } from 'better-auth/react';
 
 const UpdatePasswordForm = () => {
   const form = useForm<UpdatePasswordSchema>({

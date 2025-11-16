@@ -18,7 +18,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { updateUser } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { ErrorContext } from 'better-auth/react';
+import type { ErrorContext } from 'better-auth/react';
 
 interface UpdateProfileFormProps {
   firstName: string;

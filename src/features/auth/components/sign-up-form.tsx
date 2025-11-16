@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { PasswordField } from './password-field';
 import { Loader2 } from 'lucide-react';
 import { signUp } from '@/lib/auth-client';
-import { ErrorContext } from 'better-auth/react';
+import type { ErrorContext } from 'better-auth/react';
 
 interface SignUpFormProps {
   onStoreEmail: (email: string) => void;

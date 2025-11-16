@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ForgotPasswordSchema, forgotPasswordSchema } from '@/lib/schemas';
 import { Loader2 } from 'lucide-react';
-import { ErrorContext } from 'better-auth/react';
+import type { ErrorContext } from 'better-auth/react';
 import { toast } from 'sonner';
 import { requestPasswordReset } from '@/lib/auth-client';
 

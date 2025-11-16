@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { ResetPasswordSchema, resetPasswordSchema } from '@/lib/schemas';
 import { Loader2 } from 'lucide-react';
-import { ErrorContext } from 'better-auth/react';
+import type { ErrorContext } from 'better-auth/react';
 import { toast } from 'sonner';
 import { resetPassword } from '@/lib/auth-client';
 import { PasswordField } from './password-field';

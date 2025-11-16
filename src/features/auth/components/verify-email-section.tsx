@@ -18,25 +18,31 @@ export default function VerifyEmailSection({
     // when shouldStartCountdown is false, start at 0
     return shouldStartCountdown ? 30 : 0;
   }); // 30 seconds countdown
-  const interval = useRef<NodeJS.Timeout>(undefined); // to store the interval ID
+  const interval = useRef<ReturnType<typeof setInterval> | null>(null); // to store the interval ID
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (shouldStartCountdown) {
       startEmailVerificationCountdown();
     }
+
+    return () => {
+      if (interval.current) {
+        clearInterval(interval.current);
+      }
+    };
   }, [shouldStartCountdown]);
 
   const startEmailVerificationCountdown = (time = 30) => {
     setTimeToNextResend(time);
 
-    clearInterval(interval.current);
+    if (interval.current) clearInterval(interval.current);
     interval.current = setInterval(() => {
       setTimeToNextResend((t) => {
         const newT = t - 1;
 
         if (newT <= 0) {
-          clearInterval(interval.current);
+          if (interval.current) clearInterval(interval.current);
           return 0;
         }
         return newT;

@@ -6,6 +6,7 @@ import UpdateProfileForm from './update-profile-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PageContainer from '@/components/layout/page-container';
 import UpdatePasswordForm from './update-password-form';
+import { redirect } from 'next/navigation';
 
 export default function ProfileViewPage() {
   // Get the user session
@@ -24,7 +25,7 @@ export default function ProfileViewPage() {
 
   // Check if session and user exist before rendering
   if (!session || !session.user) {
-    return <div>Please sign in to view your profile.</div>;
+    redirect('/auth/sign-in');
   }
 
   return (

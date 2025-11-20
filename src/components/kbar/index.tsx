@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 import RenderResults from './render-result';
 import useThemeSwitching from './use-theme-switching';
 
+// https://kbar.vercel.app/
 export default function KBar({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 

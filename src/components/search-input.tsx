@@ -1,10 +1,81 @@
 'use client';
-import { useKBar } from 'kbar';
+import { useKBar, useRegisterActions } from 'kbar';
 import { IconSearch } from '@tabler/icons-react';
 import { Button } from './ui/button';
+import { useEffect, useState } from 'react';
 
 export default function SearchInput() {
-  const { query } = useKBar();
+  const [results, setResults] = useState<{
+    playlistVideos: any[];
+    playlists: any[];
+  }>({ playlistVideos: [], playlists: [] });
+  const { searchQuery, query } = useKBar((state) => ({
+    searchQuery: state.searchQuery
+  }));
+
+  // Register dynamic KBar actions
+  useRegisterActions(
+    [
+      // Playlist videos
+      ...results.playlistVideos.map((item) => {
+        const noteText = item.note?.searchableText ?? '';
+        const queryLower = searchQuery.toLowerCase();
+        const noteLower = noteText.toLowerCase();
+        let subtitle = `Video from ${item.playlist.title} playlist`;
+
+        // Check if the note contains the query
+        const matchIndex = noteLower.indexOf(queryLower);
+        if (matchIndex >= 0) {
+          // Extract a snippet around the match (50 chars before and after)
+          const start = Math.max(0, matchIndex - 50);
+          const end = Math.min(
+            noteText.length,
+            matchIndex + queryLower.length + 50
+          );
+          const snippet = noteText.slice(start, end).replace(/\n/g, ' ');
+          subtitle = `Note from ${item.playlist.title} playlist: …${snippet}…`;
+        }
+
+        return {
+          id: `video-${item.id}`,
+          name: item.video.title,
+          section: 'Search Results',
+          subtitle,
+          perform: () => (window.location.href = `/dashboard/videos/${item.id}`)
+        };
+      }),
+
+      // Standalone playlists
+      ...results.playlists.map((playlist) => ({
+        id: `playlist-${playlist.id}`,
+        name: playlist.title,
+        section: 'Search Results',
+        subtitle: 'Playlist',
+        perform: () =>
+          (window.location.href = `/dashboard/playlists/${playlist.id}`)
+      }))
+    ],
+    [results, searchQuery]
+  );
+
+  // Fetch search results as user types
+  useEffect(() => {
+    if (!searchQuery) {
+      setResults({ playlistVideos: [], playlists: [] });
+      return;
+    }
+
+    const search = async () => {
+      const res = await fetch(
+        `/api/search?q=${encodeURIComponent(searchQuery)}`
+      );
+      const data = await res.json();
+      setResults(data);
+    };
+
+    search();
+  }, [searchQuery]);
+
   return (
     <div className='w-full space-y-2'>
       <Button

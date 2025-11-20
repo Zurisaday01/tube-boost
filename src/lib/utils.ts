@@ -264,3 +264,50 @@ export const handleActionResponse = (
     toast.error(message);
   }
 };
+
+type BlockContent = {
+  type: string;
+  text: string;
+  styles?: any;
+};
+
+type EditorBlock = {
+  id: string;
+  type: string;
+  content?: BlockContent[]; // content is an array of text objects
+  children?: EditorBlock[];
+};
+
+export function extractTextFromBlocks(blocks: any): string {
+  if (typeof blocks === 'string') {
+    try {
+      if (!blocks.trim()) return ''; // Handle empty strings safely
+      blocks = JSON.parse(blocks);
+    } catch (e) {
+      console.error('Error parsing JSON:', e);
+      return '';
+    }
+  }
+
+  // 2. Now validation: Ensure we have an array (whether it came from string or was already an array)
+  if (!Array.isArray(blocks)) {
+    return '';
+  }
+
+  return blocks
+    .map((block: EditorBlock) => {
+      // 1. Extract text from the current block's content array
+      const currentText = block.content
+        ? block.content.map((c) => c.text).join(' ')
+        : '';
+
+      // 2. (Optional) Recursively get text from children if you use nested lists
+      const childrenText = block.children
+        ? extractTextFromBlocks(block.children)
+        : '';
+
+      return `${currentText} ${childrenText}`;
+    })
+    .filter((text) => text.trim() !== '') // Remove empty lines (like timestamps)
+    .join('\n');
+}

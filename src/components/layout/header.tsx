@@ -16,6 +16,7 @@ import { ChartColumnStacked } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import CreatePlaylistButton from '../dialog/create-playlist-button';
+import Link from 'next/link';
 
 // Example Tags
 const tags: ComboboxDataItem[] = [
@@ -41,9 +42,12 @@ export default function Header() {
         {open ? (
           <SidebarTrigger className='-ml-1' />
         ) : (
-          <span className='font-oswald block p-2 text-2xl font-semibold'>
+          <Link
+            href='/dashboard/playlists'
+            className='font-oswald block p-2 text-2xl font-semibold hover:opacity-80 transition-colors duration-150'
+          >
             TubeBoost
-          </span>
+          </Link>
         )}
 
         <Separator orientation='vertical' className='mr-2 h-4' />

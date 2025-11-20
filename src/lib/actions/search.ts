@@ -3,7 +3,10 @@
 import { prisma } from '../db/prisma';
 
 export async function searchVideosAndPlaylists(query: string) {
-  if (!query.trim()) return [];
+  console.log('Searching for:', query.trim());
+  if (!query.trim()) {
+    return { playlistVideos: [], playlists: [] };
+  }
 
   // 1. Search videos in playlists
   const playlistVideos = await prisma.playlistVideo.findMany({
@@ -17,8 +20,6 @@ export async function searchVideosAndPlaylists(query: string) {
     include: { video: true, playlist: true, note: true },
     take: 20
   });
-
-
 
   // 2. Search playlists directly (standalone playlists matching the query)
   const playlists = await prisma.playlist.findMany({

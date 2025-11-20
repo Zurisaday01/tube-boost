@@ -58,22 +58,32 @@ export default function SearchInput() {
     [results, searchQuery]
   );
 
-  // Fetch search results as user types
   useEffect(() => {
-    if (!searchQuery) {
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) {
       setResults({ playlistVideos: [], playlists: [] });
       return;
     }
 
-    const search = async () => {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(searchQuery)}`
-      );
-      const data = await res.json();
-      setResults(data);
+    let active = true; // token to check stale requests
+
+    const fetchResults = async () => {
+      try {
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(trimmedQuery)}`
+        );
+        const data = await res.json();
+        if (active) setResults(data); // only set if this request is still current
+      } catch (error) {
+        console.error('Error fetching search results:', error);
+      }
     };
 
-    search();
+    fetchResults();
+
+    return () => {
+      active = false; // invalidate if query changes or component unmounts
+    };
   }, [searchQuery]);
 
   return (

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SidebarTrigger, useSidebar } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
 import SearchInput from '../search-input';
@@ -33,18 +33,23 @@ const tags: ComboboxDataItem[] = [
 
 export default function Header() {
   const { open } = useSidebar();
+  const [mounted, setMounted] = React.useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className='flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-13'>
       <div className='flex items-center gap-2 px-4'>
-        {open ? (
+        {mounted && open ? (
           <SidebarTrigger className='-ml-1' />
         ) : (
           <Link
             href='/dashboard/playlists'
-            className='font-oswald block p-2 text-2xl font-semibold hover:opacity-80 transition-colors duration-150'
+            className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
           >
             TubeBoost
           </Link>

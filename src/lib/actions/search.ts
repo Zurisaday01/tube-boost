@@ -16,6 +16,9 @@ export async function searchVideosAndPlaylists(query: string) {
   // 1. Search videos in playlists
   const playlistVideos = await prisma.playlistVideo.findMany({
     where: {
+      playlist: {
+        userId: user.userId // Ensure we only search user's own playlists
+      },
       OR: [
         { video: { title: { contains: query, mode: 'insensitive' } } },
         { playlist: { title: { contains: query, mode: 'insensitive' } } },

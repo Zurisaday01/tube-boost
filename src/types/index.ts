@@ -73,7 +73,6 @@ export type Subcategory = {
   playlist?: { title: string };
 };
 
-
 export interface InformationSheetDetails {
   modified: Date;
   created: Date;
@@ -85,14 +84,37 @@ export interface PlaylistVideo {
   playlistId: string;
   videoId: string;
   youtubeVideoId: string;
-  subcategoryId: string | null; 
+  subcategoryId: string | null;
   orderIndex: number;
   addedAt: Date;
   video: VideoData;
 }
 
-
 export interface PlaylistTypeOptions {
   value: string;
   label: string;
+}
+
+// Needed for search results typing
+export interface SearchedPlaylistVideo {
+  id: string;
+  video: {
+    title: string;
+  };
+  playlist: {
+    title: string;
+  };
+  note?: {
+    searchableText: string;
+  };
+}
+
+export interface SearchedPlaylist {
+  id: string;
+  title: string;
+}
+
+export interface SearchResults {
+  playlistVideos: SearchedPlaylistVideo[];
+  playlists: SearchedPlaylist[];
 }

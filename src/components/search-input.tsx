@@ -4,13 +4,14 @@ import { IconSearch } from '@tabler/icons-react';
 import { Button } from './ui/button';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SearchResults } from '@/types';
 
 export default function SearchInput() {
   const router = useRouter();
-  const [results, setResults] = useState<{
-    playlistVideos: any[];
-    playlists: any[];
-  }>({ playlistVideos: [], playlists: [] });
+  const [results, setResults] = useState<SearchResults>({
+    playlistVideos: [],
+    playlists: []
+  });
   const { searchQuery, query } = useKBar((state) => ({
     searchQuery: state.searchQuery
   }));

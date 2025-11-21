@@ -3,8 +3,10 @@ import { useKBar, useRegisterActions } from 'kbar';
 import { IconSearch } from '@tabler/icons-react';
 import { Button } from './ui/button';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SearchInput() {
+  const router = useRouter();
   const [results, setResults] = useState<{
     playlistVideos: any[];
     playlists: any[];
@@ -41,7 +43,7 @@ export default function SearchInput() {
           name: item.video.title,
           section: 'Search Results',
           subtitle,
-          perform: () => (window.location.href = `/dashboard/videos/${item.id}`)
+          perform: () => router.push(`/dashboard/videos/${item.id}`)
         };
       }),
 

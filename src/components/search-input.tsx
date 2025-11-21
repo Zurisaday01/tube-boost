@@ -36,7 +36,9 @@ export default function SearchInput() {
             matchIndex + queryLower.length + 50
           );
           const snippet = noteText.slice(start, end).replace(/\n/g, ' ');
-          subtitle = `Note from ${item.playlist.title} playlist: …${snippet}…`;
+          const prefix = start > 0 ? '…' : '';
+          const suffix = end < noteText.length ? '…' : '';
+          subtitle = `Note from ${item.playlist.title} playlist: ${prefix}${snippet}${suffix}`;
         }
 
         return {

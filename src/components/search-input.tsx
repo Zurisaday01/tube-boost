@@ -67,22 +67,26 @@ export default function SearchInput() {
 
     let active = true; // token to check stale requests
 
-    const fetchResults = async () => {
-      try {
-        const res = await fetch(
-          `/api/search?q=${encodeURIComponent(trimmedQuery)}`
-        );
-        const data = await res.json();
-        if (active) setResults(data); // only set if this request is still current
-      } catch (error) {
-        console.error('Error fetching search results:', error);
-      }
-    };
+    // Debounce search requests
+    const timeoutId = setTimeout(() => {
+      const fetchResults = async () => {
+        try {
+          const res = await fetch(
+            `/api/search?q=${encodeURIComponent(trimmedQuery)}`
+          );
+          const data = await res.json();
+          if (active) setResults(data); // only set if this request is still current
+        } catch (error) {
+          console.error('Error fetching search results:', error);
+        }
+      };
 
-    fetchResults();
+      fetchResults();
+    }, 300); // 300ms debounce delay
 
     return () => {
       active = false; // invalidate if query changes or component unmounts
+      clearTimeout(timeoutId);
     };
   }, [searchQuery]);
 

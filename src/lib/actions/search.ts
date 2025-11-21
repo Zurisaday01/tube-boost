@@ -1,9 +1,14 @@
 'use server';
 
 import { prisma } from '../db/prisma';
+import { getSessionUser, isUserAuthenticated } from '../utils/actions';
 
 export async function searchVideosAndPlaylists(query: string) {
-  console.log('Searching for:', query.trim());
+  const user = await getSessionUser();
+  if (!isUserAuthenticated(user)) {
+    throw new Error('User not authenticated');
+  }
+
   if (!query.trim()) {
     return { playlistVideos: [], playlists: [] };
   }

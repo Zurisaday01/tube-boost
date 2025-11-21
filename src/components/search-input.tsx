@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SearchResults } from '@/types';
+import { toast } from 'sonner';
 
 export default function SearchInput() {
   const router = useRouter();
@@ -79,10 +80,17 @@ export default function SearchInput() {
           const res = await fetch(
             `/api/search?q=${encodeURIComponent(trimmedQuery)}`
           );
+
+          if (!res.ok) {
+            throw new Error(`Search failed: ${res.statusText}`);
+          }
+
           const data = await res.json();
           if (active) setResults(data); // only set if this request is still current
         } catch (error) {
           console.error('Error fetching search results:', error);
+          // Show a user-friendly error message
+          toast.error('Search failed. Please try again.');
         }
       };
 

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db/prisma';
 import { PlaylistVideoNote, Prisma } from '@prisma/client';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
 import { ActionResponse, SaveNoteInput } from '@/types/actions';
+import { extractTextFromBlocks } from '../utils';
 
 export const savePlaylistVideoNote = async ({
   playlistVideoId,
@@ -15,17 +16,21 @@ export const savePlaylistVideoNote = async ({
       throw new Error('User not authenticated.');
     }
 
+    const plainText = extractTextFromBlocks(document);
+
     // Upsert: create if not exists, update if exists
     const note = await prisma.playlistVideoNote.upsert({
       where: { playlistVideoId }, // one-to-one key
       update: {
         document: document as Prisma.InputJsonValue,
-        userId: user.userId
+        userId: user.userId,
+        searchableText: plainText
       },
       create: {
         playlistVideoId,
         userId: user.userId,
-        document: document as Prisma.InputJsonValue
+        document: document as Prisma.InputJsonValue,
+        searchableText: plainText
       }
     });
 

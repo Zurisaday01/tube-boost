@@ -1,10 +1,108 @@
 'use client';
-import { useKBar } from 'kbar';
+import { useKBar, useRegisterActions } from 'kbar';
 import { IconSearch } from '@tabler/icons-react';
 import { Button } from './ui/button';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { SearchResults } from '@/types';
+import { toast } from 'sonner';
 
 export default function SearchInput() {
-  const { query } = useKBar();
+  const router = useRouter();
+  const [results, setResults] = useState<SearchResults>({
+    playlistVideos: [],
+    playlists: []
+  });
+  const { searchQuery, query } = useKBar((state) => ({
+    searchQuery: state.searchQuery
+  }));
+
+  // Register dynamic KBar actions
+  useRegisterActions(
+    [
+      // Playlist videos
+      ...results.playlistVideos.map((item) => {
+        const noteText = item.note?.searchableText ?? '';
+        const queryLower = searchQuery.toLowerCase();
+        const noteLower = noteText.toLowerCase();
+        let subtitle = `Video from ${item.playlist.title} playlist`;
+
+        // Check if the note contains the query
+        const matchIndex = noteLower.indexOf(queryLower);
+        if (matchIndex >= 0) {
+          // Extract a snippet around the match (50 chars before and after)
+          const start = Math.max(0, matchIndex - 50);
+          const end = Math.min(
+            noteText.length,
+            matchIndex + queryLower.length + 50
+          );
+          const snippet = noteText.slice(start, end).replace(/\n/g, ' ');
+          const prefix = start > 0 ? '…' : '';
+          const suffix = end < noteText.length ? '…' : '';
+          subtitle = `Note from ${item.playlist.title} playlist: ${prefix}${snippet}${suffix}`;
+        }
+
+        return {
+          id: `video-${item.id}`,
+          name: item.video.title,
+          section: 'Search Results',
+          subtitle,
+          perform: () => router.push(`/dashboard/videos/${item.id}`)
+        };
+      }),
+
+      // Standalone playlists
+      ...results.playlists.map((playlist) => ({
+        id: `playlist-${playlist.id}`,
+        name: playlist.title,
+        section: 'Search Results',
+        subtitle: 'Playlist',
+        perform: () =>
+          (window.location.href = `/dashboard/playlists/${playlist.id}`)
+      }))
+    ],
+    [results, searchQuery]
+  );
+
+  useEffect(() => {
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) {
+      setResults({ playlistVideos: [], playlists: [] });
+      return;
+    }
+
+    let active = true; // token to check stale requests
+
+    // Debounce search requests
+    const timeoutId = setTimeout(() => {
+      const fetchResults = async () => {
+        try {
+          const res = await fetch(
+            `/api/search?q=${encodeURIComponent(trimmedQuery)}`
+          );
+
+          if (!res.ok) {
+            throw new Error(`Search failed: ${res.statusText}`);
+          }
+
+          const data = await res.json();
+          if (active) setResults(data); // only set if this request is still current
+        } catch (error) {
+          console.error('Error fetching search results:', error);
+          // Show a user-friendly error message
+          toast.error('Search failed. Please try again.');
+        }
+      };
+
+      fetchResults();
+    }, 300); // 300ms debounce delay
+
+    return () => {
+      active = false; // invalidate if query changes or component unmounts
+      clearTimeout(timeoutId);
+    };
+  }, [searchQuery]);
+
   return (
     <div className='w-full space-y-2'>
       <Button

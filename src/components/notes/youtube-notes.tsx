@@ -138,11 +138,12 @@ export default function YouTubeNotes({
     }
 
     try {
-      await savePlaylistVideoNote({
+      const result = await savePlaylistVideoNote({
         playlistVideoId,
         document: noteContent
       });
-      toast.success('Note saved successfully!');
+
+      toast.success(result.message);
     } catch (err) {
       console.error(err);
       toast.error('Failed to save note.');

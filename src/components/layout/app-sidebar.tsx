@@ -41,9 +41,12 @@ export default function AppSidebar() {
     <Sidebar collapsible='icon'>
       <SidebarHeader>
         {open ? (
-          <span className='font-oswald block p-2 text-2xl font-semibold'>
+          <Link
+            href='/dashboard/playlists'
+            className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
+          >
             TubeBoost
-          </span>
+          </Link>
         ) : (
           <SidebarTrigger onClick={toggleSidebar} />
         )}

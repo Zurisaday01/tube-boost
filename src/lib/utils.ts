@@ -298,7 +298,7 @@ export function extractTextFromBlocks(blocks: any): string {
     .map((block: EditorBlock) => {
       // 1. Extract text from the current block's content array
       const currentText = block.content
-        ? block.content.map((c) => c.text).join(' ')
+        ? block.content.map((c) => c.text ?? '').join(' ')
         : '';
 
       // 2. (Optional) Recursively get text from children if you use nested lists

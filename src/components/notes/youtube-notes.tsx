@@ -142,7 +142,7 @@ export default function YouTubeNotes({
         playlistVideoId,
         document: noteContent
       });
-      console.log('Save result:', result);
+
       toast.success(result.message);
     } catch (err) {
       console.error(err);

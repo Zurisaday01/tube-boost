@@ -45,10 +45,7 @@ export default function AppSidebar() {
     <Sidebar collapsible='icon'>
       <SidebarHeader>
         {isMobile ? (
-          <button
-            onClick={isMobile ? toggleSidebar : undefined}
-            className='flex'
-          >
+          <button onClick={toggleSidebar} className='flex'>
             <Link
               href='/dashboard/playlists'
               className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'

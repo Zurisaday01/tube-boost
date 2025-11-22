@@ -54,7 +54,7 @@ const PlaylistTypeCard = ({
 
   return (
     <div
-      className='flex max-w-[250px] items-center gap-3 rounded-md p-3'
+      className='flex items-center gap-3 rounded-md p-3'
       style={{ backgroundColor: bgColor }}
     >
       <Tag className='size-7' style={{ color }} />

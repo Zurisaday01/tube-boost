@@ -128,7 +128,7 @@ export default function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Your Playlists</SidebarGroupLabel>
+          <SidebarGroupLabel>Others</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.slice(3).map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;

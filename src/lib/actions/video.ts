@@ -250,6 +250,14 @@ export const movePlaylistVideoWithinPlaylist = async ({
 
     // Revalidate the playlist page
     revalidatePath(`/dashboard/playlists/${playlistVideo.playlistId}`);
+
+    // Revalidate the target subcategory page if applicable
+    if (targetSubcategoryId) {
+      revalidatePath(
+        `/dashboard/playlists/${playlistVideo.playlistId}/subcategory/${targetSubcategoryId}`
+      );
+    }
+
     // Revalidate the current subcategory page if applicable
     if (currentSubcategoryId) {
       revalidatePath(

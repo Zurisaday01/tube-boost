@@ -13,15 +13,21 @@ import {
 } from '@dnd-kit/sortable';
 import SortableVideoCard from './sortable-video-card';
 import { PlaylistVideoIncludeVideo } from '@/types/actions';
-import { VideoThumbnails } from '@/types';
+import { Subcategory } from '@/types';
 
 interface VideoListProps {
   videos: PlaylistVideoIncludeVideo[];
   reorderMode: boolean;
   onReorder: (newOrder: PlaylistVideoIncludeVideo[]) => void;
+  subcategories: Subcategory[];
 }
 
-const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
+const VideoList = ({
+  videos,
+  reorderMode,
+  onReorder,
+  subcategories
+}: VideoListProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor) // move using pointer (mouse, touch, pen)
   );
@@ -40,6 +46,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
   const gridClass =
     'mt-8 grid w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
 
+  // Original non-reorderable list
   if (!reorderMode) {
     return (
       <div className={gridClass}>
@@ -54,6 +61,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
             thumbnails={video.video.thumbnails}
             addedAt={video.addedAt as Date}
             reorderMode={reorderMode}
+            subcategories={subcategories}
           />
         ))}
       </div>

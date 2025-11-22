@@ -1,23 +1,28 @@
 import PageContainer from '@/components/layout/page-container';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
-import { getSubcategoryById } from '@/lib/actions/subcategory';
+import { getAllSubcategories, getSubcategoryById } from '@/lib/actions/subcategory';
 import { isSuccess } from '@/lib/utils/actions';
 import { Folder } from 'lucide-react';
 import { hasher } from 'node-object-hash';
 
-type PageProps = { params: Promise<{ subcategoryId: string }> };
+type PageProps = { params: Promise<{ id: string, subcategoryId: string }> };
 
 const SubcategoryPage = async ({ params }: PageProps) => {
-  const { subcategoryId } = await params;
+  // the first one belongs to the playlist, the second to the subcategory
+  const { id, subcategoryId } = await params;
 
-  const response = await getSubcategoryById(subcategoryId);
+   // Initiate both requests in parallel
+    const [subcategoryResponse, subcategoriesResponse] = await Promise.all([
+      getSubcategoryById(subcategoryId),
+      getAllSubcategories(id)
+    ]);
 
-  if (!isSuccess(response)) {
+  if (!isSuccess(subcategoryResponse) || !isSuccess(subcategoriesResponse)) {
     return <div>Failed to load subcategory.</div>;
   }
 
-  const { data: subcategory } = response;
-
+  const { data: subcategory } = subcategoryResponse;
+  const { data: subcategories } = subcategoriesResponse;
   // Generate a stable hash for the user ID to use as a key
   const videoHashKey = hasher().hash({
     videos: subcategory.videos.map((v) => v.id)
@@ -40,6 +45,7 @@ const SubcategoryPage = async ({ params }: PageProps) => {
           key={videoHashKey}
           videos={subcategory.videos}
           subcategoryId={subcategory.id}
+          subcategories={subcategories}
         />
       </section>
     </PageContainer>

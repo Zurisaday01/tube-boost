@@ -1,5 +1,5 @@
 import { cn, formatDuration, formatLocalDate } from '@/lib/utils';
-import { VideoThumbnails } from '@/types';
+import { Subcategory, VideoThumbnails } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import PlaylistVideoOptionsMenu from './playlist-video-options-menu';
@@ -13,6 +13,7 @@ interface VideoCardProps {
   thumbnails: VideoThumbnails;
   addedAt: Date;
   reorderMode: boolean; // to indicate if in reorder mode
+  subcategories: Subcategory[];
 }
 
 const VideoCard = ({
@@ -23,7 +24,8 @@ const VideoCard = ({
   thumbnails,
   addedAt,
   reorderMode,
-  youtubeVideoId
+  youtubeVideoId,
+  subcategories
 }: VideoCardProps) => {
   const cardContent = (
     <>
@@ -38,7 +40,7 @@ const VideoCard = ({
       <header className='flex items-center gap-2'>
         <h2 className='font-bold'>{title}</h2>
         {!reorderMode ? (
-          <PlaylistVideoOptionsMenu id={id} title={title} />
+          <PlaylistVideoOptionsMenu id={id} title={title} subcategories={subcategories} />
         ) : null}
       </header>
 

@@ -209,6 +209,67 @@ export const reorderPlaylistVideos = async ({
   }
 };
 
+interface MovePlaylistVideoParams {
+  playlistVideoId: string;
+  targetSubcategoryId: string | null; // null means uncategorized and string means a specific subcategory ID
+  currentSubcategoryId: string | null; // null means uncategorized and string means a specific subcategory ID
+}
+
+export const movePlaylistVideoWithinPlaylist = async ({
+  playlistVideoId,
+  targetSubcategoryId,
+  currentSubcategoryId
+}: MovePlaylistVideoParams): Promise<ActionResponse> => {
+  try {
+    const user = await getSessionUser();
+
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
+    // Find the playlist video and ensure it belongs to the user
+    const playlistVideo = await prisma.playlistVideo.findFirst({
+      where: {
+        id: playlistVideoId,
+        playlist: {
+          userId: user.userId
+        }
+      }
+    });
+
+    if (!playlistVideo) {
+      throw new Error('Playlist video not found.');
+    }
+
+    // Update the subcategoryId of the playlist video
+    // nullable: video can be uncategorized (null) or moved to a subcategory (id)
+    await prisma.playlistVideo.update({
+      where: { id: playlistVideoId },
+      data: { subcategoryId: targetSubcategoryId }
+    });
+
+    // Revalidate the playlist page
+    revalidatePath(`/dashboard/playlists/${playlistVideo.playlistId}`);
+    // Revalidate the current subcategory page if applicable
+    if (currentSubcategoryId) {
+      revalidatePath(
+        `/dashboard/playlists/${playlistVideo.playlistId}/subcategory/${currentSubcategoryId}`
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Playlist video moved successfully.'
+    };
+  } catch (error) {
+    console.error('Error moving playlist video:', error);
+    return {
+      status: 'error',
+      message: 'Failed to move playlist video.'
+    };
+  }
+};
+
 export const reorderUncategorizedVideos = async ({
   playlistId,
   videoIds

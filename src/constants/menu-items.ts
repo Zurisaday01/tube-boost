@@ -9,17 +9,18 @@ interface MenuItemsProps {
   onAssignUpdateType: (e: React.MouseEvent<HTMLDivElement>) => void;
   assignUpdateLabel: string;
   infoComponent: ReactNode;
+  movePlaylistVideoComponent: ReactNode;
   changeColorComponent: ReactNode;
 }
 
 type SubcategoryMenuItemsProps = Omit<
   MenuItemsProps,
-  'onAssignUpdateType' | 'assignUpdateLabel'
+  'onAssignUpdateType' | 'assignUpdateLabel' | 'movePlaylistVideoComponent'
 >;
 
 type TagGroupMenuItemsProps = Omit<
   MenuItemsProps,
-  'playlistId' | 'onAssignUpdateType' | 'assignUpdateLabel'
+  'playlistId' | 'onAssignUpdateType' | 'assignUpdateLabel' | 'movePlaylistVideoComponent'
 >;
 
 type PlaylistMenuItemsProps = Pick<
@@ -27,10 +28,11 @@ type PlaylistMenuItemsProps = Pick<
   'id' | 'onDelete' | 'onRename' | 'assignUpdateLabel' | 'onAssignUpdateType'
 >;
 
-type PlaylistVideoMenuItemsProps = Pick<MenuItemsProps, 'id' | 'onDelete'>;
+type PlaylistVideoMenuItemsProps = Pick<MenuItemsProps, 'id' | 'movePlaylistVideoComponent' | 'onDelete'>;
+
 type PlaylistTypeMenuItemsProps = Omit<
   MenuItemsProps,
-  'onAssignUpdateType' | 'assignUpdateLabel' | 'playlistId'
+  'onAssignUpdateType' | 'assignUpdateLabel' | 'playlistId' | 'movePlaylistVideoComponent'
 >;
 
 // Subcategory Menu Items
@@ -148,8 +150,18 @@ export const getPlaylistMenuItems = ({
 
 // Playlist Video Menu Items
 export const getPlaylistVideoMenuItems = ({
-  onDelete
+  onDelete,
+  movePlaylistVideoComponent,
 }: PlaylistVideoMenuItemsProps): MenuAction[] => [
+  {
+    type: 'button',
+    label: 'Move Playlist Video',
+    icon: 'info',
+    render: () => movePlaylistVideoComponent
+  },
+  {
+    type: 'separator'
+  },
   {
     type: 'button',
     label: 'Delete',

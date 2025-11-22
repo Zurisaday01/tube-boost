@@ -72,7 +72,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
       >
         <div className={gridClass}>
           {videos.map((video) => (
-            <div key={video.id} className='h-[320px] w-[350px]'>
+            <div key={video.id}>
               <SortableVideoCard
                 key={video.id}
                 id={video.id}

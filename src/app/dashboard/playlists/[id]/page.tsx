@@ -62,6 +62,7 @@ const PlaylistPage = async ({
           <div className='mt-10'>
             <VideosDraggerContainer
               videos={playlist.uncategorizedPlaylistVideos}
+              subcategories={subcategories}
             />
           </div>
         )}

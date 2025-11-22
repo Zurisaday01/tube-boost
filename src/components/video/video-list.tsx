@@ -80,9 +80,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
                 channelTitle={video.video.channelTitle}
                 youtubeVideoId={video.video.youtubeVideoId}
                 duration={Number(video.video.duration)}
-                thumbnails={
-                  video.video.thumbnails as unknown as VideoThumbnails
-                }
+                thumbnails={video.video.thumbnails}
                 addedAt={video.addedAt as Date}
                 reorderMode={reorderMode}
               />

@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import { updatePlaylistTypeColor } from '@/lib/actions/playlist-type';
 import PlaylistTypeOptionsMenu from './playlist-type-menu';
+import Link from 'next/link';
 
 interface PlaylistTypeCardProps {
   id: string; // needed for color update
@@ -53,7 +54,8 @@ const PlaylistTypeCard = ({
   }, [color]);
 
   return (
-    <div
+    <Link
+      href={`/dashboard/playlist-types/${id}`}
       className='flex items-center gap-3 rounded-md p-3'
       style={{ backgroundColor: bgColor }}
     >
@@ -67,7 +69,7 @@ const PlaylistTypeCard = ({
         onColorChange={handleColorChange}
         currentColor={color}
       />
-    </div>
+    </Link>
   );
 };
 export default PlaylistTypeCard;

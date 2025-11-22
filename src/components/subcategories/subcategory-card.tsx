@@ -13,6 +13,7 @@ import {
 import { updateColor } from '@/lib/actions/subcategory';
 import { toast } from 'sonner';
 import { InformationSheetDetails } from '@/types';
+import Link from 'next/link';
 
 interface SubcategoryCardProps {
   id: string; // needed for color update
@@ -54,7 +55,8 @@ const SubcategoryCard = ({
   }, [color]);
 
   return (
-    <div
+    <Link
+      href={`/dashboard/playlists/${playlistId}/subcategory/${id}`}
       className='flex items-center gap-3 rounded-md p-3'
       style={{ backgroundColor: bgColor }}
     >
@@ -68,7 +70,7 @@ const SubcategoryCard = ({
         onColorChange={handleColorChange}
         currentColor={color}
       />
-    </div>
+    </Link>
   );
 };
 export default SubcategoryCard;

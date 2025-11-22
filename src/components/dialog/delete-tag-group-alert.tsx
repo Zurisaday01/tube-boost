@@ -23,7 +23,8 @@ const DeleteTagGroupAlert = ({
   open,
   onOpenChange
 }: DeleteTagGroupAlertProps) => {
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // <- Stop Link navigation
     try {
       const result = await deleteTagGroup(id);
       handleActionResponse(result, () => {
@@ -36,7 +37,11 @@ const DeleteTagGroupAlert = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent
+        isPropagationStopped
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Tag Group</AlertDialogTitle>
           <AlertDialogDescription>

@@ -1,4 +1,3 @@
-
 import VideoCard from './video-card';
 import {
   closestCenter,
@@ -37,9 +36,13 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
     }
   };
 
+  // Grid: min 250px, max 320px per card; auto-fit to fill row
+  const gridClass =
+    'mt-8 grid w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+
   if (!reorderMode) {
     return (
-      <div className='mt-8 grid grid-cols-[repeat(auto-fit,350px)] gap-x-3 gap-y-8'>
+      <div className={gridClass}>
         {videos.map((video) => (
           <VideoCard
             key={video.id}
@@ -67,7 +70,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
         items={videos.map((v) => v.id)}
         strategy={rectSortingStrategy}
       >
-        <div className='mt-8 grid grid-cols-[repeat(auto-fit,350px)] gap-x-3 gap-y-8'>
+        <div className={gridClass}>
           {videos.map((video) => (
             <div key={video.id} className='h-[320px] w-[350px]'>
               <SortableVideoCard
@@ -77,7 +80,9 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
                 channelTitle={video.video.channelTitle}
                 youtubeVideoId={video.video.youtubeVideoId}
                 duration={Number(video.video.duration)}
-                thumbnails={video.video.thumbnails as unknown as VideoThumbnails}
+                thumbnails={
+                  video.video.thumbnails as unknown as VideoThumbnails
+                }
                 addedAt={video.addedAt as Date}
                 reorderMode={reorderMode}
               />

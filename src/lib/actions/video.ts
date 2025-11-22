@@ -241,8 +241,24 @@ export const movePlaylistVideoWithinPlaylist = async ({
       throw new Error('Playlist video not found.');
     }
 
-    // Update the subcategoryId of the playlist video
-    // nullable: video can be uncategorized (null) or moved to a subcategory (id)
+    // If moving into a subcategory, ensure it belongs to this playlist
+    if (targetSubcategoryId) {
+      const targetSubcategory = await prisma.subcategory.findFirst({
+        where: {
+          id: targetSubcategoryId,
+          playlistId: playlistVideo.playlistId
+        },
+        select: { id: true }
+      });
+
+      if (!targetSubcategory) {
+        throw new Error('Target subcategory not found or unauthorized.');
+      }
+    }
+
+    const currentSubcategoryId = playlistVideo.subcategoryId;
+
+    // Update the subcategoryId of the playlist video (nullable)
     await prisma.playlistVideo.update({
       where: { id: playlistVideoId },
       data: { subcategoryId: targetSubcategoryId }

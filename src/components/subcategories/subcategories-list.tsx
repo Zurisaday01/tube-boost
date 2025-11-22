@@ -7,7 +7,7 @@ const SubcategoriesList = ({
   subcategories: Subcategory[];
 }) => {
   return (
-    <div className='mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+    <div className='mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
       {subcategories.map((subcategory) => (
         <SubcategoryCard
           key={subcategory.id}

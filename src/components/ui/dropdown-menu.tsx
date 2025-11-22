@@ -198,14 +198,26 @@ function DropdownMenuSub({
   return <DropdownMenuPrimitive.Sub data-slot='dropdown-menu-sub' {...props} />;
 }
 
+interface DropdownMenuSubTriggerProps
+  extends React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> {
+  isPropagationStopped?: boolean;
+  inset?: boolean;
+}
+
 function DropdownMenuSubTrigger({
   className,
   inset,
   children,
+  isPropagationStopped,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
-  inset?: boolean;
-}) {
+}: DropdownMenuSubTriggerProps) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isPropagationStopped) {
+      e.stopPropagation(); // <-- prevents parent link navigation
+    }
+    props.onClick?.(e);
+  };
+
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot='dropdown-menu-sub-trigger'
@@ -215,6 +227,7 @@ function DropdownMenuSubTrigger({
         className
       )}
       {...props}
+      onClick={handleClick}
     >
       {children}
       <ChevronRightIcon className='ml-auto size-4' />

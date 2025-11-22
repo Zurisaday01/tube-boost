@@ -27,7 +27,7 @@ const VideoCard = ({
 }: VideoCardProps) => {
   const cardContent = (
     <>
-      <div className='relative mb-2 h-[230px] w-[330px] overflow-hidden rounded-md bg-gray-200'>
+      <div className='relative mb-2 h-[230px] overflow-hidden rounded-md bg-gray-200'>
         <Image
           src={thumbnails.maxres?.url || thumbnails.high.url}
           alt={title}

@@ -5,8 +5,6 @@ import { Separator } from '../ui/separator';
 import SearchInput from '../search-input';
 import { UserNav } from './user-nav';
 import { ModeToggle } from './ThemeToggle/theme-toggle';
-import { Combobox } from '../ui/combobox';
-import { ComboboxDataItem } from '@/types';
 import {
   Tooltip,
   TooltipContent,
@@ -17,25 +15,13 @@ import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import CreatePlaylistButton from '../dialog/create-playlist-button';
 import Link from 'next/link';
-
-// Example Tags
-const tags: ComboboxDataItem[] = [
-  { value: 'react', label: 'React' },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'frontend', label: 'Frontend' },
-  { value: 'ux', label: 'UX' },
-  { value: 'web-inspiration', label: 'Web Inspiration' },
-  { value: 'lofi', label: 'Lo-fi' },
-  { value: 'tutorial', label: 'Tutorial' },
-  { value: 'project-idea', label: 'Project Idea' },
-  { value: 'reference', label: 'Reference' }
-];
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Header() {
   const { open } = useSidebar();
   const [mounted, setMounted] = React.useState(false);
-
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setMounted(true);
@@ -43,8 +29,10 @@ export default function Header() {
 
   return (
     <header className='flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-13'>
-      <div className='flex items-center gap-2 px-4'>
-        {mounted && open ? (
+      <div className='flex items-center gap-2 pl-4'>
+        {isMobile ? (
+          <SidebarTrigger className='-ml-1' />
+        ) : mounted && open ? (
           <SidebarTrigger className='-ml-1' />
         ) : (
           <Link
@@ -54,15 +42,14 @@ export default function Header() {
             TubeBoost
           </Link>
         )}
-
         <Separator orientation='vertical' className='mr-2 h-4' />
       </div>
-      <div className='flex items-center gap-3'>
-        <div className='hidden md:flex'>
+      <div className='flex w-full items-center gap-3 sm:w-fit'>
+        <div className='w-max-md w-full'>
           <SearchInput />
         </div>
         {/* Filter the videos based on the selected tag */}
-        <Combobox placeholder='Select a tag' type='tag' dataItems={tags} />
+        {/* <Combobox placeholder='Select a tag' type='tag' dataItems={tags} /> */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -79,9 +66,11 @@ export default function Header() {
         </Tooltip>
       </div>
 
-      <div className='flex items-center gap-2 px-4'>
+      <div className='flex items-center gap-2 pr-4'>
         <CreatePlaylistButton />
-        <UserNav />
+        <div className='hidden sm:block'>
+          <UserNav />
+        </div>
         <ModeToggle />
       </div>
     </header>

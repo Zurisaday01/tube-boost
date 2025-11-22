@@ -1,5 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
-import PlaylistCard from '@/components/playlists/playlist-card';
+import PlaylistsList from '@/components/playlists/playlists-list';
 import { getAllPlaylists } from '@/lib/actions/playlist';
 
 const PlaylistsPage = async () => {
@@ -17,24 +17,10 @@ const PlaylistsPage = async () => {
 
   return (
     <PageContainer>
-      <section className='flex flex-col gap-6'>
+      <section className='flex flex-col gap-6 w-full'>
         <h1 className='text-2xl font-bold'>Your Playlists</h1>
 
-        {/* Grid container */}
-        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-          {playlists?.map((playlist) => (
-            <PlaylistCard
-              key={playlist.id}
-              id={playlist.id}
-              title={playlist.title}
-              playlistType={playlist.playlistType}
-              createdAt={playlist.createdAt}
-              updatedAt={playlist.updatedAt}
-              totalVideos={playlist.totalVideos}
-              totalCategories={playlist.totalCategories}
-            />
-          ))}
-        </div>
+        <PlaylistsList playlists={playlists} />
       </section>
     </PageContainer>
   );

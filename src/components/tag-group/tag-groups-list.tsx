@@ -15,7 +15,7 @@ const TagGroupsList = ({ tagGroups }: TagGroupsListProps) => {
   }
 
   return (
-    <div className='mt-8 grid w-full grid-cols-[repeat(auto-fit,250px)] gap-x-3 gap-y-8'>
+    <div className='mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
       {tagGroups.map((tagGroup) => (
         <TagGroupCard
           key={tagGroup.id}

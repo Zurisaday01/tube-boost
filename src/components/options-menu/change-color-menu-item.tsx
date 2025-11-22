@@ -17,11 +17,11 @@ const ChangeColorMenuItem = ({
 }: ChangeColorMenuItemProps) => {
   return (
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger className='flex'>
+      <DropdownMenuSubTrigger className='flex' isPropagationStopped>
         <Paintbrush className='text-muted-foreground mr-2 size-4' />
         Change Color
       </DropdownMenuSubTrigger>
-      <DropdownMenuSubContent>
+      <DropdownMenuSubContent onClick={(e) => e.stopPropagation()}>
         <ChangeColor
           onColorChange={onColorChange}
           currentColor={currentColor}

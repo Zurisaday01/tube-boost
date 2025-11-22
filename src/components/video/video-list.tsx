@@ -36,7 +36,7 @@ const VideoList = ({ videos, reorderMode, onReorder }: VideoListProps) => {
     }
   };
 
-  // Grid: min 250px, max 320px per card; auto-fit to fill row
+  // Responsive grid: 1 col (mobile), 2 (sm), 3 (lg), 4 (xl)
   const gridClass =
     'mt-8 grid w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
 

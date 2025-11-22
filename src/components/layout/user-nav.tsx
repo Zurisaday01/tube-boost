@@ -11,9 +11,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { useSession, signOut } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 
 import { useRouter } from 'next/navigation';
-export function UserNav() {
+
+interface UserNavProps {
+  isSidebar?: boolean;
+}
+
+export function UserNav({ isSidebar = false }: UserNavProps) {
   // Get the user session
   const { data: session } = useSession();
 
@@ -24,12 +30,16 @@ export function UserNav() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
+          <Button
+            variant='ghost'
+            className={cn('relative rounded-full', isSidebar ? '' : 'h-8 w-8')}
+          >
             <UserAvatarProfile
               firstName={session.user.firstName}
               lastName={session.user.lastName}
               email={session.user.email}
-              image={session.user.image }
+              image={session.user.image}
+              showInfo={isSidebar}
             />
           </Button>
         </DropdownMenuTrigger>

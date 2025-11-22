@@ -8,6 +8,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
@@ -27,11 +28,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { UserNav } from './user-nav';
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
   const { open, toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     // Side effects based on sidebar state changes
@@ -40,7 +44,16 @@ export default function AppSidebar() {
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>
-        {open ? (
+        {isMobile ? (
+          <button onClick={toggleSidebar} className='flex'>
+            <Link
+              href='/dashboard/playlists'
+              className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
+            >
+              TubeBoost
+            </Link>
+          </button>
+        ) : open ? (
           <Link
             href='/dashboard/playlists'
             className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
@@ -97,6 +110,7 @@ export default function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     tooltip={item.title}
+                    onClick={isMobile ? toggleSidebar : undefined}
                     isActive={pathname === item.url}
                   >
                     <Link href={item.url}>
@@ -111,7 +125,7 @@ export default function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Your Playlists</SidebarGroupLabel>
+          <SidebarGroupLabel>Others</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.slice(3).map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
@@ -140,6 +154,7 @@ export default function AppSidebar() {
                             <SidebarMenuSubButton
                               asChild
                               isActive={pathname === subItem.url}
+                              onClick={isMobile ? toggleSidebar : undefined}
                             >
                               <Link href={subItem.url}>
                                 <span>{subItem.title}</span>
@@ -169,6 +184,11 @@ export default function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className='block sm:hidden'>
+          <UserNav isSidebar />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

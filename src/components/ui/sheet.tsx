@@ -28,10 +28,23 @@ function SheetPortal({
   return <SheetPrimitive.Portal data-slot='sheet-portal' {...props} />;
 }
 
+interface SheetOverlayProps
+  extends React.ComponentProps<typeof SheetPrimitive.Overlay> {
+  isPropagationStopped?: boolean;
+}
+
 function SheetOverlay({
   className,
+  isPropagationStopped,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+}: SheetOverlayProps) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isPropagationStopped) {
+      e.stopPropagation(); // <-- prevents parent link navigation
+    }
+    props.onClick?.(e);
+  };
+
   return (
     <SheetPrimitive.Overlay
       data-slot='sheet-overlay'
@@ -40,21 +53,27 @@ function SheetOverlay({
         className
       )}
       {...props}
+      onClick={handleClick}
     />
   );
+}
+
+interface SheetContentProps
+  extends React.ComponentProps<typeof SheetPrimitive.Content> {
+  side?: 'top' | 'right' | 'bottom' | 'left';
+  isPropagationStopped?: boolean;
 }
 
 function SheetContent({
   className,
   children,
   side = 'right',
+  isPropagationStopped,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: 'top' | 'right' | 'bottom' | 'left';
-}) {
+}: SheetContentProps) {
   return (
     <SheetPortal>
-      <SheetOverlay />
+      <SheetOverlay isPropagationStopped={isPropagationStopped} />
       <SheetPrimitive.Content
         data-slot='sheet-content'
         className={cn(

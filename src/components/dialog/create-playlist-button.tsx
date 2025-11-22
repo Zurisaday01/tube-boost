@@ -20,9 +20,9 @@ const CreatePlaylistButton = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className='flex cursor-pointer gap-1 rounded-full'>
+        <Button className='flex cursor-pointer gap-1 rounded-md !px-2 sm:!px-4 h-8 sm:rounded-full'>
           <Plus />
-          <span>Create</span>
+          <span className='hidden sm:block'>Create</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

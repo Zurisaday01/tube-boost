@@ -23,7 +23,8 @@ const DeletePlaylistTypeAlert = ({
   open,
   onOpenChange
 }: DeletePlaylistTypeAlertProps) => {
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // <- Stop Link navigation
     try {
       const result = await deletePlaylistType(id);
       handleActionResponse(result, () => {
@@ -36,7 +37,11 @@ const DeletePlaylistTypeAlert = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent
+        isPropagationStopped
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Playlist Type</AlertDialogTitle>
           <AlertDialogDescription>

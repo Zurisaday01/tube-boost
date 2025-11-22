@@ -258,11 +258,44 @@ export const movePlaylistVideoWithinPlaylist = async ({
 
     const currentSubcategoryId = playlistVideo.subcategoryId;
 
+    // Get the max orderIndex in the target group to append this video
+    const lastVideoInTarget = await prisma.playlistVideo.findFirst({
+      where: {
+        playlistId: playlistVideo.playlistId,
+        subcategoryId: targetSubcategoryId
+      },
+      orderBy: { orderIndex: 'desc' }
+    });
+    const targetOrderIndex = lastVideoInTarget
+      ? lastVideoInTarget.orderIndex + 1
+      : 0;
+
     // Update the subcategoryId of the playlist video (nullable)
     await prisma.playlistVideo.update({
       where: { id: playlistVideoId },
-      data: { subcategoryId: targetSubcategoryId }
+      data: { subcategoryId: targetSubcategoryId, orderIndex: targetOrderIndex }
     });
+
+    // Reindex remaining videos in the source group
+    if (currentSubcategoryId !== targetSubcategoryId) {
+      const remainingInSource = await prisma.playlistVideo.findMany({
+        where: {
+          playlistId: playlistVideo.playlistId,
+          subcategoryId: currentSubcategoryId,
+          id: { not: playlistVideoId }
+        },
+        orderBy: { orderIndex: 'asc' }
+      });
+
+      await prisma.$transaction(
+        remainingInSource.map((video, i) =>
+          prisma.playlistVideo.update({
+            where: { id: video.id },
+            data: { orderIndex: i }
+          })
+        )
+      );
+    }
 
     // Revalidate the playlist page
     revalidatePath(`/dashboard/playlists/${playlistVideo.playlistId}`);

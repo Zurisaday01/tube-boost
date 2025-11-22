@@ -28,7 +28,7 @@ const MovePlaylistVideo = ({
     const response = await movePlaylistVideoWithinPlaylist({
       playlistVideoId,
       targetSubcategoryId: isDefault ? null : id,
-      currentSubcategoryId: String(subcategoryId) ?? null
+      currentSubcategoryId: subcategoryId ? String(subcategoryId) : null
     });
 
     // Handle response

@@ -104,9 +104,11 @@ export const updatePlaylistTitle = async (
   }
 };
 
-export const getAllPlaylists = async (): Promise<
-  ActionResponse<PlaylistWithStats[]>
-> => {
+export const getAllPlaylists = async ({
+  playlistTypeId
+}: {
+  playlistTypeId?: string; // Optional filter by playlist type ID
+}): Promise<ActionResponse<PlaylistWithStats[]>> => {
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
@@ -114,7 +116,12 @@ export const getAllPlaylists = async (): Promise<
     }
 
     const playlists = await prisma.playlist.findMany({
-      where: { userId: user.userId },
+      where: {
+        userId: user.userId,
+        ...(playlistTypeId
+          ? { playlistTypeId } // filter ONLY if provided
+          : {}) // otherwise do nothing
+      },
       select: {
         id: true,
         title: true,

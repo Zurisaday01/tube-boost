@@ -37,7 +37,9 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
       <section className='flex w-full flex-col gap-6'>
         <h1 className='text-2xl font-bold'>Your Playlists</h1>
 
-        <FilterByPlaylistType playlistTypes={playlistTypes || []} />
+        {playlistTypes && playlistTypes.length > 0 && (
+          <FilterByPlaylistType playlistTypes={playlistTypes || []} />
+        )}
 
         <PlaylistsList playlists={playlists} />
       </section>

@@ -10,9 +10,101 @@ import { devLog } from '@/lib/utils';
 import { cache } from 'react';
 import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
 
-import { ActionResponse, DeleteActionResponse } from '@/types/actions';
+import { ActionResponse, DeleteActionResponse, PlaylistWithStats } from '@/types/actions';
 import type { PlaylistType } from '@prisma/client';
 import { PlaylistTypeOptions } from '@/types';
+
+export const getPlaylistCountByPlaylistType = async (
+  id: string
+): Promise<
+  ActionResponse<{
+    playlistType: any;
+    count: number;
+    playlists: PlaylistWithStats[];
+  }>
+> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
+    }
+
+    // Get playlist type (for metadata, name, etc.)
+    const playlistType = await prisma.playlistType.findFirst({
+      where: { id, userId: user.userId }
+    });
+
+    if (!playlistType) {
+      throw new Error('Playlist type not found.');
+    }
+
+    // Get playlists of this type, with the *same select* as getAllPlaylists
+    const playlists = await prisma.playlist.findMany({
+      where: {
+        userId: user.userId,
+        playlistTypeId: id
+      },
+      select: {
+        id: true,
+        title: true,
+        source: true,
+        createdAt: true,
+        updatedAt: true,
+        playlistType: true,
+        _count: {
+          select: {
+            videos: true,
+            subcategories: true
+          }
+        },
+        subcategories: {
+          select: {
+            _count: { select: { videos: true } }
+          }
+        }
+      }
+    });
+
+    // Compute stats same as getAllPlaylists
+    const playlistsWithStats = playlists.map((playlist) => {
+      const totalVideosInSubcategories = playlist.subcategories.reduce(
+        (acc, sub) => acc + sub._count.videos,
+        0
+      );
+
+      const totalVideos = playlist._count.videos + totalVideosInSubcategories;
+
+      return {
+        id: playlist.id,
+        title: playlist.title,
+        source: playlist.source,
+        createdAt: playlist.createdAt,
+        updatedAt: playlist.updatedAt,
+        totalCategories: playlist._count.subcategories,
+        playlistType: playlist.playlistType,
+        totalVideos
+      };
+    });
+
+    const count = playlistsWithStats.length;
+
+    return {
+      status: 'success',
+      message: 'Playlist type, playlists, and count fetched successfully.',
+      data: {
+        playlistType,
+        count,
+        playlists: playlistsWithStats
+      }
+    };
+  } catch (error) {
+    devLog.error('Error fetching playlist type and stats:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch playlist type info.'
+    };
+  }
+};
 
 export const createPlaylistType = async (
   data: z.infer<typeof createUpdatePlaylistTypeSchema>

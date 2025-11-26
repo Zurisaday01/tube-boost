@@ -12,9 +12,12 @@ type PageProps = {
 const PlaylistsPage = async ({ searchParams }: PageProps) => {
   // Get the current search params
   const currentSearchParams = await searchParams;
-  const playlistTypeParam = currentSearchParams['playlist-type'] as
-    | string
-    | undefined;
+  
+  // Extract playlist type filter from search params and ensure it's a string
+  // (if multiple values are provided, ignore them)
+  const rawPlaylistType = currentSearchParams['playlist-type'];
+  const playlistTypeParam =
+    typeof rawPlaylistType === 'string' ? rawPlaylistType : undefined;
 
   const [playlistResponse, playlistTypesResponse] = await Promise.all([
     getAllPlaylists({ playlistTypeId: playlistTypeParam }),

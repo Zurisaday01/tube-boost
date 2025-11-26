@@ -22,9 +22,15 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
 
   // pagination params
   const rawPage = currentSearchParams.page;
-  const page = rawPage ? Number(rawPage) : 1;
+  const page =
+    rawPage && !isNaN(Number(rawPage)) && Number(rawPage) >= 1
+      ? Math.floor(Number(rawPage))
+      : 1;
   const rawPageSize = currentSearchParams.pageSize;
-  const pageSize = rawPageSize ? Number(rawPageSize) : 10;
+  const pageSize =
+    rawPageSize && !isNaN(Number(rawPageSize)) && Number(rawPageSize) >= 1
+      ? Math.floor(Number(rawPageSize))
+      : 10;
 
   const [playlistResponse, playlistTypesResponse] = await Promise.all([
     getAllPlaylists({ playlistTypeId: playlistTypeParam, page, pageSize }),
@@ -52,7 +58,7 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
 
   return (
     <PageContainer>
-      <section className='min-h-[90vh] flex w-full flex-col gap-2'>
+      <section className='flex min-h-[90vh] w-full flex-col gap-2'>
         <h1 className='text-2xl font-bold'>Your Playlists</h1>
 
         {playlistTypes && playlistTypes.length > 0 && (

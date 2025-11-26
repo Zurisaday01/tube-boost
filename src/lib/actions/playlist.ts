@@ -8,6 +8,7 @@ import { devLog } from '@/lib/utils';
 import {
   getSessionUser,
   isUserAuthenticated,
+  mapToPlaylistWithStats,
   parseVideoThumbnails
 } from '@/lib/utils/actions';
 import {
@@ -104,9 +105,11 @@ export const updatePlaylistTitle = async (
   }
 };
 
-export const getAllPlaylists = async (): Promise<
-  ActionResponse<PlaylistWithStats[]>
-> => {
+export const getAllPlaylists = async ({
+  playlistTypeId
+}: {
+  playlistTypeId?: string; // Optional filter by playlist type ID
+}): Promise<ActionResponse<PlaylistWithStats[]>> => {
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
@@ -114,7 +117,12 @@ export const getAllPlaylists = async (): Promise<
     }
 
     const playlists = await prisma.playlist.findMany({
-      where: { userId: user.userId },
+      where: {
+        userId: user.userId,
+        ...(playlistTypeId
+          ? { playlistTypeId } // filter ONLY if provided
+          : {}) // otherwise do nothing
+      },
       select: {
         id: true,
         title: true,
@@ -136,24 +144,7 @@ export const getAllPlaylists = async (): Promise<
       }
     });
 
-    const playlistsWithStats = playlists.map((playlist) => {
-      const totalVideosInSubcategories = playlist.subcategories.reduce(
-        (acc, sub) => acc + sub._count.videos,
-        0
-      );
-      const totalVideos = playlist._count.videos + totalVideosInSubcategories;
-
-      return {
-        id: playlist.id,
-        title: playlist.title,
-        source: playlist.source,
-        createdAt: playlist.createdAt,
-        updatedAt: playlist.updatedAt,
-        totalCategories: playlist._count.subcategories,
-        playlistType: playlist.playlistType,
-        totalVideos
-      };
-    });
+    const playlistsWithStats = mapToPlaylistWithStats(playlists);
 
     return {
       status: 'success',

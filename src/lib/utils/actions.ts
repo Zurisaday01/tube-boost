@@ -1,6 +1,6 @@
 // Utility functions for server actions
 import { VideoThumbnails } from '@/types';
-import { ActionResponse } from '@/types/actions';
+import { ActionResponse, PlaylistForStatProcessing, PlaylistWithStats } from '@/types/actions';
 import { auth } from 'auth';
 import { headers } from 'next/headers';
 
@@ -40,3 +40,24 @@ export function parseVideoThumbnails<T extends { thumbnails: unknown }>(
     thumbnails: video.thumbnails as VideoThumbnails
   };
 }
+
+export const mapToPlaylistWithStats = (playlists: PlaylistForStatProcessing[]): PlaylistWithStats[] =>
+  playlists.map((playlist) => {
+    const totalVideosInSubcategories = playlist.subcategories.reduce(
+      (acc, sub) => acc + sub._count.videos,
+      0
+    );
+
+    const totalVideos = playlist._count.videos + totalVideosInSubcategories;
+
+    return {
+      id: playlist.id,
+      title: playlist.title,
+      source: playlist.source,
+      createdAt: playlist.createdAt,
+      updatedAt: playlist.updatedAt,
+      totalCategories: playlist._count.subcategories,
+      playlistType: playlist.playlistType,
+      totalVideos
+    };
+  });

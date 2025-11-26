@@ -164,6 +164,7 @@ export const getAllPlaylists = async ({
         }
       }),
 
+      // Total count
       prisma.playlist.count({ where })
     ]);
 

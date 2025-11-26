@@ -40,7 +40,6 @@ export function PaginationFooter({
 }: Props) {
   const searchParams = useSearchParams();
 
-
   const buildPageHref = (targetPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(queryKey, String(targetPage));
@@ -121,7 +120,13 @@ export function PaginationFooter({
               </PaginationItem>
             ) : (
               <PaginationItem key={p}>
-                <PaginationLink href={buildPageHref(p)} isActive={p === page}>
+                <PaginationLink
+                  href={totalPages > 1 ? buildPageHref(p) : undefined}
+                  className={cn(
+                    totalPages === 1 && 'pointer-events-none opacity-50'
+                  )}
+                  isActive={p === page}
+                >
                   {p}
                 </PaginationLink>
               </PaginationItem>

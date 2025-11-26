@@ -124,20 +124,24 @@ export const getAllPlaylists = async ({
       throw new Error('User not authenticated');
     }
 
+    // Validate pagination params
+    const validPage = Math.max(1, Math.floor(page));
+    const validPageSize = Math.max(1, Math.min(100, Math.floor(pageSize)));
+
     const where = {
       userId: user.userId,
       ...(playlistTypeId ? { playlistTypeId } : {})
     };
 
     // Pagination calculations
-    const skip = (page - 1) * pageSize;
+    const skip = (validPage - 1) * validPageSize;
 
     // Fetch page data + total count in parallel
     const [playlists, total] = await Promise.all([
       prisma.playlist.findMany({
         where,
         skip,
-        take: pageSize,
+        take: validPageSize,
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,

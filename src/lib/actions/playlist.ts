@@ -115,7 +115,9 @@ export const getAllPlaylists = async ({
   playlistTypeId,
   page = 1,
   pageSize = 10
-}: GetAllPlaylistsParams): Promise<ActionResponse<{items: PlaylistWithStats[]; total: number;}>> => {
+}: GetAllPlaylistsParams): Promise<
+  ActionResponse<{ items: PlaylistWithStats[]; total: number }>
+> => {
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
@@ -136,6 +138,7 @@ export const getAllPlaylists = async ({
         where,
         skip,
         take: pageSize,
+        orderBy: { createdAt: 'desc' },
         select: {
           id: true,
           title: true,

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Pagination,
   PaginationContent,
@@ -38,14 +38,14 @@ export function PaginationFooter({
   pageSizeOptions = [5, 10, 20, 30, 50, 100]
 }: Props) {
   const buildPageHref = (targetPage: number) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(window.location.search);
     params.set(queryKey, String(targetPage));
     params.set(pageSizeKey, String(pageSize));
     return `${basePath}?${params.toString()}`;
   };
 
   const buildPageSizeHref = (newSize: number) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(window.location.search);
     params.set(pageSizeKey, String(newSize));
     params.set(queryKey, '1'); // always reset to page 1
     return `${basePath}?${params.toString()}`;
@@ -73,8 +73,10 @@ export function PaginationFooter({
   return (
     <div className='mt-4 flex w-full items-center justify-between'>
       {/* Page size selector */}
-      <div className='flex items-center gap-2 w-fit'>
-        <span className='text-muted-foreground text-sm w-28'>Rows per page:</span>
+      <div className='flex w-fit items-center gap-2'>
+        <span className='text-muted-foreground w-28 text-sm'>
+          Rows per page:
+        </span>
 
         <Select
           defaultValue={String(pageSize)}

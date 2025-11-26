@@ -12,7 +12,7 @@ type PageProps = {
 const PlaylistsPage = async ({ searchParams }: PageProps) => {
   // Get the current search params
   const currentSearchParams = await searchParams;
-  
+
   // Extract playlist type filter from search params and ensure it's a string
   // (if multiple values are provided, ignore them)
   const rawPlaylistType = currentSearchParams['playlist-type'];
@@ -24,14 +24,21 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
     getAllPlaylistTypes()
   ]);
 
-  const { status, message, data: playlists } = playlistResponse;
+  const { data: playlists } = playlistResponse;
   const { data: playlistTypes } = playlistTypesResponse;
 
   if (!isSuccess(playlistResponse) || !isSuccess(playlistTypesResponse)) {
-    let errorMsg = 'Failed to load playlists.';
-    if (status === 'error' && message === 'User not authenticated.') {
-      errorMsg = 'Please sign in to view your playlists.';
-    }
+    // Check if the error is due to unauthenticated user
+    const unauthenticated =
+      (!isSuccess(playlistResponse) &&
+        playlistResponse.message === 'User not authenticated') ||
+      (!isSuccess(playlistTypesResponse) &&
+        playlistTypesResponse.message === 'User not authenticated.');
+
+    // Show appropriate error message
+    const errorMsg = unauthenticated
+      ? 'Please sign in to view your playlists.'
+      : 'Failed to load playlists.';
     return <PageContainer>{errorMsg}</PageContainer>;
   }
 

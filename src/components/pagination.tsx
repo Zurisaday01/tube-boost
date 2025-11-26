@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 
 import { cn } from '@/lib/utils';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   page: number;

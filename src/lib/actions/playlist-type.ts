@@ -70,6 +70,7 @@ export const getPlaylistCountByPlaylistType = async ({
         },
         skip,
         take: validPageSize,
+        orderBy: { createdAt: 'desc' },
         select: {
           id: true,
           title: true,

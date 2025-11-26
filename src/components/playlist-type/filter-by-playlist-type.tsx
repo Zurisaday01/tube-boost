@@ -44,7 +44,7 @@ const FilterByPlaylistType = ({ playlistTypes }: FilterByPlaylistTypeProps) => {
               className='cursor-pointer'
               onClick={() => handleSelect(type.id)}
             >
-              <PlaylistTypeTag playlistType={type} />
+              <PlaylistTypeTag playlistType={type} isCard={false} />
             </button>
           ))}
       </div>

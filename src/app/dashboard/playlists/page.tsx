@@ -1,4 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
+import { PaginationFooter } from '@/components/pagination';
 import FilterByPlaylistType from '@/components/playlist-type/filter-by-playlist-type';
 import PlaylistsList from '@/components/playlists/playlists-list';
 import { getAllPlaylists } from '@/lib/actions/playlist';
@@ -19,12 +20,19 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
   const playlistTypeParam =
     typeof rawPlaylistType === 'string' ? rawPlaylistType : undefined;
 
+  // pagination params
+  const rawPage = currentSearchParams.page;
+  const page = rawPage ? Number(rawPage) : 1;
+  const rawPageSize = currentSearchParams.pageSize;
+  const pageSize = rawPageSize ? Number(rawPageSize) : 10;
+
   const [playlistResponse, playlistTypesResponse] = await Promise.all([
-    getAllPlaylists({ playlistTypeId: playlistTypeParam }),
+    getAllPlaylists({ playlistTypeId: playlistTypeParam, page, pageSize }),
     getAllPlaylistTypes()
   ]);
 
-  const { data: playlists } = playlistResponse;
+  const { data: { items: playlists, total } = { items: [], total: 0 } } =
+    playlistResponse;
   const { data: playlistTypes } = playlistTypesResponse;
 
   if (!isSuccess(playlistResponse) || !isSuccess(playlistTypesResponse)) {
@@ -44,14 +52,22 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
 
   return (
     <PageContainer>
-      <section className='flex w-full flex-col gap-6'>
+      <section className='min-h-[90vh] flex w-full flex-col gap-2'>
         <h1 className='text-2xl font-bold'>Your Playlists</h1>
 
         {playlistTypes && playlistTypes.length > 0 && (
           <FilterByPlaylistType playlistTypes={playlistTypes || []} />
         )}
 
-        <PlaylistsList playlists={playlists} />
+        <div className='flex-1'>
+          <PlaylistsList playlists={playlists} />
+        </div>
+
+        <PaginationFooter
+          page={page}
+          totalPages={Math.ceil(total / pageSize)}
+          pageSize={pageSize}
+        />
       </section>
     </PageContainer>
   );

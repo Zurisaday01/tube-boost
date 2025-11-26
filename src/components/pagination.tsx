@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 
 import { cn } from '@/lib/utils';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 type Props = {
   page: number;
@@ -24,7 +25,7 @@ type Props = {
   pageSize: number;
   pageSizeKey?: string; // default = "pageSize"
   queryKey?: string; // default = "page"
-  basePath?: string; // default = current path ("")
+  basePath: string; // default = current path ("")
   pageSizeOptions?: number[];
 };
 
@@ -34,18 +35,21 @@ export function PaginationFooter({
   pageSize,
   pageSizeKey = 'pageSize',
   queryKey = 'page',
-  basePath = '',
+  basePath,
   pageSizeOptions = [5, 10, 20, 30, 50, 100]
 }: Props) {
+  const searchParams = useSearchParams();
+
+
   const buildPageHref = (targetPage: number) => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set(queryKey, String(targetPage));
     params.set(pageSizeKey, String(pageSize));
     return `${basePath}?${params.toString()}`;
   };
 
   const buildPageSizeHref = (newSize: number) => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(searchParams.toString());
     params.set(pageSizeKey, String(newSize));
     params.set(queryKey, '1'); // always reset to page 1
     return `${basePath}?${params.toString()}`;

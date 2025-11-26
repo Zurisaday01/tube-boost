@@ -73,6 +73,7 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
           page={page}
           totalPages={Math.ceil(total / pageSize)}
           pageSize={pageSize}
+          basePath='/dashboard/playlists'
         />
       </section>
     </PageContainer>

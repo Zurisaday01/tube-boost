@@ -105,51 +105,78 @@ export const updatePlaylistTitle = async (
   }
 };
 
+interface GetAllPlaylistsParams {
+  playlistTypeId?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export const getAllPlaylists = async ({
-  playlistTypeId
-}: {
-  playlistTypeId?: string; // Optional filter by playlist type ID
-}): Promise<ActionResponse<PlaylistWithStats[]>> => {
+  playlistTypeId,
+  page = 1,
+  pageSize = 10
+}: GetAllPlaylistsParams): Promise<
+  ActionResponse<{ items: PlaylistWithStats[]; total: number }>
+> => {
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
       throw new Error('User not authenticated');
     }
 
-    const playlists = await prisma.playlist.findMany({
-      where: {
-        userId: user.userId,
-        ...(playlistTypeId
-          ? { playlistTypeId } // filter ONLY if provided
-          : {}) // otherwise do nothing
-      },
-      select: {
-        id: true,
-        title: true,
-        source: true,
-        createdAt: true,
-        updatedAt: true,
-        playlistType: true,
-        _count: {
-          select: {
-            videos: true, // videos directly in playlist
-            subcategories: true // number of categories
-          }
-        },
-        subcategories: {
-          select: {
-            _count: { select: { videos: true } } // videos per subcategory
+    // Validate pagination params
+    const validPage = Math.max(1, Math.floor(page));
+    const validPageSize = Math.max(1, Math.min(100, Math.floor(pageSize)));
+
+    const where = {
+      userId: user.userId,
+      ...(playlistTypeId ? { playlistTypeId } : {})
+    };
+
+    // Pagination calculations
+    const skip = (validPage - 1) * validPageSize;
+
+    // Fetch page data + total count in parallel
+    const [playlists, total] = await Promise.all([
+      prisma.playlist.findMany({
+        where,
+        skip,
+        take: validPageSize,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          source: true,
+          createdAt: true,
+          updatedAt: true,
+          playlistType: true,
+          _count: {
+            select: {
+              videos: true,
+              subcategories: true
+            }
+          },
+          subcategories: {
+            select: {
+              _count: { select: { videos: true } }
+            }
           }
         }
-      }
-    });
+      }),
+
+      // Total count
+      prisma.playlist.count({ where })
+    ]);
 
     const playlistsWithStats = mapToPlaylistWithStats(playlists);
 
     return {
       status: 'success',
       message: 'Playlists fetched successfully.',
-      data: playlistsWithStats
+      data: {
+        items: playlistsWithStats,
+        total
+      }
     };
   } catch (error) {
     devLog.error('Error fetching playlists:', error);

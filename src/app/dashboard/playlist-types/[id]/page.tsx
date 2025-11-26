@@ -1,4 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
+import { PaginationFooter } from '@/components/pagination';
 import PlaylistsList from '@/components/playlists/playlists-list';
 import {
   getPlaylistCountByPlaylistType,
@@ -6,14 +7,30 @@ import {
 } from '@/lib/actions/playlist-type';
 import { isSuccess } from '@/lib/utils/actions';
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
 
-const PlaylistTypePage = async ({ params }: PageProps) => {
+const PlaylistTypePage = async ({ params, searchParams }: PageProps) => {
   const { id } = await params;
+  const currentSearchParams = await searchParams;
+
+  // pagination params
+  const rawPage = currentSearchParams.page;
+  const page =
+    rawPage && !isNaN(Number(rawPage)) && Number(rawPage) >= 1
+      ? Math.floor(Number(rawPage))
+      : 1;
+  const rawPageSize = currentSearchParams.pageSize;
+  const pageSize =
+    rawPageSize && !isNaN(Number(rawPageSize)) && Number(rawPageSize) >= 1
+      ? Math.floor(Number(rawPageSize))
+      : 10;
 
   // Initiate both requests in parallel
   const [playlistTypeCountData, playlistTypeData] = await Promise.all([
-    getPlaylistCountByPlaylistType(id),
+    getPlaylistCountByPlaylistType({ id, page, pageSize }),
     getPlaylistTypeById(id)
   ]);
 
@@ -27,7 +44,7 @@ const PlaylistTypePage = async ({ params }: PageProps) => {
 
   return (
     <PageContainer>
-      <section className='flex w-full flex-col gap-6'>
+      <section className='flex min-h-[90vh] w-full flex-col gap-6'>
         <header className='flex flex-col items-start gap-2'>
           <h1 className='text-2xl font-bold'>
             All Playlists of Type{' '}
@@ -40,7 +57,16 @@ const PlaylistTypePage = async ({ params }: PageProps) => {
           </div>
         </header>
 
-        <PlaylistsList playlists={playlistCount.playlists} />
+        <div className='flex-1'>
+          <PlaylistsList playlists={playlistCount.playlists.items} />
+        </div>
+
+        <PaginationFooter
+          page={page}
+          totalPages={Math.ceil(playlistCount.playlists.total / pageSize)}
+          pageSize={pageSize}
+          basePath={`/dashboard/playlist-types/${id}`}
+        />
       </section>
     </PageContainer>
   );

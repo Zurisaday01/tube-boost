@@ -8,19 +8,35 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
 import { cache } from 'react';
-import { getSessionUser, isUserAuthenticated, mapToPlaylistWithStats } from '@/lib/utils/actions';
+import {
+  getSessionUser,
+  isUserAuthenticated,
+  mapToPlaylistWithStats
+} from '@/lib/utils/actions';
 
-import { ActionResponse, DeleteActionResponse, PlaylistWithStats } from '@/types/actions';
+import {
+  ActionResponse,
+  DeleteActionResponse,
+  PlaylistWithStats
+} from '@/types/actions';
 import type { PlaylistType } from '@prisma/client';
 import { PlaylistTypeOptions } from '@/types';
 
-export const getPlaylistCountByPlaylistType = async (
-  id: string
-): Promise<
+interface GetPlaylistCountByPlaylistTypeParams {
+  id: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export const getPlaylistCountByPlaylistType = async ({
+  id,
+  page = 1,
+  pageSize = 10
+}: GetPlaylistCountByPlaylistTypeParams): Promise<
   ActionResponse<{
     playlistType: any;
     count: number;
-    playlists: PlaylistWithStats[];
+    playlists: { items: PlaylistWithStats[]; total: number};
   }>
 > => {
   try {
@@ -38,36 +54,55 @@ export const getPlaylistCountByPlaylistType = async (
       throw new Error('Playlist type not found.');
     }
 
+    // Validate pagination params
+    const validPage = Math.max(1, Math.floor(page));
+    const validPageSize = Math.max(1, Math.min(100, Math.floor(pageSize)));
+    // Pagination calculations
+    const skip = (validPage - 1) * validPageSize;
+
     // Get playlists of this type, with the *same select* as getAllPlaylists
-    const playlists = await prisma.playlist.findMany({
-      where: {
-        userId: user.userId,
-        playlistTypeId: id
-      },
-      select: {
-        id: true,
-        title: true,
-        source: true,
-        createdAt: true,
-        updatedAt: true,
-        playlistType: true,
-        _count: {
-          select: {
-            videos: true,
-            subcategories: true
-          }
+    // Fetch page data + total count in parallel
+    const [playlists, total] = await Promise.all([
+      await prisma.playlist.findMany({
+        where: {
+          userId: user.userId,
+          playlistTypeId: id
         },
-        subcategories: {
-          select: {
-            _count: { select: { videos: true } }
+        skip,
+        take: validPageSize,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          source: true,
+          createdAt: true,
+          updatedAt: true,
+          playlistType: true,
+          _count: {
+            select: {
+              videos: true,
+              subcategories: true
+            }
+          },
+          subcategories: {
+            select: {
+              _count: { select: { videos: true } }
+            }
           }
         }
-      }
-    });
+      }),
 
+      // Get total count of playlists of this type
+      prisma.playlist.count({
+        where: {
+          userId: user.userId,
+          playlistTypeId: id
+        }
+      })
+    ]);
 
     // Compute stats same as getAllPlaylists
-    const playlistsWithStats =  mapToPlaylistWithStats(playlists);
+    const playlistsWithStats = mapToPlaylistWithStats(playlists);
 
     const count = playlistsWithStats.length;
 
@@ -77,7 +112,10 @@ export const getPlaylistCountByPlaylistType = async (
       data: {
         playlistType,
         count,
-        playlists: playlistsWithStats
+        playlists: {
+          items: playlistsWithStats,
+          total
+        }
       }
     };
   } catch (error) {

@@ -5,7 +5,8 @@ import {
   PlaylistVideo as PlaylistVideoDB,
   Prisma,
   PlaylistType,
-  TagGroup
+  TagGroup,
+  Playlist
 } from '@prisma/client';
 import { VideoThumbnails } from '.';
 
@@ -25,6 +26,28 @@ export interface DeleteActionResponse {
 export interface SaveNoteInput {
   playlistVideoId: string;
   document: string; // BlockNote document JSON
+}
+
+// Playlist to be processed with stats
+export interface PlaylistForStatProcessing {
+  id: string;
+  title: string;
+  source: string;
+  createdAt: Date;
+  updatedAt: Date;
+  
+  playlistType: PlaylistType | null;
+
+  _count: {
+    videos: number;
+    subcategories: number;
+  };
+
+  subcategories: {
+    _count: {
+      videos: number;
+    };
+  }[];
 }
 
 // Playlist with additional stats

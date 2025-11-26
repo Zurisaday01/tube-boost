@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { devLog } from '@/lib/utils';
 import { cache } from 'react';
-import { getSessionUser, isUserAuthenticated } from '@/lib/utils/actions';
+import { getSessionUser, isUserAuthenticated, mapToPlaylistWithStats } from '@/lib/utils/actions';
 
 import { ActionResponse, DeleteActionResponse, PlaylistWithStats } from '@/types/actions';
 import type { PlaylistType } from '@prisma/client';
@@ -65,26 +65,9 @@ export const getPlaylistCountByPlaylistType = async (
       }
     });
 
+
     // Compute stats same as getAllPlaylists
-    const playlistsWithStats = playlists.map((playlist) => {
-      const totalVideosInSubcategories = playlist.subcategories.reduce(
-        (acc, sub) => acc + sub._count.videos,
-        0
-      );
-
-      const totalVideos = playlist._count.videos + totalVideosInSubcategories;
-
-      return {
-        id: playlist.id,
-        title: playlist.title,
-        source: playlist.source,
-        createdAt: playlist.createdAt,
-        updatedAt: playlist.updatedAt,
-        totalCategories: playlist._count.subcategories,
-        playlistType: playlist.playlistType,
-        totalVideos
-      };
-    });
+    const playlistsWithStats =  mapToPlaylistWithStats(playlists);
 
     const count = playlistsWithStats.length;
 

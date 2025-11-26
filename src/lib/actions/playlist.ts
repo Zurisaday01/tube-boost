@@ -8,6 +8,7 @@ import { devLog } from '@/lib/utils';
 import {
   getSessionUser,
   isUserAuthenticated,
+  mapToPlaylistWithStats,
   parseVideoThumbnails
 } from '@/lib/utils/actions';
 import {
@@ -143,24 +144,7 @@ export const getAllPlaylists = async ({
       }
     });
 
-    const playlistsWithStats = playlists.map((playlist) => {
-      const totalVideosInSubcategories = playlist.subcategories.reduce(
-        (acc, sub) => acc + sub._count.videos,
-        0
-      );
-      const totalVideos = playlist._count.videos + totalVideosInSubcategories;
-
-      return {
-        id: playlist.id,
-        title: playlist.title,
-        source: playlist.source,
-        createdAt: playlist.createdAt,
-        updatedAt: playlist.updatedAt,
-        totalCategories: playlist._count.subcategories,
-        playlistType: playlist.playlistType,
-        totalVideos
-      };
-    });
+    const playlistsWithStats = mapToPlaylistWithStats(playlists);
 
     return {
       status: 'success',

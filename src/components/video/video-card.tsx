@@ -13,7 +13,8 @@ interface VideoCardProps {
   thumbnails: VideoThumbnails;
   addedAt: Date;
   reorderMode: boolean; // to indicate if in reorder mode
-  subcategories: Subcategory[];
+  subcategories?: Subcategory[];
+  // subcategories is only needed when not in reorder mode for the options menu (sortable video card does not pass it)
 }
 
 const VideoCard = ({
@@ -39,8 +40,12 @@ const VideoCard = ({
       </div>
       <header className='flex items-center gap-2'>
         <h2 className='font-bold'>{title}</h2>
-        {!reorderMode ? (
-          <PlaylistVideoOptionsMenu id={id} title={title} subcategories={subcategories} />
+        {!reorderMode && subcategories ? (
+          <PlaylistVideoOptionsMenu
+            id={id}
+            title={title}
+            subcategories={subcategories}
+          />
         ) : null}
       </header>
 

@@ -3,6 +3,9 @@ import PageContainer from '@/components/layout/page-container';
 import PlaylistTypeList from '@/components/playlist-type/playlist-type-list';
 import { getAllPlaylistTypes } from '@/lib/actions/playlist-type';
 
+// Flag this page is dynamic and should not be statically optimized
+export const dynamic = 'force-dynamic';
+
 const PlaylistTypes = async () => {
   const { status, message, data: playlistTypes } = await getAllPlaylistTypes();
 

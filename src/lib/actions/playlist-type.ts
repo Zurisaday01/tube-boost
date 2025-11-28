@@ -36,7 +36,7 @@ export const getPlaylistCountByPlaylistType = async ({
   ActionResponse<{
     playlistType: any;
     count: number;
-    playlists: { items: PlaylistWithStats[]; total: number};
+    playlists: { items: PlaylistWithStats[]; total: number };
   }>
 > => {
   try {

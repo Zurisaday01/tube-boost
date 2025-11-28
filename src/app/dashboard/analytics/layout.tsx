@@ -11,6 +11,9 @@ import {
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 import React from 'react';
 
+// Flag this page is dynamic and should not be statically optimized
+export const dynamic = 'force-dynamic';
+
 export default function OverViewLayout({
   sales,
   pie_stats,

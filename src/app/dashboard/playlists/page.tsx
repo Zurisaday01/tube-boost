@@ -6,6 +6,9 @@ import { getAllPlaylists } from '@/lib/actions/playlist';
 import { getAllPlaylistTypes } from '@/lib/actions/playlist-type';
 import { isSuccess } from '@/lib/utils/actions';
 
+// Flag this page is dynamic and should not be statically optimized
+export const dynamic = 'force-dynamic';
+
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

@@ -4,12 +4,15 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import ProductListingPage from '@/features/products/components/product-listing';
-import { searchParamsCache, serialize } from '@/lib/searchparams';
+import { searchParamsCache } from '@/lib/searchparams';
 import { cn } from '@/lib/utils';
 import { IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
 import { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
+
+// Flag this page is dynamic and should not be statically optimized
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Dashboard: Products'

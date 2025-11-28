@@ -143,38 +143,38 @@ export const updateTagGroup = async (
   }
 };
 
-export const getAllTagGroups = cache(
-  async (): Promise<ActionResponse<TagGroup[]>> => {
-    try {
-      const user = await getSessionUser();
-      if (!isUserAuthenticated(user)) {
-        throw new Error('User not authenticated.');
-      }
-
-      const tagGroups = await prisma.tagGroup.findMany({
-        where: { userId: user.userId },
-        include: {
-          tags: {
-            include: { _count: { select: { videos: true } } }
-          }
-        },
-        orderBy: { createdAt: 'asc' }
-      });
-
-      return {
-        status: 'success',
-        message: 'Tag groups fetched successfully.',
-        data: tagGroups
-      };
-    } catch (error) {
-      devLog.error('Error fetching tag groups:', error);
-      return {
-        status: 'error',
-        message: (error as Error).message || 'Failed to fetch tag groups.'
-      };
+export const getAllTagGroups = async (): Promise<
+  ActionResponse<TagGroup[]>
+> => {
+  try {
+    const user = await getSessionUser();
+    if (!isUserAuthenticated(user)) {
+      throw new Error('User not authenticated.');
     }
+
+    const tagGroups = await prisma.tagGroup.findMany({
+      where: { userId: user.userId },
+      include: {
+        tags: {
+          include: { _count: { select: { videos: true } } }
+        }
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    return {
+      status: 'success',
+      message: 'Tag groups fetched successfully.',
+      data: tagGroups
+    };
+  } catch (error) {
+    devLog.error('Error fetching tag groups:', error);
+    return {
+      status: 'error',
+      message: (error as Error).message || 'Failed to fetch tag groups.'
+    };
   }
-);
+};
 
 export const getTagGroupById = async (
   id: string

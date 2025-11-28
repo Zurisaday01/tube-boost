@@ -357,36 +357,36 @@ export const getAllPlaylistTypesOptions = cache(
   }
 );
 
-export const getAllPlaylistTypes = async (): Promise<
-  ActionResponse<PlaylistType[]>
-> => {
-  try {
-    const user = await getSessionUser();
-    if (!isUserAuthenticated(user)) {
-      throw new Error('User not authenticated.');
+export const getAllPlaylistTypes = cache(
+  async (): Promise<ActionResponse<PlaylistType[]>> => {
+    try {
+      const user = await getSessionUser();
+      if (!isUserAuthenticated(user)) {
+        throw new Error('User not authenticated.');
+      }
+
+      const playlistTypes = await prisma.playlistType.findMany({
+        where: { userId: user.userId },
+        include: {
+          playlists: true
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      return {
+        status: 'success',
+        message: 'Playlist types fetched successfully.',
+        data: playlistTypes
+      };
+    } catch (error) {
+      devLog.error('Error fetching playlist types:', error);
+      return {
+        status: 'error',
+        message: (error as Error).message || 'Failed to fetch playlist types.'
+      };
     }
-
-    const playlistTypes = await prisma.playlistType.findMany({
-      where: { userId: user.userId },
-      include: {
-        playlists: true
-      },
-      orderBy: { createdAt: 'asc' }
-    });
-
-    return {
-      status: 'success',
-      message: 'Playlist types fetched successfully.',
-      data: playlistTypes
-    };
-  } catch (error) {
-    devLog.error('Error fetching playlist types:', error);
-    return {
-      status: 'error',
-      message: (error as Error).message || 'Failed to fetch playlist types.'
-    };
   }
-};
+);
 
 export const getPlaylistTypeById = async (
   id: string

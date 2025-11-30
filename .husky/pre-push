@@ -1,1 +1,8 @@
-pnpm run build
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run tests first
+CI=true npm run test || exit 1
+
+# Then build
+npm run build

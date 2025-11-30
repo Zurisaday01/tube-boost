@@ -10,6 +10,13 @@ jest.mock('../playlist-card', () => ({
 
 const MockedPlaylistCard = PlaylistCard as jest.Mock;
 
+/*
+Component responsibility:
+PlaylistsList receives a list of playlists and decides what to render.
+It shows an empty-state message when the list is empty, otherwise it maps
+each playlist into a PlaylistCard, forwarding the expected props.
+*/
+
 describe('PlaylistsList', () => {
   // Mock playlist data
   const mockPlaylists = [

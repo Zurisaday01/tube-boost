@@ -71,7 +71,6 @@ const SearchYouTubeVideoForm = ({
           return;
         }
 
-
         onVideoSelect(videoData);
 
         toast.success(`Found video: ${videoData.title}`);

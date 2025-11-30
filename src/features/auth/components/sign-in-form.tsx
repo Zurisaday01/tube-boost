@@ -96,7 +96,9 @@ const SignInForm = ({ onStoreEmail }: SignInFormProps) => {
 
         <PasswordField
           disabled={form.formState.isSubmitting}
-          description={<Link href='forgot-password'>Forgot your password?</Link>}
+          description={
+            <Link href='forgot-password'>Forgot your password?</Link>
+          }
         />
 
         <Button

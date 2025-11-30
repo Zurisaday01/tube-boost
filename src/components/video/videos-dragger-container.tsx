@@ -58,7 +58,7 @@ const VideosDraggerContainer = ({
               videoIds: currentVideos.map((v) => v.id)
             });
 
-        handleActionResponse(response)
+        handleActionResponse(response);
       } catch (err) {
         console.error('Failed to save new order', err);
         toast.error('Failed to reorder videos.');

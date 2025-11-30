@@ -31,9 +31,7 @@ export default function ResetPasswordViewPage() {
         <div className='relative flex flex-grow flex-col items-center justify-center space-y-6'>
           <div className='flex flex-col space-y-2 text-center'>
             <h1 className='text-4xl font-bold'>Reset Your Password</h1>
-            <p>
-              Enter your new password below to reset your account password.
-            </p>
+            <p>Enter your new password below to reset your account password.</p>
           </div>
 
           <div className='w-full max-w-[500px]'>

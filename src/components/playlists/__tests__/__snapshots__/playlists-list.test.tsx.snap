@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PlaylistsList matches snapshot 1`] = `
+<div>
+  <div
+    class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+  >
+    <div
+      data-testid="playlist-card"
+    />
+    <div
+      data-testid="playlist-card"
+    />
+  </div>
+</div>
+`;

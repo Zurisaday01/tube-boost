@@ -28,8 +28,9 @@ function AlertDialogPortal({
   );
 }
 
-interface AlertDialogOverlayProps
-  extends React.ComponentProps<typeof AlertDialogPrimitive.Overlay> {
+interface AlertDialogOverlayProps extends React.ComponentProps<
+  typeof AlertDialogPrimitive.Overlay
+> {
   isPropagationStopped?: boolean;
 }
 
@@ -58,8 +59,9 @@ function AlertDialogOverlay({
   );
 }
 
-interface AlertDialogContentProps
-  extends React.ComponentProps<typeof AlertDialogPrimitive.Content> {
+interface AlertDialogContentProps extends React.ComponentProps<
+  typeof AlertDialogPrimitive.Content
+> {
   isPropagationStopped?: boolean;
 }
 

@@ -28,8 +28,9 @@ function SheetPortal({
   return <SheetPrimitive.Portal data-slot='sheet-portal' {...props} />;
 }
 
-interface SheetOverlayProps
-  extends React.ComponentProps<typeof SheetPrimitive.Overlay> {
+interface SheetOverlayProps extends React.ComponentProps<
+  typeof SheetPrimitive.Overlay
+> {
   isPropagationStopped?: boolean;
 }
 
@@ -58,8 +59,9 @@ function SheetOverlay({
   );
 }
 
-interface SheetContentProps
-  extends React.ComponentProps<typeof SheetPrimitive.Content> {
+interface SheetContentProps extends React.ComponentProps<
+  typeof SheetPrimitive.Content
+> {
   side?: 'top' | 'right' | 'bottom' | 'left';
   isPropagationStopped?: boolean;
 }

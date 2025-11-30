@@ -1,21 +1,24 @@
 import PageContainer from '@/components/layout/page-container';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
-import { getAllSubcategories, getSubcategoryById } from '@/lib/actions/subcategory';
+import {
+  getAllSubcategories,
+  getSubcategoryById
+} from '@/lib/actions/subcategory';
 import { isSuccess } from '@/lib/utils/actions';
 import { Folder } from 'lucide-react';
 import { hasher } from 'node-object-hash';
 
-type PageProps = { params: Promise<{ id: string, subcategoryId: string }> };
+type PageProps = { params: Promise<{ id: string; subcategoryId: string }> };
 
 const SubcategoryPage = async ({ params }: PageProps) => {
   // the first one belongs to the playlist, the second to the subcategory
   const { id, subcategoryId } = await params;
 
-   // Initiate both requests in parallel
-    const [subcategoryResponse, subcategoriesResponse] = await Promise.all([
-      getSubcategoryById(subcategoryId),
-      getAllSubcategories(id)
-    ]);
+  // Initiate both requests in parallel
+  const [subcategoryResponse, subcategoriesResponse] = await Promise.all([
+    getSubcategoryById(subcategoryId),
+    getAllSubcategories(id)
+  ]);
 
   if (!isSuccess(subcategoryResponse) || !isSuccess(subcategoriesResponse)) {
     return <div>Failed to load subcategory.</div>;

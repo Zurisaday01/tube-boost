@@ -30,8 +30,9 @@ function DialogClose({
   return <DialogPrimitive.Close data-slot='dialog-close' {...props} />;
 }
 
-interface DialogOverlayProps
-  extends React.ComponentProps<typeof DialogPrimitive.Overlay> {
+interface DialogOverlayProps extends React.ComponentProps<
+  typeof DialogPrimitive.Overlay
+> {
   isPropagationStopped?: boolean;
 }
 
@@ -59,8 +60,9 @@ function DialogOverlay({
   );
 }
 
-interface DialogContentProps
-  extends React.ComponentProps<typeof DialogPrimitive.Content> {
+interface DialogContentProps extends React.ComponentProps<
+  typeof DialogPrimitive.Content
+> {
   isPropagationStopped?: boolean;
 }
 

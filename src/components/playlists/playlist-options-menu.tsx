@@ -14,14 +14,20 @@ interface PlaylistOptionsMenuProps {
   playlistType: null | PlaylistType;
 }
 
-const PlaylistOptionsMenu = ({ id, title, playlistType }: PlaylistOptionsMenuProps) => {
+const PlaylistOptionsMenu = ({
+  id,
+  title,
+  playlistType
+}: PlaylistOptionsMenuProps) => {
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isTypeAssignUpdateOpen, setIsTypeAssignUpdateOpen] = useState(false);
 
   const actions = getPlaylistMenuItems({
     id,
-    assignUpdateLabel: playlistType ? 'Update Playlist Type' : 'Assign Playlist Type',
+    assignUpdateLabel: playlistType
+      ? 'Update Playlist Type'
+      : 'Assign Playlist Type',
     onDelete: (e) => {
       e.stopPropagation();
       setIsDeleteOpen(true);
@@ -54,7 +60,7 @@ const PlaylistOptionsMenu = ({ id, title, playlistType }: PlaylistOptionsMenuPro
             onOpenChange={setIsDeleteOpen}
           />
           <AssignUpdatePlaylistType
-            id={id} 
+            id={id}
             actionType={playlistType ? 'Update' : 'Assign'}
             open={isTypeAssignUpdateOpen}
             onOpenChange={setIsTypeAssignUpdateOpen}

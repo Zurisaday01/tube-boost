@@ -49,7 +49,10 @@ const PlaylistPage = async ({
             <div>
               <CreateSubcategoryButton playlistId={playlist.id} />
             </div>
-            <PlaylistTypeTag playlistType={playlist.playlistType} isCard={false} />
+            <PlaylistTypeTag
+              playlistType={playlist.playlistType}
+              isCard={false}
+            />
           </div>
         </header>
         <SearchVideoToAdd

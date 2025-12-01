@@ -2,13 +2,19 @@ import { PlaylistWithStats } from '@/types/actions';
 import PlaylistCard from './playlist-card';
 
 interface PlaylistsListProps {
-  playlists: PlaylistWithStats[] | undefined;
+  playlists: PlaylistWithStats[];
 }
 
 const PlaylistsList = ({ playlists }: PlaylistsListProps) => {
+  // Handle empty playlists case
+  if (playlists.length === 0) {
+    return <p className='text-muted-foreground'>Put together a playlist!</p>;
+  }
+
+  // Render the list of playlists
   return (
-    <div className='w-full grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-      {playlists?.map((playlist) => (
+    <div className='grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+      {playlists.map((playlist) => (
         <PlaylistCard
           key={playlist.id}
           id={playlist.id}

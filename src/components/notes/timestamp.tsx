@@ -36,7 +36,7 @@ const createTimestamp = (jumpTo: (time: number) => void) =>
             >
               {formatted}
             </span>
-            <div className='bg-neutral-200 h-[2px] w-full'></div>
+            <div className='h-[2px] w-full bg-neutral-200'></div>
           </div>
         );
       }

@@ -198,8 +198,9 @@ function DropdownMenuSub({
   return <DropdownMenuPrimitive.Sub data-slot='dropdown-menu-sub' {...props} />;
 }
 
-interface DropdownMenuSubTriggerProps
-  extends React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> {
+interface DropdownMenuSubTriggerProps extends React.ComponentProps<
+  typeof DropdownMenuPrimitive.SubTrigger
+> {
   isPropagationStopped?: boolean;
   inset?: boolean;
 }

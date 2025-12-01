@@ -73,6 +73,10 @@ export function PaginationFooter({
     pages.push(totalPages);
   }
 
+  if (totalPages === 0) {
+    return null;
+  }
+
   return (
     <div className='mt-4 flex w-full items-center justify-between'>
       {/* Page size selector */}

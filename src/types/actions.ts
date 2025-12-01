@@ -35,7 +35,7 @@ export interface PlaylistForStatProcessing {
   source: string;
   createdAt: Date;
   updatedAt: Date;
-  
+
   playlistType: PlaylistType | null;
 
   _count: {
@@ -74,8 +74,7 @@ export interface PlaylistVideoIncludeVideo extends PlaylistVideoDB {
 }
 // -----------------------------------------------------------------------------------
 
-export interface PlaylistWithStatsAndUncategorizedVideos
-  extends PlaylistWithStats {
+export interface PlaylistWithStatsAndUncategorizedVideos extends PlaylistWithStats {
   uncategorizedPlaylistVideos: PlaylistVideoIncludeVideo[];
 }
 

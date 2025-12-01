@@ -116,7 +116,6 @@ const res = await signUp.email({
 - `name` is still required by Better Auth; combine first and last name
 - `firstName` and `lastName` are passed explicitly and stored in the DB
 
-
 ## 📝 7. Important Notes
 
 - **Migration:** Always run Prisma migrations after adding new fields

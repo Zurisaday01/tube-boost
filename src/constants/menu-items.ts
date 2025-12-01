@@ -20,7 +20,10 @@ type SubcategoryMenuItemsProps = Omit<
 
 type TagGroupMenuItemsProps = Omit<
   MenuItemsProps,
-  'playlistId' | 'onAssignUpdateType' | 'assignUpdateLabel' | 'movePlaylistVideoComponent'
+  | 'playlistId'
+  | 'onAssignUpdateType'
+  | 'assignUpdateLabel'
+  | 'movePlaylistVideoComponent'
 >;
 
 type PlaylistMenuItemsProps = Pick<
@@ -28,11 +31,17 @@ type PlaylistMenuItemsProps = Pick<
   'id' | 'onDelete' | 'onRename' | 'assignUpdateLabel' | 'onAssignUpdateType'
 >;
 
-type PlaylistVideoMenuItemsProps = Pick<MenuItemsProps, 'id' | 'movePlaylistVideoComponent' | 'onDelete'>;
+type PlaylistVideoMenuItemsProps = Pick<
+  MenuItemsProps,
+  'id' | 'movePlaylistVideoComponent' | 'onDelete'
+>;
 
 type PlaylistTypeMenuItemsProps = Omit<
   MenuItemsProps,
-  'onAssignUpdateType' | 'assignUpdateLabel' | 'playlistId' | 'movePlaylistVideoComponent'
+  | 'onAssignUpdateType'
+  | 'assignUpdateLabel'
+  | 'playlistId'
+  | 'movePlaylistVideoComponent'
 >;
 
 // Subcategory Menu Items
@@ -151,7 +160,7 @@ export const getPlaylistMenuItems = ({
 // Playlist Video Menu Items
 export const getPlaylistVideoMenuItems = ({
   onDelete,
-  movePlaylistVideoComponent,
+  movePlaylistVideoComponent
 }: PlaylistVideoMenuItemsProps): MenuAction[] => [
   {
     type: 'button',

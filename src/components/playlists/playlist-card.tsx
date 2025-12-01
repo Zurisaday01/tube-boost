@@ -26,8 +26,8 @@ const PlaylistCard = ({
 }: PlaylistCardProps) => {
   return (
     <Link href={`/dashboard/playlists/${id}`}>
-      <div className='group hover:bg-accent/60 p-2 rounded-md transition-colors duration-150'>
-        <div className='flex h-[200px] items-center justify-center rounded-md bg-gray-200 p-4 transition-colors duration-150 group-hover:bg-gray-300 relative'>
+      <div className='group hover:bg-accent/60 rounded-md p-2 transition-colors duration-150'>
+        <div className='relative flex h-[200px] items-center justify-center rounded-md bg-gray-200 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
           <Music className='size-20 text-gray-400' />
 
           <div className='absolute top-2 left-1'>
@@ -52,8 +52,12 @@ const PlaylistCard = ({
           <p className='text-muted-foreground text-sm'>
             Updated at: {formatLocalDate(updatedAt.toISOString().slice(0, 10))}
           </p>
-          <p className='text-muted-foreground text-sm'>Total videos: {totalVideos}</p>
-          <p className='text-muted-foreground text-sm'>Total categories: {totalCategories}</p>
+          <p className='text-muted-foreground text-sm'>
+            Total videos: {totalVideos}
+          </p>
+          <p className='text-muted-foreground text-sm'>
+            Total categories: {totalCategories}
+          </p>
         </div>
       </div>
     </Link>

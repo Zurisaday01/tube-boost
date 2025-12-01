@@ -24,11 +24,10 @@ const PlaylistTypeOptionsMenu = ({
   currentColor,
   id,
   name,
-  description,
+  description
 }: SubcategoryTypeOptionsMenuProps) => {
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
 
   const actions = getPlaylistTypeMenuItems({
     id,

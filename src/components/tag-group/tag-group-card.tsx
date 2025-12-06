@@ -2,17 +2,21 @@
 import { Folder } from 'lucide-react';
 import SubcategoryOptionsMenu from './tag-group-options-menu';
 import { InformationSheetDetails } from '@/types';
-import { useMemo, useState } from 'react';
-import {
-  getLuminance,
-  handleActionResponse,
-  hexToRgb,
-  lighten,
-  rgba
-} from '@/lib/utils';
+import { useState } from 'react';
+import { handleActionResponse } from '@/lib/utils';
 import { toast } from 'sonner';
 import { updateTagGroupColor } from '@/lib/actions/tag-group';
-import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import SkeletonColorCard from '../color-change-card/skeleton-color-card';
+
+// Dynamically import ColorCardBase to avoid SSR issues (hydration mismatch)
+const ColorCardBase = dynamic(
+  () => import('../color-change-card/color-card-base'),
+  {
+    ssr: false,
+    loading: () => <SkeletonColorCard />
+  }
+);
 
 interface TagGroupCardProps {
   id: string; // needed for color update
@@ -41,35 +45,24 @@ const TagGroupCard = ({
     }
   };
 
-  // lighter/opaque version (e.g. 20% opacity background)
-  const bgColor = useMemo(() => {
-    const rgb = hexToRgb(color);
-    const luminance = getLuminance(rgb);
-
-    // threshold ~128 → dark color
-    if (luminance < 128) {
-      return lighten(rgb, 0.95); // almost white pastel for dark colors
-    }
-    return rgba(rgb, 0.2);
-  }, [color]);
-
   return (
-    <Link
+    <ColorCardBase
+      id={id}
+      name={name}
+      initialColor={color}
       href={`/dashboard/tag-groups/${id}`}
-      className='flex items-center gap-3 rounded-md p-3'
-      style={{ backgroundColor: bgColor }}
-    >
-      <Folder className='size-7' style={{ color }} />
-      <p>{name}</p>
-      <SubcategoryOptionsMenu
-        id={id}
-        name={name}
-        description={description}
-        details={details}
-        onColorChange={handleColorChange}
-        currentColor={color}
-      />
-    </Link>
+      Icon={Folder}
+      OptionsMenu={
+        <SubcategoryOptionsMenu
+          id={id}
+          name={name}
+          description={description}
+          details={details}
+          onColorChange={handleColorChange}
+          currentColor={color}
+        />
+      }
+    />
   );
 };
 export default TagGroupCard;

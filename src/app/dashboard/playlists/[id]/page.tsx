@@ -39,7 +39,7 @@ const PlaylistPage = async ({
     <PageContainer>
       <section className='w-full'>
         <header className='mb-6 flex items-center gap-4'>
-          <div className='flex size-[200px] items-center justify-center rounded-md bg-gray-200 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
+          <div className='flex size-[200px] items-center justify-center rounded-md bg-gray-200 dark:bg-neutral-800 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
             <Music className='size-20 text-gray-400' />
           </div>
           <div className='flex flex-col gap-2'>

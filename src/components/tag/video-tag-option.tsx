@@ -24,7 +24,7 @@ const VideoTagOption = ({
   return (
     <div
       key={videoTag.tag.id}
-      className='flex rounded-full bg-neutral-100 dark:dark:bg-white/10 p-1'
+      className='flex rounded-full bg-neutral-100 dark:bg-white/10 p-1'
     >
       <PlaylistVideoTag videoTag={videoTag} />
 

@@ -13,9 +13,10 @@ const PlaylistTypeTag = ({
   playlistType,
   isCard = true
 }: PlaylistTypeTagProps) => {
-  if (!playlistType) return null;
+  // Get colors based on playlist type color
+  const { bgColor, displayColor } = useTagColors(playlistType?.color);
 
-  const { bgColor, displayColor } = useTagColors(playlistType.color);
+  if (!playlistType) return null;
 
   return (
     <div

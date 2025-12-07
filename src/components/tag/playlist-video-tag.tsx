@@ -7,9 +7,10 @@ interface PlaylistVideoTagProps {
 }
 
 const PlaylistVideoTag = ({ videoTag }: PlaylistVideoTagProps) => {
-  if (!videoTag) return null;
-
+  // Get colors based on tag group color
   const { bgColor, displayColor } = useTagColors(videoTag.tag.group?.color);
+
+  if (!videoTag) return null;
 
   return (
     <span

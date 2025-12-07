@@ -19,22 +19,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Header() {
   const { open } = useSidebar();
-  const [mounted, setMounted] = React.useState(false);
   const router = useRouter();
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <header className='flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-13'>
       <div className='flex items-center gap-2 pl-4'>
-        {isMobile ? (
-          <SidebarTrigger className='-ml-1' />
-        ) : mounted && open ? (
+        {/* Render the SidebarTrigger only if the client is mounted AND its required state is met (mobile OR desktop open) */}
+        {isMobile || open ? (
           <SidebarTrigger className='-ml-1' />
         ) : (
+          /* Render the Full Link as the safe server default (desktop closed/unmounted) */
           <Link
             href='/dashboard/playlists'
             className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'

@@ -129,7 +129,7 @@ export default function AppSidebar() {
                   defaultOpen={item.isActive}
                   className='group/collapsible'
                 >
-                  <SidebarMenuItem>
+                  <SidebarMenuItem suppressHydrationWarning>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}

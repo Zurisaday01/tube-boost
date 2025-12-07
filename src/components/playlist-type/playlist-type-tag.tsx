@@ -1,4 +1,6 @@
-import { cn, getLuminance, hexToRgb, lighten, rgba } from '@/lib/utils';
+'use client';
+import { useTagColors } from '@/hooks/use-tag-colors';
+import { cn } from '@/lib/utils';
 import { PlaylistType } from '@prisma/client';
 import { CircleSmall } from 'lucide-react';
 
@@ -11,22 +13,24 @@ const PlaylistTypeTag = ({
   playlistType,
   isCard = true
 }: PlaylistTypeTagProps) => {
-  const rawColor = playlistType?.color ?? '#888888';
-  const color = /^#([0-9a-fA-F]{6})$/.test(rawColor) ? rawColor : '#888888';
-  const rgb = hexToRgb(color);
-  const luminance = getLuminance(rgb);
-  const bgColor = luminance < 128 ? lighten(rgb, 0.95) : rgba(rgb, 0.2);
+  // Get colors based on playlist type color
+  const { bgColor, displayColor } = useTagColors(playlistType?.color);
 
   if (!playlistType) return null;
 
   return (
-    <div className={cn('w-fit rounded-full', isCard ? 'bg-white' : '')}>
+    <div
+      className={cn(
+        'w-fit rounded-full',
+        isCard ? 'bg-white dark:bg-transparent' : ''
+      )}
+    >
       <span
         className='flex w-fit items-center gap-1 rounded-full py-1 pr-3 pl-2 text-sm font-medium transition-colors'
         style={{
-          border: `1px solid ${color}`,
+          border: `1px solid ${displayColor}`,
           backgroundColor: bgColor,
-          color
+          color: displayColor
         }}
       >
         <CircleSmall className='size-4' />
@@ -35,4 +39,5 @@ const PlaylistTypeTag = ({
     </div>
   );
 };
+
 export default PlaylistTypeTag;

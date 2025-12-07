@@ -21,9 +21,18 @@ interface UserNavProps {
 
 export function UserNav({ isSidebar = false }: UserNavProps) {
   // Get the user session
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
 
   const router = useRouter();
+
+  // Show an skeleton loader while the session is being fetched
+  if (isPending) {
+    return (
+      <div className='relative rounded-full bg-gray-100 dark:bg-white/10 animate-pulse w-8 h-8 flex items-center justify-center'>
+        <span className='text-xs rounded-sm font-medium bg-gray-300 dark:bg-white/30 select-none h-3 w-4' />
+      </div>
+    );
+  }
 
   // Check if session and user exist before rendering
   if (session && session.user) {

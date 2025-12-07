@@ -1,9 +1,19 @@
+'use client';
 import { formatLocalDate } from '@/lib/utils';
 import { Music } from 'lucide-react';
 import Link from 'next/link';
 import PlaylistOptionsMenu from './playlist-options-menu';
 import { PlaylistType } from '@prisma/client';
-import PlaylistTypeTag from '../playlist-type/playlist-type-tag';
+import dynamic from 'next/dynamic';
+import SkeletonColorChangeTag from '../color-change-tag/skeleton-change-tag';
+
+const PlaylistTypeTag = dynamic(
+  () => import('../playlist-type/playlist-type-tag'),
+  {
+    ssr: false,
+    loading: () => <SkeletonColorChangeTag />
+  }
+);
 
 interface PlaylistCardProps {
   id: string;
@@ -26,8 +36,8 @@ const PlaylistCard = ({
 }: PlaylistCardProps) => {
   return (
     <Link href={`/dashboard/playlists/${id}`}>
-      <div className='group hover:bg-accent/60 rounded-md p-2 transition-colors duration-150'>
-        <div className='relative flex h-[200px] items-center justify-center rounded-md bg-gray-200 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
+      <div className='group hover:bg-accent/60 dark:hover:bg-accent/80 rounded-md p-2 transition-colors duration-150'>
+        <div className='relative flex h-[200px] items-center justify-center rounded-md bg-gray-200 dark:bg-neutral-800 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
           <Music className='size-20 text-gray-400' />
 
           <div className='absolute top-2 left-1'>

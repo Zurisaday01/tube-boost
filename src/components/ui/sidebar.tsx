@@ -512,6 +512,7 @@ function SidebarMenuButton({
 
   const button = (
     <Comp
+      suppressHydrationWarning
       data-slot='sidebar-menu-button'
       data-sidebar='menu-button'
       data-size={size}

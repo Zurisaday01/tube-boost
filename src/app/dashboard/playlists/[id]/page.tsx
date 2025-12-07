@@ -4,11 +4,10 @@ import SearchVideoToAdd from '@/components/video/search-video-to-add';
 import SubcategoriesList from '@/components/subcategories/subcategories-list';
 import { getPlaylistById } from '@/lib/actions/playlist';
 import { getAllSubcategories } from '@/lib/actions/subcategory';
-import { Music } from 'lucide-react';
 import { isSuccess } from '@/lib/utils/actions';
 
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
-import PlaylistTypeTag from '@/components/playlist-type/playlist-type-tag';
+import PlaylistHeaderDetails from '@/components/playlist-type/playlist-header-details';
 
 const PlaylistPage = async ({
   params
@@ -38,23 +37,7 @@ const PlaylistPage = async ({
   return (
     <PageContainer>
       <section className='w-full'>
-        <header className='mb-6 flex items-center gap-4'>
-          <div className='flex size-[200px] items-center justify-center rounded-md bg-gray-200 p-4 transition-colors duration-150 group-hover:bg-gray-300'>
-            <Music className='size-20 text-gray-400' />
-          </div>
-          <div className='flex flex-col gap-2'>
-            <h1 className='text-2xl font-bold'>{playlist.title}</h1>
-            <p>Total Videos: {playlist.totalVideos}</p>
-            <p>Total Categories: {playlist.totalCategories} </p>
-            <div>
-              <CreateSubcategoryButton playlistId={playlist.id} />
-            </div>
-            <PlaylistTypeTag
-              playlistType={playlist.playlistType}
-              isCard={false}
-            />
-          </div>
-        </header>
+        <PlaylistHeaderDetails playlist={playlist} />
         <SearchVideoToAdd
           subcategories={subcategories}
           playlistId={playlist.id}

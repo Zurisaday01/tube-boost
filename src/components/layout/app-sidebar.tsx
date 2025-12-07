@@ -22,24 +22,17 @@ import {
   useSidebar
 } from '@/components/ui/sidebar';
 import { navItems } from '@/constants/data';
-import { useMediaQuery } from '@/hooks/use-media-query';
 import { IconChevronRight } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import * as React from 'react';
 import { Icons } from '../icons';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserNav } from './user-nav';
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { isOpen } = useMediaQuery();
   const { open, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
-
-  React.useEffect(() => {
-    // Side effects based on sidebar state changes
-  }, [isOpen]);
 
   return (
     <Sidebar collapsible='icon'>
@@ -76,7 +69,7 @@ export default function AppSidebar() {
                   defaultOpen={item.isActive}
                   className='group/collapsible'
                 >
-                  <SidebarMenuItem>
+                  <SidebarMenuItem suppressHydrationWarning>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}
@@ -136,7 +129,7 @@ export default function AppSidebar() {
                   defaultOpen={item.isActive}
                   className='group/collapsible'
                 >
-                  <SidebarMenuItem>
+                  <SidebarMenuItem suppressHydrationWarning>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}

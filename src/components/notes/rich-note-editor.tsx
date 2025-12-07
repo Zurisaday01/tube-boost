@@ -8,6 +8,7 @@ import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import createTimestamp from './timestamp';
 import type { RichNoteEditor as RichNoteEditorProps } from '@/types/notes';
+import { useTheme } from 'next-themes';
 
 function RichNoteEditor({
   timestampsNotes,
@@ -16,6 +17,7 @@ function RichNoteEditor({
   editable = true,
   jumpTo
 }: RichNoteEditorProps) {
+  const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   // gard against multiple inserts of the initial editor content
   const hasInsertedRef = useRef(false);
@@ -98,10 +100,11 @@ function RichNoteEditor({
   // Only render editor on client
   if (!mounted) return null;
 
+  // bg-[#1F1F1F] was added to fill container background in dark mode for the specific editior background color
   return (
-    <div className='rounded-md border border-gray-300'>
+    <div className='rounded-md border border-gray-300 dark:bg-[#1F1F1F] dark:border-neutral-600'>
       <BlockNoteView
-        theme='light'
+        theme={theme === 'light' ? 'light' : 'dark'}
         className='min-h-[200px] p-3'
         editor={editor as BlockNoteEditor}
         onChange={handleEditorChange}

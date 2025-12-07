@@ -1,8 +1,14 @@
 'use client';
 import { PlaylistType } from '@prisma/client';
-import PlaylistTypeTag from './playlist-type-tag';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '../ui/button';
+import SkeletonColorChangeTag from '../color-change-tag/skeleton-change-tag';
+import dynamic from 'next/dynamic';
+
+const PlaylistTypeTag = dynamic(() => import('./playlist-type-tag'), {
+  ssr: false,
+  loading: () => <SkeletonColorChangeTag />
+});
 
 interface FilterByPlaylistTypeProps {
   playlistTypes: PlaylistType[];

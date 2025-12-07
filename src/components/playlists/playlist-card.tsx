@@ -1,9 +1,19 @@
+'use client';
 import { formatLocalDate } from '@/lib/utils';
 import { Music } from 'lucide-react';
 import Link from 'next/link';
 import PlaylistOptionsMenu from './playlist-options-menu';
 import { PlaylistType } from '@prisma/client';
-import PlaylistTypeTag from '../playlist-type/playlist-type-tag';
+import dynamic from 'next/dynamic';
+import SkeletonColorChangeTag from '../color-change-tag/skeleton-change-tag';
+
+const PlaylistTypeTag = dynamic(
+  () => import('../playlist-type/playlist-type-tag'),
+  {
+    ssr: false,
+    loading: () => <SkeletonColorChangeTag />
+  }
+);
 
 interface PlaylistCardProps {
   id: string;

@@ -3,7 +3,6 @@ import { cn, getLuminance, hexToRgb, lighten, rgba } from '@/lib/utils';
 import { PlaylistType } from '@prisma/client';
 import { CircleSmall } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 
 interface PlaylistTypeTagProps {
   playlistType: null | PlaylistType;
@@ -15,11 +14,8 @@ const PlaylistTypeTag = ({
   isCard = true
 }: PlaylistTypeTagProps) => {
   const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
   if (!playlistType) return null;
-  if (!mounted) return null;
 
   const activeTheme = theme === 'system' ? resolvedTheme : theme;
 

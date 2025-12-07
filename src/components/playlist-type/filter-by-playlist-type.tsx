@@ -24,6 +24,9 @@ const FilterByPlaylistType = ({ playlistTypes }: FilterByPlaylistTypeProps) => {
     // Set or replace the playlist-type param
     params.set('playlist-type', id);
 
+    // remove page param to reset pagination
+    params.delete('page');
+
     router.push(`?${params.toString()}`);
   };
 

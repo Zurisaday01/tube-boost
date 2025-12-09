@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import YouTube, {
-  YouTubeEvent,
-  YouTubePlayer,
-  YouTubeProps
-} from 'react-youtube';
+import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
@@ -18,7 +14,7 @@ interface YouTubeNotesProps {
   playlistVideoId: string;
   videoId: string;
   initialEditorContent: BlockNoteEditor['document'] | null;
-  onVideoLoad: () => void;
+  onEditorLoad: () => void;
 }
 
 const normalizeDocument = (doc: BlockNoteEditor['document'] | null) => {
@@ -47,7 +43,7 @@ export default function YouTubeNotes({
   playlistVideoId,
   videoId, // NOTE: External YouTube video ID from YouTube API
   initialEditorContent,
-  onVideoLoad
+  onEditorLoad
 }: YouTubeNotesProps) {
   const [isNoteEmpty, setIsNoteEmpty] = useState(true);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -66,7 +62,7 @@ export default function YouTubeNotes({
   const onReady = (event: YouTubeEvent) => {
     playerRef.current = event.target;
     // This is to hide the loading spinner in the parent component
-    onVideoLoad();
+    // onVideoLoad();
   };
 
   const addNote = async () => {
@@ -154,12 +150,6 @@ export default function YouTubeNotes({
     <div className='flex w-full flex-col gap-4 md:flex-row'>
       <div>
         {/* YouTube Player */}
-        {/* <YouTube
-          videoId={videoId}
-          onReady={onReady}
-          onStateChange={onStateChange}
-          opts={opts}
-        /> */}
         <ResizableYouTubePlayer
           videoId={videoId}
           onReady={onReady}
@@ -194,6 +184,7 @@ export default function YouTubeNotes({
           timestampsNotes={sortedTimestampedNotes as TimestampedContent[]}
           onChange={handleChange}
           jumpTo={jumpTo}
+          onEditorLoad={onEditorLoad}
         />
 
         <Button

@@ -41,14 +41,14 @@ const YouTubeTimestampsList = ({
           {timestamps.map((timestamp, index) => (
             <li key={index}>
               <button
-                className='text-primary underline'
+                className='text-primary underline font-bold'
                 onClick={() => {
                   if (playerRef.current) {
                     playerRef.current.seekTo(timestamp, true);
                   }
                 }}
               >
-                {new Date(timestamp * 1000).toISOString().substr(11, 8)}
+                {new Date(timestamp * 1000).toISOString().substring(11, 19)}
               </button>
             </li>
           ))}

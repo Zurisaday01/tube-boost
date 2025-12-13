@@ -21,6 +21,7 @@ function RichNoteEditor({
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [ready, setReady] = useState(false);
+  const onEditorLoadCalledRef = useRef(false);
 
   // Our schema with block specs, which contain the configs and implementations for
   // blocks that we want our editor to use.
@@ -94,7 +95,8 @@ function RichNoteEditor({
   }, [editor.document]);
 
   useEffect(() => {
-    if (!ready) return;
+    // Insert timestamps when editor is ready and onEditorLoad hasn't been called yet
+    if (!ready || onEditorLoadCalledRef.current) return;
 
     // Insert timestamps after current call stack
     queueMicrotask(() => {
@@ -102,7 +104,9 @@ function RichNoteEditor({
     });
 
     onEditorLoad();
-  }, [ready, handleInsertTimestamps, onEditorLoad]);
+    // Prevent multiple calls to onEditorLoad
+    onEditorLoadCalledRef.current = true;
+  }, [ready, handleInsertTimestamps]);
 
   // Run once on mount or when timestampsNotes changes
   // useEffect(() => {

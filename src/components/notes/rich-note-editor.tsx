@@ -95,9 +95,14 @@ function RichNoteEditor({
 
   useEffect(() => {
     if (!ready) return;
-    handleInsertTimestamps();
+
+    // Insert timestamps after current call stack
+    queueMicrotask(() => {
+      handleInsertTimestamps();
+    });
+
     onEditorLoad();
-  }, [ready, handleInsertTimestamps]);
+  }, [ready, handleInsertTimestamps, onEditorLoad]);
 
   // Run once on mount or when timestampsNotes changes
   // useEffect(() => {

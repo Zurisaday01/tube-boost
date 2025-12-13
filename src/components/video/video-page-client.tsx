@@ -68,6 +68,10 @@ const VideoPageClient = ({
   >(null);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
 
+  const handleTimestampsSaved = (timestamps: number[]) => {
+    setSimpleTimestamps(timestamps);
+  };
+
   const handleLoad = () => {
     setIsVideoLoading(false);
   };
@@ -149,6 +153,7 @@ const VideoPageClient = ({
           playlistVideoId={playlistVideoId}
           youtubeVideoId={youtubeVideoId}
           handleLoad={handleLoad}
+          onTimestampsSaved={handleTimestampsSaved}
         />
 
         <SelectTagOptions

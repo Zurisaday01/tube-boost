@@ -10,6 +10,7 @@ interface TabsVideoContentProps {
   initialEditorContent: BlockNoteEditor['document'] | null;
   simpleTimestamps: number[];
   handleLoad: () => void;
+  onTimestampsSaved: (timestamps: number[]) => void;
 }
 
 const TabsVideoContent = ({
@@ -17,7 +18,8 @@ const TabsVideoContent = ({
   playlistVideoId,
   initialEditorContent,
   simpleTimestamps,
-  handleLoad
+  handleLoad,
+  onTimestampsSaved
 }: TabsVideoContentProps) => {
   return (
     <Tabs defaultValue='note-taking' className='w-full'>
@@ -36,6 +38,7 @@ const TabsVideoContent = ({
             playlistVideoId={playlistVideoId}
             videoId={youtubeVideoId}
             onEditorLoad={handleLoad}
+            onTimestampsSaved={onTimestampsSaved}
           />
         </div>
       </TabsContent>

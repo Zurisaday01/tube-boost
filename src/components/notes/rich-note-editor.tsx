@@ -41,7 +41,10 @@ function RichNoteEditor({
 
   // Whenever the content changes, notify parent
   const handleEditorChange = (editor: BlockNoteEditor) => {
-    if (onChange) onChange(editor.document);
+    if (onChange) {
+      // Notify parent component of the updated document
+      onChange(editor.document);
+    }
   };
 
   // Insert timestamps into the editor
@@ -103,7 +106,6 @@ function RichNoteEditor({
 
   // Only render editor on client
   if (!mounted) return null;
-  if (initialEditorContent === null) return null;
 
   // bg-[#1F1F1F] was added to fill container background in dark mode for the specific editior background color
   return (

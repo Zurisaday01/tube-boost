@@ -9,12 +9,14 @@ import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/types/notes';
 import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import ResizableYouTubePlayer from './resizable-youtube-player';
+import { extractTimestamps } from '@/lib/utils';
 
 interface YouTubeNotesProps {
   playlistVideoId: string;
   videoId: string;
   initialEditorContent: BlockNoteEditor['document'] | null;
   onEditorLoad: () => void;
+  onTimestampsSaved: (timestamps: number[]) => void;
 }
 
 const normalizeDocument = (doc: BlockNoteEditor['document'] | null) => {
@@ -43,7 +45,8 @@ export default function YouTubeNotes({
   playlistVideoId,
   videoId, // NOTE: External YouTube video ID from YouTube API
   initialEditorContent,
-  onEditorLoad
+  onEditorLoad,
+  onTimestampsSaved
 }: YouTubeNotesProps) {
   const [isNoteEmpty, setIsNoteEmpty] = useState(true);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -134,6 +137,13 @@ export default function YouTubeNotes({
     }
 
     try {
+      // 🔹 extract timestamps once (cheap, intentional)
+      const timestamps = extractTimestamps(currentDocument);
+
+      // 🔹 update listening mode immediately
+      onTimestampsSaved(timestamps);
+
+      // 🔹 persist
       const result = await savePlaylistVideoNote({
         playlistVideoId,
         document: noteContent

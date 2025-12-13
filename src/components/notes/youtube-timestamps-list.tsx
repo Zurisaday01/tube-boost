@@ -14,8 +14,8 @@ const YouTubeTimestampsList = ({
   timestamps
 }: YouTubeTimestampsListProps) => {
   const opts: YouTubeProps['opts'] = {
-    width: 1000,
-    height: 560,
+    width: '100%',
+    height: '100%',
     playerVars: { modestbranding: 1 }
   };
 
@@ -28,8 +28,17 @@ const YouTubeTimestampsList = ({
   };
 
   return (
-    <div className='flex gap-5'>
-      <YouTube videoId={videoId} opts={opts} onReady={onReady} />
+    <div className='flex flex-col md:flex-row gap-5'>
+      <div className='w-full'>
+        <div className='relative w-full aspect-video'>
+          <YouTube
+            videoId={videoId}
+            opts={opts}
+            onReady={onReady}
+            className='h-full'
+          />
+        </div>
+      </div>
       <div>
         <h2 className='mt-4 mb-2 text-lg font-semibold'>Timestamps</h2>
         <p className='text-muted-foreground'>

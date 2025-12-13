@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -92,10 +92,13 @@ export default function YouTubeNotes({
     //
   };
 
-  const jumpTo = async (time: number) => {
-    if (!playerRef.current) return;
-    await playerRef.current.seekTo(time, true);
-  };
+  const jumpTo = useCallback(
+    async (time: number) => {
+      if (!playerRef.current) return;
+      await playerRef.current.seekTo(time, true);
+    },
+    [playerRef]
+  );
 
   // when the video plays/pauses, update isNoteTakingReady state
   // if state is 1 (playing) or 2 (paused), set isNoteTakingReady to true, else false (-1=unstarted, 1=playing, 0=ended, 2=paused, 3=buffering, 5=cued)

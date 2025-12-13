@@ -106,11 +106,6 @@ function RichNoteEditor({
     onEditorLoad();
   }, [ready, handleInsertTimestamps, onEditorLoad]);
 
-  // Run once on mount or when timestampsNotes changes
-  // useEffect(() => {
-  //   queueMicrotask(() => handleInsertTimestamps());
-  // }, [handleInsertTimestamps]);
-
   // Only render editor on client
   if (!mounted) return null;
 

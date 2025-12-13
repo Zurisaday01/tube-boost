@@ -1,3 +1,4 @@
+import { formatTimestamp } from '@/lib/utils';
 import { useRef } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 
@@ -48,7 +49,7 @@ const YouTubeTimestampsList = ({
                   }
                 }}
               >
-                {new Date(timestamp * 1000).toISOString().substring(11, 19)}
+                {formatTimestamp(timestamp)}
               </button>
             </li>
           ))}

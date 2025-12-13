@@ -11,4 +11,5 @@ export interface RichNoteEditor {
   onChange?: (content: any) => void;
   editable?: boolean;
   jumpTo: (time: number) => void;
+  onEditorLoad: () => void;
 }

@@ -1,4 +1,6 @@
 import { ActionResponse } from '@/types/actions';
+import { TimestampedContent } from '@/types/notes';
+import { BlockNoteEditor } from '@blocknote/core';
 import { type ClassValue, clsx } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
@@ -310,4 +312,28 @@ export function extractTextFromBlocks(blocks: any): string {
     })
     .filter((text) => text.trim() !== '') // Remove empty lines (like timestamps)
     .join('\n');
+}
+
+export function extractTimestamps(
+  doc: BlockNoteEditor['document'] | null
+): number[] {
+  if (!doc) return [];
+
+  const results: number[] = [];
+
+  const walk = (blocks: any[]) => {
+    for (const block of blocks) {
+      console.log('Visiting block:', block);
+      // adjust this condition to match how you store timestamps
+      if (block.type === 'timestamp') {
+        results.push(Number(block.props.time));
+      }
+      if (block.children?.length) {
+        walk(block.children);
+      }
+    }
+  };
+  walk(doc);
+
+  return results;
 }

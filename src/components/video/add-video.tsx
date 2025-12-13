@@ -10,6 +10,7 @@ import { Button } from '../ui/button';
 import { VideoData } from '@/types';
 import { createVideoAndAttach } from '@/lib/actions/video';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface Options {
   label: string;
@@ -29,6 +30,7 @@ const AddVideo = ({
   playlistId,
   onClear
 }: AddVideoProps) => {
+  const router = useRouter();
   // this state will hold the selected option from the dropdown
   // - if: uncategorized option = playlistId
   // - else: subcategories = subcategoryOptions.value (the value is the id of the subcategory)
@@ -50,6 +52,9 @@ const AddVideo = ({
       );
       // clear the selected video
       onClear();
+
+      // Refresh the page to update any server-side data
+      router.refresh();
     } else {
       toast.error(message);
     }

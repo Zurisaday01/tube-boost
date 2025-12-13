@@ -326,7 +326,15 @@ export function extractTimestamps(
       console.log('Visiting block:', block);
       // adjust this condition to match how you store timestamps
       if (block.type === 'timestamp') {
-        results.push(Number(block.props.time));
+        const time = block.props?.time;
+        if (typeof time === 'number' && !isNaN(time)) {
+          results.push(time);
+        } else if (time != null) {
+          const parsed = Number(time);
+          if (!isNaN(parsed)) {
+            results.push(parsed);
+          }
+        }
       }
       if (block.children?.length) {
         walk(block.children);

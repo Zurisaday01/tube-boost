@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import PageContainer from '../layout/page-container';
-import YouTubeNotes from '../notes/youtube-notes';
 import { useEffect, useState, useCallback, useTransition } from 'react';
 import { cn, extractTimestamps, handleActionResponse } from '@/lib/utils';
 import { toast } from 'sonner';

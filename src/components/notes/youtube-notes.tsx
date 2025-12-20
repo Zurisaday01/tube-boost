@@ -64,8 +64,6 @@ export default function YouTubeNotes({
 
   const onReady = (event: YouTubeEvent) => {
     playerRef.current = event.target;
-    // This is to hide the loading spinner in the parent component
-    // onVideoLoad();
   };
 
   const addNote = async () => {
@@ -160,7 +158,7 @@ export default function YouTubeNotes({
   };
 
   return (
-    <div className='flex w-full flex-col gap-4 md:flex-row'>
+    <div className='flex w-full flex-col gap-4 lg:flex-row'>
       <div>
         {/* YouTube Player */}
         <ResizableYouTubePlayer

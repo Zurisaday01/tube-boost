@@ -1,5 +1,4 @@
 import { ActionResponse } from '@/types/actions';
-import { TimestampedContent } from '@/types/notes';
 import { BlockNoteEditor } from '@blocknote/core';
 import { type ClassValue, clsx } from 'clsx';
 import { toast } from 'sonner';
@@ -323,7 +322,6 @@ export function extractTimestamps(
 
   const walk = (blocks: any[]) => {
     for (const block of blocks) {
-      console.log('Visiting block:', block);
       // adjust this condition to match how you store timestamps
       if (block.type === 'timestamp') {
         const time = block.props?.time;

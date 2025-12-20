@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import PageContainer from '../layout/page-container';
-import YouTubeNotes from '../notes/youtube-notes';
 import { useEffect, useState, useCallback, useTransition } from 'react';
-import { cn, handleActionResponse } from '@/lib/utils';
+import { cn, extractTimestamps, handleActionResponse } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getPlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import { BlockNoteEditor } from '@blocknote/core';
@@ -14,6 +13,22 @@ import { ComboboxDataItem } from '@/types';
 import { removeTagFromVideo } from '@/lib/actions/tag';
 import VideoTagsList from '../tag/video-tags-list';
 import { VideoTagWithTags } from '@/types/actions';
+
+import TabsVideoContent from './tabs-video-content';
+
+/*
+MODES:
+
+Listening mode → “I’m consuming, not writing”
+- I can see timestamps
+- I can jump to them
+
+Note-taking mode → “I’m actively working”
+- Full editor
+- Rich formatting
+- Creating/editing notes freely
+
+*/
 
 interface VideoPageClientProps {
   youtubeVideoId: string;
@@ -46,12 +61,17 @@ const VideoPageClient = ({
 }: VideoPageClientProps) => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const [simpleTimestamps, setSimpleTimestamps] = useState<number[]>([]);
   const [initialEditorContent, setInitialEditorContent] = useState<
     BlockNoteEditor['document'] | null
   >(null);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
 
-  const handleVideoLoad = () => {
+  const handleTimestampsSaved = (timestamps: number[]) => {
+    setSimpleTimestamps(timestamps);
+  };
+
+  const handleLoad = () => {
     setIsVideoLoading(false);
   };
 
@@ -82,6 +102,10 @@ const VideoPageClient = ({
           const parsedDocument = JSON.parse(note.document as string);
           const clonedDocument = JSON.parse(JSON.stringify(parsedDocument));
           setInitialEditorContent(clonedDocument);
+
+          // ✅ extract timestamps from saved document
+          const extracted = extractTimestamps(clonedDocument);
+          setSimpleTimestamps(extracted);
         }
       } else {
         toast.error(message);
@@ -121,14 +145,15 @@ const VideoPageClient = ({
             </Link>
           </p>
         </div>
-        <div className='w-full'>
-          <YouTubeNotes
-            initialEditorContent={initialEditorContent}
-            playlistVideoId={playlistVideoId}
-            videoId={youtubeVideoId}
-            onVideoLoad={handleVideoLoad}
-          />
-        </div>
+
+        <TabsVideoContent
+          simpleTimestamps={simpleTimestamps}
+          initialEditorContent={initialEditorContent}
+          playlistVideoId={playlistVideoId}
+          youtubeVideoId={youtubeVideoId}
+          handleLoad={handleLoad}
+          onTimestampsSaved={handleTimestampsSaved}
+        />
 
         <SelectTagOptions
           tagOptions={tagOptions}

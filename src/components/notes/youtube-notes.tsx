@@ -1,11 +1,7 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import YouTube, {
-  YouTubeEvent,
-  YouTubePlayer,
-  YouTubeProps
-} from 'react-youtube';
+import React, { useCallback, useRef, useState } from 'react';
+import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ClientRichNoteEditor } from './client-rich-note-editor';
@@ -13,12 +9,14 @@ import { BlockNoteEditor } from '@blocknote/core';
 import { TimestampedContent } from '@/types/notes';
 import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import ResizableYouTubePlayer from './resizable-youtube-player';
+import { extractTimestamps } from '@/lib/utils';
 
 interface YouTubeNotesProps {
   playlistVideoId: string;
   videoId: string;
   initialEditorContent: BlockNoteEditor['document'] | null;
-  onVideoLoad: () => void;
+  onEditorLoad: () => void;
+  onTimestampsSaved: (timestamps: number[]) => void;
 }
 
 const normalizeDocument = (doc: BlockNoteEditor['document'] | null) => {
@@ -47,7 +45,8 @@ export default function YouTubeNotes({
   playlistVideoId,
   videoId, // NOTE: External YouTube video ID from YouTube API
   initialEditorContent,
-  onVideoLoad
+  onEditorLoad,
+  onTimestampsSaved
 }: YouTubeNotesProps) {
   const [isNoteEmpty, setIsNoteEmpty] = useState(true);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -65,8 +64,6 @@ export default function YouTubeNotes({
 
   const onReady = (event: YouTubeEvent) => {
     playerRef.current = event.target;
-    // This is to hide the loading spinner in the parent component
-    onVideoLoad();
   };
 
   const addNote = async () => {
@@ -93,10 +90,13 @@ export default function YouTubeNotes({
     //
   };
 
-  const jumpTo = async (time: number) => {
-    if (!playerRef.current) return;
-    await playerRef.current.seekTo(time, true);
-  };
+  const jumpTo = useCallback(
+    async (time: number) => {
+      if (!playerRef.current) return;
+      await playerRef.current.seekTo(time, true);
+    },
+    [playerRef]
+  );
 
   // when the video plays/pauses, update isNoteTakingReady state
   // if state is 1 (playing) or 2 (paused), set isNoteTakingReady to true, else false (-1=unstarted, 1=playing, 0=ended, 2=paused, 3=buffering, 5=cued)
@@ -138,6 +138,13 @@ export default function YouTubeNotes({
     }
 
     try {
+      // 🔹 extract timestamps once (cheap, intentional)
+      const timestamps = extractTimestamps(currentDocument);
+
+      // 🔹 update listening mode immediately
+      onTimestampsSaved(timestamps);
+
+      // 🔹 persist
       const result = await savePlaylistVideoNote({
         playlistVideoId,
         document: noteContent
@@ -151,15 +158,9 @@ export default function YouTubeNotes({
   };
 
   return (
-    <div className='flex w-full flex-col gap-4 md:flex-row'>
+    <div className='flex w-full flex-col gap-4 lg:flex-row'>
       <div>
         {/* YouTube Player */}
-        {/* <YouTube
-          videoId={videoId}
-          onReady={onReady}
-          onStateChange={onStateChange}
-          opts={opts}
-        /> */}
         <ResizableYouTubePlayer
           videoId={videoId}
           onReady={onReady}
@@ -194,6 +195,7 @@ export default function YouTubeNotes({
           timestampsNotes={sortedTimestampedNotes as TimestampedContent[]}
           onChange={handleChange}
           jumpTo={jumpTo}
+          onEditorLoad={onEditorLoad}
         />
 
         <Button

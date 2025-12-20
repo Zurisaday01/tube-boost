@@ -9,6 +9,8 @@ import { isSuccess } from '@/lib/utils/actions';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
 import PlaylistHeaderDetails from '@/components/playlist-type/playlist-header-details';
 
+export const dynamic = 'force-dynamic';
+
 const PlaylistPage = async ({
   params
 }: {
@@ -38,10 +40,12 @@ const PlaylistPage = async ({
     <PageContainer>
       <section className='w-full'>
         <PlaylistHeaderDetails playlist={playlist} />
+
         <SearchVideoToAdd
           subcategories={subcategories}
           playlistId={playlist.id}
         />
+
         <SubcategoriesList subcategories={subcategories} />
 
         {playlist.uncategorizedPlaylistVideos.length > 0 && (

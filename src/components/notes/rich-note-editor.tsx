@@ -5,7 +5,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/shadcn/style.css';
 
 import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import createTimestamp from './timestamp';
 import type { RichNoteEditor as RichNoteEditorProps } from '@/types/notes';
 import { useTheme } from 'next-themes';
@@ -15,44 +15,36 @@ function RichNoteEditor({
   initialEditorContent,
   onChange,
   editable = true,
-  jumpTo
+  jumpTo,
+  onEditorLoad
 }: RichNoteEditorProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  // gard against multiple inserts of the initial editor content
-  const hasInsertedRef = useRef(false);
+  const [ready, setReady] = useState(false);
 
   // Our schema with block specs, which contain the configs and implementations for
   // blocks that we want our editor to use.
-  const schema = BlockNoteSchema.create().extend({
-    blockSpecs: {
-      // Creates an instance of the Timestamp block and adds it to the schema.
-      timestamp: createTimestamp(jumpTo)()
-    }
+  const schema = useMemo(
+    () =>
+      BlockNoteSchema.create().extend({
+        blockSpecs: {
+          timestamp: createTimestamp(jumpTo)()
+        }
+      }),
+    [jumpTo]
+  );
+
+  const editor = useCreateBlockNote({
+    schema,
+    initialContent: initialEditorContent ?? undefined
   });
-
-  const editor = useCreateBlockNote({ schema });
-
-  useEffect(() => {
-    setMounted(true); // mark that we are on client
-  }, []);
-
-  useEffect(() => {
-    // when initial content is set, update the editor
-    if (initialEditorContent && editor && !hasInsertedRef.current) {
-      // Use queueMicrotask to ensure this runs after the current call stack
-      queueMicrotask(() => {
-        // get the document id of the last block
-        const lastBlock = editor.document[editor.document.length - 1];
-        editor.insertBlocks(initialEditorContent, lastBlock.id, 'before');
-        hasInsertedRef.current = true;
-      });
-    }
-  }, [editor, initialEditorContent]);
 
   // Whenever the content changes, notify parent
   const handleEditorChange = (editor: BlockNoteEditor) => {
-    if (onChange) onChange(editor.document);
+    if (onChange) {
+      // Notify parent component of the updated document
+      onChange(editor.document);
+    }
   };
 
   // Insert timestamps into the editor
@@ -92,10 +84,27 @@ function RichNoteEditor({
     }
   }, [editor, timestampsNotes]);
 
-  // Run once on mount or when timestampsNotes changes
   useEffect(() => {
-    queueMicrotask(() => handleInsertTimestamps());
-  }, [handleInsertTimestamps]);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!editor?.document?.length) return;
+    setReady(true);
+  }, [editor.document]);
+
+  useEffect(() => {
+    if (!ready) return;
+
+    // Intentionally runs whenever the editor becomes ready.
+    // The editor can remount or be recreated (e.g. doc/playlist changes),
+    // so this must NOT be a one-time effect.
+    queueMicrotask(() => {
+      handleInsertTimestamps();
+    });
+
+    onEditorLoad();
+  }, [ready, handleInsertTimestamps, onEditorLoad]);
 
   // Only render editor on client
   if (!mounted) return null;

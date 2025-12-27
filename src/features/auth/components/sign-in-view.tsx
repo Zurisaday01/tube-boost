@@ -51,14 +51,14 @@ export default function SignInViewPage() {
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking sign in, you agree to our{' '}
             <Link
-              href='/terms'
+              href='/terms?from=sign-in'
               className='hover:text-primary underline underline-offset-4'
             >
               Terms of Service
             </Link>{' '}
             and{' '}
             <Link
-              href='/privacy'
+              href='/privacy?from=sign-in'
               className='hover:text-primary underline underline-offset-4'
             >
               Privacy Policy

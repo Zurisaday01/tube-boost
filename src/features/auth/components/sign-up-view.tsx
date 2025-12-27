@@ -50,14 +50,14 @@ export default function SignUpViewPage() {
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking sign up, you agree to our{' '}
             <Link
-              href='/terms'
+              href='/terms?from=sign-up'
               className='hover:text-primary underline underline-offset-4'
             >
               Terms of Service
             </Link>{' '}
             and{' '}
             <Link
-              href='/privacy'
+              href='/privacy?from=sign-up'
               className='hover:text-primary underline underline-offset-4'
             >
               Privacy Policy

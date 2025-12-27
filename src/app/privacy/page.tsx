@@ -1,4 +1,5 @@
 import PageContainer from '@/components/layout/page-container';
+import { getAuthSource } from '@/lib/utils';
 import Link from 'next/link';
 
 const PrivacyPage = async ({
@@ -10,7 +11,7 @@ const PrivacyPage = async ({
   const queries = await searchParams;
 
   // Get the 'from' query parameter if it exists
-  const from = queries['from'] || 'sign-in';
+  const from = getAuthSource(queries.from);
 
   return (
     <PageContainer fullHeight>

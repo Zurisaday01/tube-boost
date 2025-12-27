@@ -353,3 +353,20 @@ export const formatTimestamp = (seconds: number) => {
 
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 };
+
+export type AuthSource = 'sign-in' | 'sign-up';
+
+const ALLOWED_AUTH_SOURCES: readonly AuthSource[] = ['sign-in', 'sign-up'];
+
+export function getAuthSource(
+  from: string | string[] | undefined,
+  fallback: AuthSource = 'sign-in'
+): AuthSource {
+  if (typeof from !== 'string') {
+    return fallback;
+  }
+
+  return ALLOWED_AUTH_SOURCES.includes(from as AuthSource)
+    ? (from as AuthSource)
+    : fallback;
+}

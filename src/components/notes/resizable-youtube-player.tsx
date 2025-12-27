@@ -15,6 +15,8 @@ export default function ResizableYouTubePlayer({
   const [width, setWidth] = useState(720);
   const [resizing, setResizing] = useState(false);
   const handleRef = useRef<HTMLDivElement>(null);
+  const moveRef = useRef<((e: PointerEvent) => void) | null>(null);
+  const upRef = useRef<(() => void) | null>(null);
 
   // Mobile default
   useEffect(() => {
@@ -33,7 +35,6 @@ export default function ResizableYouTubePlayer({
 
     const onMove = (ev: PointerEvent) => {
       const nextWidth = startWidth + (ev.clientX - startX);
-
       setWidth(Math.min(Math.max(320, nextWidth), window.innerWidth - 16));
     };
 
@@ -42,11 +43,27 @@ export default function ResizableYouTubePlayer({
       handleRef.current?.releasePointerCapture(e.pointerId);
       document.removeEventListener('pointermove', onMove);
       document.removeEventListener('pointerup', onUp);
+      moveRef.current = null;
+      upRef.current = null;
     };
+
+    moveRef.current = onMove;
+    upRef.current = onUp;
 
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onUp);
   };
+
+  useEffect(() => {
+    return () => {
+      if (moveRef.current) {
+        document.removeEventListener('pointermove', moveRef.current);
+      }
+      if (upRef.current) {
+        document.removeEventListener('pointerup', upRef.current);
+      }
+    };
+  }, []);
 
   const opts: YouTubeProps['opts'] = {
     width: '100%',

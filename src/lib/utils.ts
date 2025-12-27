@@ -1,4 +1,5 @@
 import { ActionResponse } from '@/types/actions';
+import { BlockNoteEditor } from '@blocknote/core';
 import { type ClassValue, clsx } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
@@ -311,3 +312,44 @@ export function extractTextFromBlocks(blocks: any): string {
     .filter((text) => text.trim() !== '') // Remove empty lines (like timestamps)
     .join('\n');
 }
+
+export function extractTimestamps(
+  doc: BlockNoteEditor['document'] | null
+): number[] {
+  if (!doc) return [];
+
+  const results: number[] = [];
+
+  const walk = (blocks: any[]) => {
+    for (const block of blocks) {
+      // adjust this condition to match how you store timestamps
+      if (block.type === 'timestamp') {
+        const time = block.props?.time;
+        if (typeof time === 'number' && !isNaN(time)) {
+          results.push(time);
+        } else if (time != null) {
+          const parsed = Number(time);
+          if (!isNaN(parsed)) {
+            results.push(parsed);
+          }
+        }
+      }
+      if (block.children?.length) {
+        walk(block.children);
+      }
+    }
+  };
+  walk(doc);
+
+  return results;
+}
+
+export const formatTimestamp = (seconds: number) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+};

@@ -1,0 +1,70 @@
+import { formatTimestamp } from '@/lib/utils';
+import { useRef } from 'react';
+import YouTube, { YouTubeProps } from 'react-youtube';
+
+interface YouTubeTimestampsListProps {
+  videoId: string;
+  onLoad: () => void;
+  timestamps: number[];
+}
+
+const YouTubeTimestampsList = ({
+  videoId,
+  onLoad,
+  timestamps
+}: YouTubeTimestampsListProps) => {
+  const opts: YouTubeProps['opts'] = {
+    width: '100%',
+    height: '100%',
+    playerVars: { modestbranding: 1 }
+  };
+
+  const playerRef = useRef<any>(null);
+
+  const onReady: YouTubeProps['onReady'] = (event) => {
+    playerRef.current = event.target;
+    // This is to hide the loading spinner in the parent component
+    onLoad();
+  };
+
+  return (
+    <div className='flex flex-col md:flex-row gap-5'>
+      <div className='w-full'>
+        <div className='relative w-full aspect-video'>
+          <YouTube
+            videoId={videoId}
+            opts={opts}
+            onReady={onReady}
+            className='h-full'
+          />
+        </div>
+      </div>
+      <div>
+        <h2 className='mt-4 mb-2 text-lg font-semibold'>Timestamps</h2>
+        <p className='text-muted-foreground'>
+          Click on a timestamp to jump to that part of the video.
+        </p>
+        {timestamps.length === 0 && (
+          <p className='mt-4 text-muted-foreground'>No timestamps available.</p>
+        )}
+        <ul className='mt-4 space-y-2'>
+          {timestamps.map((timestamp, index) => (
+            <li key={index}>
+              <button
+                className='text-primary underline font-bold'
+                onClick={() => {
+                  if (playerRef.current) {
+                    playerRef.current.seekTo(timestamp, true);
+                  }
+                }}
+              >
+                {formatTimestamp(timestamp)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+export default YouTubeTimestampsList;

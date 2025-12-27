@@ -12,79 +12,58 @@ export default function ResizableYouTubePlayer({
   onReady?: YouTubeProps['onReady'];
   onStateChange?: YouTubeProps['onStateChange'];
 }) {
-  const [size, setSize] = useState({ width: 640, height: 360 });
+  const [width, setWidth] = useState(720);
   const [resizing, setResizing] = useState(false);
-  const playerRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
 
-  const handlersRef = useRef<{
-    handleMouseMove?: (e: MouseEvent) => void;
-    handleMouseUp?: () => void;
-  }>({});
-
+  // Mobile default
   useEffect(() => {
-    return () => {
-      if (handlersRef.current.handleMouseMove) {
-        document.removeEventListener(
-          'mousemove',
-          handlersRef.current.handleMouseMove
-        );
-      }
-      if (handlersRef.current.handleMouseUp) {
-        document.removeEventListener(
-          'mouseup',
-          handlersRef.current.handleMouseUp
-        );
-      }
-    };
+    if (window.innerWidth < 640) {
+      setWidth(window.innerWidth - 16);
+    }
   }, []);
 
-  const handleResize = (e: React.MouseEvent) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
     setResizing(true);
+    handleRef.current?.setPointerCapture(e.pointerId);
 
     const startX = e.clientX;
-    const startY = e.clientY;
-    const startWidth = size.width;
-    const startHeight = size.height;
+    const startWidth = width;
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const newWidth = startWidth + (moveEvent.clientX - startX);
-      const newHeight = startHeight + (moveEvent.clientY - startY);
-      setSize({
-        width: Math.max(320, newWidth),
-        height: Math.max(180, newHeight)
-      });
+    const onMove = (ev: PointerEvent) => {
+      const nextWidth = startWidth + (ev.clientX - startX);
+
+      setWidth(Math.min(Math.max(320, nextWidth), window.innerWidth - 16));
     };
 
-    const handleMouseUp = () => {
+    const onUp = () => {
       setResizing(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      handlersRef.current = {};
+      handleRef.current?.releasePointerCapture(e.pointerId);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
     };
 
-    handlersRef.current = { handleMouseMove, handleMouseUp };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
   };
 
   const opts: YouTubeProps['opts'] = {
-    width: size.width,
-    height: size.height,
+    width: '100%',
+    height: '100%',
     playerVars: { modestbranding: 1 }
   };
 
   return (
     <div
-      ref={playerRef}
       style={{
-        width: size.width,
-        height: size.height,
+        width,
+        aspectRatio: '16 / 9',
         position: 'relative',
+        margin: '0 auto',
         border: `2px solid ${resizing ? 'red' : '#888'}`,
         borderRadius: 8,
-        overflow: 'hidden',
-        transition: 'border-color 0.2s'
+        overflow: 'hidden'
       }}
     >
       <YouTube
@@ -92,29 +71,39 @@ export default function ResizableYouTubePlayer({
         opts={opts}
         onReady={onReady}
         onStateChange={onStateChange}
+        style={{ width: '100%', height: '100%' }}
       />
-      {/* Resize handle (bottom-right corner) */}
+
+      {/* Resize handle */}
       <div
-        onMouseDown={handleResize}
+        ref={handleRef}
+        onPointerDown={handlePointerDown}
         role='separator'
-        aria-label='Resize video player'
-        aria-valuenow={size.width}
-        aria-valuemin={320}
-        aria-valuemax={1920}
-        tabIndex={0}
+        aria-label='Resize video'
         style={{
-          width: 20,
-          height: 20,
-          borderRadius: '50%',
-          background: resizing ? 'red' : '#ccc',
           position: 'absolute',
           right: 0,
           bottom: 0,
+          width: 36,
+          height: 36,
           cursor: 'se-resize',
-          transition: 'background 0.2s',
-          outline: 'none'
+          touchAction: 'none'
         }}
-      />
+      >
+        <div
+          style={{
+            position: 'absolute',
+            right: 6,
+            bottom: 6,
+            width: 0,
+            height: 0,
+            borderLeft: '14px solid transparent',
+            borderTop: '14px solid transparent',
+            borderRight: '14px solid #FF0000',
+            borderBottom: '14px solid #FF0000'
+          }}
+        />
+      </div>
     </div>
   );
 }

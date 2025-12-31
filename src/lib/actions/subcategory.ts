@@ -101,7 +101,8 @@ export const getSubcategoryById = async (
         playlist: true,
         videos: {
           include: {
-            video: true
+            video: true,
+            note: true
           },
           orderBy: { orderIndex: 'asc' }
         },
@@ -126,7 +127,8 @@ export const getSubcategoryById = async (
       updatedAt: subcategory.updatedAt,
       videos: subcategory.videos.map((v) => ({
         ...v,
-        video: parseVideoThumbnails(v.video)
+        video: parseVideoThumbnails(v.video),
+        note: v.note
       })),
       totalVideos: subcategory?._count.videos || 0
     };

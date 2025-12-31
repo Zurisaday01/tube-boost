@@ -5,7 +5,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/shadcn/style.css';
 
 import { BlockNoteEditor, BlockNoteSchema } from '@blocknote/core';
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import createTimestamp from './timestamp';
 import type { RichNoteEditor as RichNoteEditorProps } from '@/types/notes';
 import { useTheme } from 'next-themes';
@@ -20,7 +20,6 @@ function RichNoteEditor({
 }: RichNoteEditorProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [ready, setReady] = useState(false);
 
   // Our schema with block specs, which contain the configs and implementations for
   // blocks that we want our editor to use.
@@ -34,10 +33,13 @@ function RichNoteEditor({
     [jumpTo]
   );
 
-  const editor = useCreateBlockNote({
-    schema,
-    initialContent: initialEditorContent ?? undefined
-  });
+  const editor = useCreateBlockNote(
+    {
+      schema,
+      initialContent: initialEditorContent ?? undefined
+    },
+    [initialEditorContent]
+  );
 
   // Whenever the content changes, notify parent
   const handleEditorChange = (editor: BlockNoteEditor) => {
@@ -49,7 +51,7 @@ function RichNoteEditor({
 
   // Insert timestamps into the editor
   const handleInsertTimestamps = useCallback(() => {
-    if (!editor || !timestampsNotes) return;
+    if (!editor || !timestampsNotes || !editor?.document) return;
 
     const sorted = [...timestampsNotes].sort((a, b) => a.time - b.time);
 
@@ -89,13 +91,7 @@ function RichNoteEditor({
   }, []);
 
   useEffect(() => {
-    if (!editor?.document?.length) return;
-    setReady(true);
-  }, [editor.document]);
-
-  useEffect(() => {
-    if (!ready) return;
-
+    if (!editor) return;
     // Intentionally runs whenever the editor becomes ready.
     // The editor can remount or be recreated (e.g. doc/playlist changes),
     // so this must NOT be a one-time effect.
@@ -103,8 +99,11 @@ function RichNoteEditor({
       handleInsertTimestamps();
     });
 
-    onEditorLoad();
-  }, [ready, handleInsertTimestamps, onEditorLoad]);
+    // setIsVideoLoading become false to remove loading state in parent
+    setTimeout(() => {
+      onEditorLoad();
+    }, 40_000); // 40 seconds timeout to avoid "Cannot find node position" client error
+  }, [handleInsertTimestamps, onEditorLoad, editor]);
 
   // Only render editor on client
   if (!mounted) return null;
@@ -113,6 +112,7 @@ function RichNoteEditor({
   return (
     <div className='rounded-md border border-gray-300 dark:bg-[#1F1F1F] dark:border-neutral-600'>
       <BlockNoteView
+        key={initialEditorContent ? 'ready' : 'empty'}
         theme={theme === 'light' ? 'light' : 'dark'}
         className='min-h-[200px] p-3'
         editor={editor as BlockNoteEditor}

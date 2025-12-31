@@ -6,7 +6,8 @@ import {
   Prisma,
   PlaylistType,
   TagGroup,
-  Playlist
+  Playlist,
+  PlaylistVideoNote
 } from '@prisma/client';
 import { VideoThumbnails } from '.';
 
@@ -72,10 +73,15 @@ export interface VideoWithParsedThumbnails extends Omit<VideoDB, 'thumbnails'> {
 export interface PlaylistVideoIncludeVideo extends PlaylistVideoDB {
   video: VideoWithParsedThumbnails;
 }
+
+export interface PlaylistVideoIncludeVideoAndNote extends PlaylistVideoDB {
+  video: VideoWithParsedThumbnails;
+  note: PlaylistVideoNote | null;
+}
 // -----------------------------------------------------------------------------------
 
 export interface PlaylistWithStatsAndUncategorizedVideos extends PlaylistWithStats {
-  uncategorizedPlaylistVideos: PlaylistVideoIncludeVideo[];
+  uncategorizedPlaylistVideos: PlaylistVideoIncludeVideoAndNote[];
 }
 
 // Subcategory with additional stats
@@ -86,7 +92,7 @@ export interface SubcategoryWithStats {
   color: string | null;
   createdAt: Date;
   updatedAt: Date;
-  videos: PlaylistVideoIncludeVideo[];
+  videos: PlaylistVideoIncludeVideoAndNote[];
   totalVideos: number;
 }
 

@@ -9,11 +9,11 @@ import {
 } from '@/lib/actions/video';
 import { toast } from 'sonner';
 import { handleActionResponse } from '@/lib/utils';
-import { PlaylistVideoIncludeVideo } from '@/types/actions';
+import { PlaylistVideoIncludeVideoAndNote } from '@/types/actions';
 import { Subcategory } from '@/types';
 
 interface VideosDraggerContainerProps {
-  videos: PlaylistVideoIncludeVideo[];
+  videos: PlaylistVideoIncludeVideoAndNote[];
   subcategoryId?: string; // stays null when uncategorized videos
   subcategories: Subcategory[];
 }
@@ -25,9 +25,9 @@ const VideosDraggerContainer = ({
 }: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
   const [currentVideos, setCurrentVideos] =
-    useState<PlaylistVideoIncludeVideo[]>(videos);
+    useState<PlaylistVideoIncludeVideoAndNote[]>(videos);
   const [originalVideos, setOriginalVideos] = useState<
-    PlaylistVideoIncludeVideo[]
+    PlaylistVideoIncludeVideoAndNote[]
   >([]);
 
   const toggleReorderMode = async () => {
@@ -71,7 +71,7 @@ const VideosDraggerContainer = ({
     setReorderMode((prev) => !prev);
   };
 
-  const handleReorder = (newOrder: PlaylistVideoIncludeVideo[]) => {
+  const handleReorder = (newOrder: PlaylistVideoIncludeVideoAndNote[]) => {
     const reordered = newOrder.map((v, index) => ({
       ...v,
       orderIndex: index

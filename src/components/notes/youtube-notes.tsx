@@ -11,6 +11,8 @@ import { savePlaylistVideoNote } from '@/lib/actions/playlist-video-note';
 import ResizableYouTubePlayer from './resizable-youtube-player';
 import { extractTimestamps } from '@/lib/utils';
 
+import AddTimestampNoteAction from './add-timestamp-note-action';
+
 interface YouTubeNotesProps {
   playlistVideoId: string;
   videoId: string;
@@ -170,24 +172,10 @@ export default function YouTubeNotes({
 
       <div className='flex w-full flex-col gap-2'>
         {/* Add note at current time */}
-        <div className='flex flex-col'>
-          <Button
-            onClick={addNote}
-            variant='secondary'
-            className='w-fit cursor-pointer'
-            disabled={!isNoteTakingReady}
-          >
-            Add Note at Current Time
-          </Button>
-          {timestampedNotes.length === 0 &&
-            !isNoteTakingReady &&
-            !initialEditorContent && (
-              <p className='text-muted-foreground mt-4 text-sm'>
-                Click &quot;Add Note at Current Time&quot; to start referencing
-                to specific timestamps in the video.
-              </p>
-            )}
-        </div>
+        <AddTimestampNoteAction
+          addNote={addNote}
+          isNoteTakingReady={isNoteTakingReady}
+        />
 
         {/* Notes Instance */}
         <ClientRichNoteEditor

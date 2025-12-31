@@ -12,13 +12,13 @@ import {
   SortableContext
 } from '@dnd-kit/sortable';
 import SortableVideoCard from './sortable-video-card';
-import { PlaylistVideoIncludeVideo } from '@/types/actions';
+import { PlaylistVideoIncludeVideoAndNote } from '@/types/actions';
 import { Subcategory } from '@/types';
 
 interface VideoListProps {
-  videos: PlaylistVideoIncludeVideo[];
+  videos: PlaylistVideoIncludeVideoAndNote[];
   reorderMode: boolean;
-  onReorder: (newOrder: PlaylistVideoIncludeVideo[]) => void;
+  onReorder: (newOrder: PlaylistVideoIncludeVideoAndNote[]) => void;
   subcategories: Subcategory[];
 }
 
@@ -41,7 +41,6 @@ const VideoList = ({
       onReorder(newVideos);
     }
   };
-
   // Responsive grid: 1 col (mobile), 2 (sm), 3 (lg), 4 (xl)
   const gridClass =
     'mt-8 grid w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
@@ -60,6 +59,10 @@ const VideoList = ({
             duration={Number(video.video.duration)}
             thumbnails={video.video.thumbnails}
             addedAt={video.addedAt as Date}
+            hasNote={
+              !!video?.note?.searchableText &&
+              video.note.searchableText.length > 0
+            } // searchableText is the note content string based
             reorderMode={reorderMode}
             subcategories={subcategories}
           />

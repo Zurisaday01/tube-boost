@@ -49,6 +49,7 @@ const SortableVideoCard = ({
         channelTitle={channelTitle}
         youtubeVideoId={youtubeVideoId}
         duration={duration}
+        hasNote={false} // SortableVideoCard does not handle notes
         thumbnails={thumbnails}
         addedAt={addedAt}
         reorderMode={reorderMode}

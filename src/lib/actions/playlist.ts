@@ -207,7 +207,7 @@ export const getPlaylistById = async (
         playlistType: true,
         videos: {
           // include the playlist videos
-          include: { video: true }
+          include: { video: true, note: true }
         },
         _count: {
           select: {
@@ -244,7 +244,8 @@ export const getPlaylistById = async (
       uncategorizedPlaylistVideos:
         uncategorizedVideos?.map((pv) => ({
           ...pv,
-          video: parseVideoThumbnails(pv.video) // Parse thumbnails JSON
+          video: parseVideoThumbnails(pv.video), // Parse thumbnails JSON
+          note: pv.note
         })) || []
     };
 

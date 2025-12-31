@@ -12,6 +12,7 @@ interface VideoCardProps {
   duration: number; // in seconds
   thumbnails: VideoThumbnails;
   addedAt: Date;
+  hasNote: boolean;
   reorderMode: boolean; // to indicate if in reorder mode
   subcategories?: Subcategory[];
   // subcategories is only needed when not in reorder mode for the options menu (sortable video card does not pass it)
@@ -24,6 +25,7 @@ const VideoCard = ({
   duration,
   thumbnails,
   addedAt,
+  hasNote,
   reorderMode,
   youtubeVideoId,
   subcategories
@@ -31,6 +33,13 @@ const VideoCard = ({
   const cardContent = (
     <>
       <div className='relative mb-2 h-[230px] overflow-hidden rounded-md bg-gray-200'>
+        <div>
+          {hasNote && (
+            <div className='absolute top-2 right-2 z-10 rounded bg-yellow-300 px-2 py-1 text-xs font-semibold text-yellow-900 shadow'>
+              Note
+            </div>
+          )}
+        </div>
         <Image
           src={thumbnails.maxres?.url || thumbnails.high.url}
           alt={title}

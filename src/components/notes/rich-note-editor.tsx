@@ -112,7 +112,6 @@ function RichNoteEditor({
   return (
     <div className='rounded-md border border-gray-300 dark:bg-[#1F1F1F] dark:border-neutral-600'>
       <BlockNoteView
-        key={initialEditorContent ? 'ready' : 'empty'}
         theme={theme === 'light' ? 'light' : 'dark'}
         className='min-h-[200px] p-3'
         editor={editor as BlockNoteEditor}

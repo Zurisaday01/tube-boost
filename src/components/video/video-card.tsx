@@ -3,6 +3,7 @@ import { BreadcrumbInfo, Subcategory, VideoThumbnails } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import PlaylistVideoOptionsMenu from './playlist-video-options-menu';
+import { useMemo } from 'react';
 
 interface VideoCardProps {
   id: string;
@@ -70,13 +71,19 @@ const VideoCard = ({
     </>
   );
 
-  const href = breadcrumbInfo
-    ? `/dashboard/videos/${id}?parentId=${breadcrumbInfo.parentId}&parentName=${breadcrumbInfo.parentName}&parentType=${breadcrumbInfo.parentType}${
-        breadcrumbInfo.additionalId
-          ? `&additionalId=${breadcrumbInfo.additionalId}`
-          : ''
-      }`
-    : `/dashboard/videos/${id}`;
+  const href = useMemo(() => {
+    if (!breadcrumbInfo) return `/dashboard/videos/${id}`;
+
+    const params = new URLSearchParams({
+      parentId: breadcrumbInfo.parentId,
+      parentName: breadcrumbInfo.parentName,
+      parentType: breadcrumbInfo.parentType
+    });
+    if (breadcrumbInfo.additionalId) {
+      params.set('additionalId', breadcrumbInfo.additionalId);
+    }
+    return `/dashboard/videos/${id}?${params.toString()}`;
+  }, [id, breadcrumbInfo]);
 
   return (
     <div

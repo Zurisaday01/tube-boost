@@ -118,7 +118,7 @@ export function useBreadcrumbs() {
         link: path
       };
     });
-  }, [pathname, parentId, parentName, parentType]);
+  }, [pathname, parentId, parentName, parentType, additionalId]);
 
   return breadcrumbs;
 }

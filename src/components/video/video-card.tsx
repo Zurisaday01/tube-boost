@@ -1,5 +1,5 @@
 import { cn, formatDuration, formatLocalDate } from '@/lib/utils';
-import { Subcategory, VideoThumbnails } from '@/types';
+import { BreadcrumbInfo, Subcategory, VideoThumbnails } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import PlaylistVideoOptionsMenu from './playlist-video-options-menu';
@@ -15,6 +15,7 @@ interface VideoCardProps {
   hasNote: boolean;
   reorderMode: boolean; // to indicate if in reorder mode
   subcategories?: Subcategory[];
+  breadcrumbInfo?: BreadcrumbInfo;
   // subcategories is only needed when not in reorder mode for the options menu (sortable video card does not pass it)
 }
 
@@ -28,7 +29,8 @@ const VideoCard = ({
   hasNote,
   reorderMode,
   youtubeVideoId,
-  subcategories
+  subcategories,
+  breadcrumbInfo
 }: VideoCardProps) => {
   const cardContent = (
     <>
@@ -68,6 +70,14 @@ const VideoCard = ({
     </>
   );
 
+  const href = breadcrumbInfo
+    ? `/dashboard/videos/${id}?parentId=${breadcrumbInfo.parentId}&parentName=${breadcrumbInfo.parentName}&parentType=${breadcrumbInfo.parentType}${
+        breadcrumbInfo.additionalId
+          ? `&additionalId=${breadcrumbInfo.additionalId}`
+          : ''
+      }`
+    : `/dashboard/videos/${id}`;
+
   return (
     <div
       className={cn(
@@ -77,11 +87,7 @@ const VideoCard = ({
           : 'hover:bg-accent/60'
       )}
     >
-      {reorderMode ? (
-        cardContent
-      ) : (
-        <Link href={`/dashboard/videos/${id}`}>{cardContent}</Link>
-      )}
+      {reorderMode ? cardContent : <Link href={href}>{cardContent}</Link>}
 
       {!reorderMode && (
         <Link

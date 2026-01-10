@@ -52,6 +52,11 @@ const PlaylistPage = async ({
           <div className='mt-10'>
             <VideosDraggerContainer
               key={`${playlist.uncategorizedPlaylistVideos.length}-${playlist.updatedAt}`}
+              breadcrumbInfo={{
+                parentId: playlist.id,
+                parentName: playlist.title,
+                parentType: 'playlist'
+              }}
               videos={playlist.uncategorizedPlaylistVideos}
               subcategories={subcategories}
             />

@@ -46,6 +46,12 @@ const SubcategoryPage = async ({ params }: PageProps) => {
         </header>
         <VideosDraggerContainer
           key={videoHashKey}
+          breadcrumbInfo={{
+            parentId: subcategory.id,
+            additionalId: id, // playlist id
+            parentName: subcategory.name,
+            parentType: 'subcategory'
+          }}
           videos={subcategory.videos}
           subcategoryId={subcategory.id}
           subcategories={subcategories}

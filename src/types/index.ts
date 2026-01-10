@@ -118,3 +118,10 @@ export interface SearchResults {
   playlistVideos: SearchedPlaylistVideo[];
   playlists: SearchedPlaylist[];
 }
+
+export type BreadcrumbInfo = {
+  parentId: string;
+  parentName: string;
+  additionalId?: string; // e.g., playlistId
+  parentType: 'playlist' | 'subcategory';
+};

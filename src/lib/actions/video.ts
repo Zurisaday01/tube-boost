@@ -11,7 +11,6 @@ import {
   ReorderVideosInput
 } from '@/types/actions';
 import { getVideoData } from './youtube';
-import { redirect } from 'next/navigation';
 
 export const checkVideoExists = async (
   youtubeVideoId: string // YouTube video ID from API

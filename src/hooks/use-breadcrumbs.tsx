@@ -112,7 +112,7 @@ export function useBreadcrumbs() {
       .filter((segment) => segment !== 'dashboard');
 
     return segments.map((segment, index) => {
-      const path = `/${segments.slice(0, index + 1).join('/')}`;
+      const path = `/dashboard/${segments.slice(0, index + 1).join('/')}`;
       return {
         title: segment.charAt(0).toUpperCase() + segment.slice(1),
         link: path

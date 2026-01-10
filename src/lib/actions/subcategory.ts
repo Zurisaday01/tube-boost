@@ -244,7 +244,7 @@ export const deleteSubcategory = async (
       if (playlistVideoIds.length > 0) {
         await tx.$executeRaw`
           DELETE FROM "Video"
-          WHERE id = ANY(${playlistVideoIds}::uuid[])
+          WHERE id::text = ANY(${playlistVideoIds})
           AND NOT EXISTS (
             SELECT 1 FROM "PlaylistVideo"
             WHERE "PlaylistVideo"."videoId" = "Video".id

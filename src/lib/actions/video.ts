@@ -137,6 +137,7 @@ export const createVideoAndAttach = async (
     });
 
     revalidatePath(`/dashboard/playlists/${playlistId}`);
+    revalidatePath('/dashboard/playlists', 'layout');
 
     return {
       status: 'success',

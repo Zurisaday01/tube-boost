@@ -51,6 +51,7 @@ const PlaylistPage = async ({
         {playlist.uncategorizedPlaylistVideos.length > 0 && (
           <div className='mt-10'>
             <VideosDraggerContainer
+              key={`${playlist.uncategorizedPlaylistVideos.length}-${playlist.updatedAt}`}
               videos={playlist.uncategorizedPlaylistVideos}
               subcategories={subcategories}
             />

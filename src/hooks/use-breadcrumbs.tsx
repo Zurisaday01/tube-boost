@@ -95,12 +95,12 @@ export function useBreadcrumbs() {
             { title: videoId ?? '' }
           ];
         }
-
-        return [
-          { title: 'Videos', link: '/dashboard/videos' },
-          { title: videoId ?? '' }
-        ];
       }
+      // Default when no parent context
+      return [
+        { title: 'Videos', link: '/dashboard/videos' },
+        { title: videoId ?? '' }
+      ];
     }
 
     // ─────────────────────────────────────

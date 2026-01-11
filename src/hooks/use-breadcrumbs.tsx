@@ -85,6 +85,13 @@ export function useBreadcrumbs() {
             { title: videoId ?? '' }
           ];
         } else if (parentType === 'subcategory') {
+          // Only build subcategory breadcrumbs if additionalId (playlistId) is available
+          if (!additionalId) {
+            return [
+              { title: 'Videos', link: '/dashboard/videos' },
+              { title: videoId ?? '' }
+            ];
+          }
           return [
             { title: 'Subcategories' },
             {

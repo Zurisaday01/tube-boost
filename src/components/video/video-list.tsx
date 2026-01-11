@@ -13,11 +13,12 @@ import {
 } from '@dnd-kit/sortable';
 import SortableVideoCard from './sortable-video-card';
 import { PlaylistVideoIncludeVideoAndNote } from '@/types/actions';
-import { Subcategory } from '@/types';
+import { BreadcrumbInfo, Subcategory } from '@/types';
 
 interface VideoListProps {
   videos: PlaylistVideoIncludeVideoAndNote[];
   reorderMode: boolean;
+  breadcrumbInfo: BreadcrumbInfo;
   onReorder: (newOrder: PlaylistVideoIncludeVideoAndNote[]) => void;
   subcategories: Subcategory[];
 }
@@ -25,6 +26,7 @@ interface VideoListProps {
 const VideoList = ({
   videos,
   reorderMode,
+  breadcrumbInfo,
   onReorder,
   subcategories
 }: VideoListProps) => {
@@ -52,6 +54,7 @@ const VideoList = ({
         {videos.map((video) => (
           <VideoCard
             key={video.id}
+            breadcrumbInfo={breadcrumbInfo}
             id={video.id}
             title={video.video.title}
             channelTitle={video.video.channelTitle}

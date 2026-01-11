@@ -1,3 +1,4 @@
+import { Breadcrumbs } from '@/components/breadcrumbs';
 import KBar from '@/components/kbar';
 import AppSidebar from '@/components/layout/app-sidebar';
 import Header from '@/components/layout/header';
@@ -29,9 +30,13 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset>
           <Header />
-          {/* page main content */}
-          {children}
-          {/* page main content ends */}
+          <>
+            <Breadcrumbs />
+
+            {/* page main content */}
+            {children}
+            {/* page main content ends */}
+          </>
         </SidebarInset>
       </SidebarProvider>
     </KBar>

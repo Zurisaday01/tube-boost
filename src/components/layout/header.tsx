@@ -1,7 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
 import { SidebarTrigger, useSidebar } from '../ui/sidebar';
-import { Separator } from '../ui/separator';
 import SearchInput from '../search-input';
 import { UserNav } from './user-nav';
 import { ModeToggle } from './ThemeToggle/theme-toggle';
@@ -37,7 +35,6 @@ export default function Header() {
             TubeBoost
           </Link>
         )}
-        <Separator orientation='vertical' className='mr-2 h-4' />
       </div>
       <div className='flex w-full items-center gap-3 sm:w-fit'>
         <div className='w-max-md w-full'>

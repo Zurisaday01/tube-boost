@@ -10,10 +10,11 @@ import {
 import { toast } from 'sonner';
 import { handleActionResponse } from '@/lib/utils';
 import { PlaylistVideoIncludeVideoAndNote } from '@/types/actions';
-import { Subcategory } from '@/types';
+import { BreadcrumbInfo, Subcategory } from '@/types';
 
 interface VideosDraggerContainerProps {
   videos: PlaylistVideoIncludeVideoAndNote[];
+  breadcrumbInfo: BreadcrumbInfo;
   subcategoryId?: string; // stays null when uncategorized videos
   subcategories: Subcategory[];
 }
@@ -21,7 +22,8 @@ interface VideosDraggerContainerProps {
 const VideosDraggerContainer = ({
   videos,
   subcategoryId,
-  subcategories
+  subcategories,
+  breadcrumbInfo
 }: VideosDraggerContainerProps) => {
   const [reorderMode, setReorderMode] = useState(false);
   const [currentVideos, setCurrentVideos] =
@@ -90,6 +92,7 @@ const VideosDraggerContainer = ({
       </Button>
 
       <VideoList
+        breadcrumbInfo={breadcrumbInfo}
         videos={currentVideos}
         reorderMode={reorderMode}
         onReorder={handleReorder}

@@ -28,11 +28,15 @@ import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserNav } from './user-nav';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import BrandName from '../brand-name';
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const { open, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
+  const { theme } = useTheme();
 
   return (
     <Sidebar collapsible='icon'>
@@ -47,11 +51,8 @@ export default function AppSidebar() {
             </Link>
           </button>
         ) : open ? (
-          <Link
-            href='/dashboard/playlists'
-            className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
-          >
-            TubeBoost
+          <Link href='/dashboard/playlists'>
+            <BrandName location='dashboard' />
           </Link>
         ) : (
           <SidebarTrigger onClick={toggleSidebar} />

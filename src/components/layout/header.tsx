@@ -14,6 +14,8 @@ import { useRouter } from 'next/navigation';
 import CreatePlaylistButton from '../dialog/create-playlist-button';
 import Link from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Image from 'next/image';
+import BrandName from '../brand-name';
 
 export default function Header() {
   const { open } = useSidebar();
@@ -28,11 +30,8 @@ export default function Header() {
           <SidebarTrigger className='-ml-1' />
         ) : (
           /* Render the Full Link as the safe server default (desktop closed/unmounted) */
-          <Link
-            href='/dashboard/playlists'
-            className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
-          >
-            TubeBoost
+          <Link href='/dashboard/playlists'>
+            <BrandName location='dashboard' />
           </Link>
         )}
       </div>

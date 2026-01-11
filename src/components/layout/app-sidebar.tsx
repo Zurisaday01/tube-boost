@@ -43,11 +43,8 @@ export default function AppSidebar() {
       <SidebarHeader>
         {isMobile ? (
           <button onClick={toggleSidebar} className='flex'>
-            <Link
-              href='/dashboard/playlists'
-              className='font-oswald block p-2 text-2xl font-semibold transition-colors duration-150 hover:opacity-80'
-            >
-              TubeBoost
+            <Link href='/dashboard/playlists'>
+              <BrandName location='dashboard' />
             </Link>
           </button>
         ) : open ? (

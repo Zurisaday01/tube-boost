@@ -1,3 +1,4 @@
+import BrandName from '@/components/brand-name';
 import { Button } from '@/components/ui/button';
 import { sendVerificationEmail } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
@@ -90,9 +91,7 @@ export default function VerifyEmailSection({
   return (
     <div className='absolute top-0 left-0 flex h-screen w-full flex-col bg-white'>
       <div className='absolute top-4 left-1/2 -translate-x-1/2'>
-        <span className='font-oswald block p-2 text-2xl font-semibold'>
-          TubeBoost
-        </span>
+        <BrandName />
       </div>
       {/* Center content */}
       <div className='flex h-full flex-grow flex-col items-center justify-center space-y-6'>

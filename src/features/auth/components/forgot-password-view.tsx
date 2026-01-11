@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import ForgotPasswordForm from './forgot-password-form';
+import BrandName from '@/components/brand-name';
 
 export default function ForgotPasswordViewPage() {
   return (
@@ -22,9 +23,7 @@ export default function ForgotPasswordViewPage() {
       <div className='relative flex h-full flex-col justify-between p-4 lg:p-8'>
         {/* Top brand */}
         <div className='absolute top-4 left-1/2 -translate-x-1/2'>
-          <span className='font-oswald block p-2 text-2xl font-semibold'>
-            TubeBoost
-          </span>
+          <BrandName />
         </div>
 
         {/* Center content */}

@@ -5,6 +5,7 @@ import SignInForm from './sign-in-form';
 import Image from 'next/image';
 import VerifyEmailSection from './verify-email-section';
 import { useState } from 'react';
+import BrandName from '@/components/brand-name';
 
 export default function SignInViewPage() {
   const [email, setEmail] = useState<string | null>(null);
@@ -32,9 +33,7 @@ export default function SignInViewPage() {
       <div className='relative flex h-full flex-col justify-between p-4 lg:p-8'>
         {/* Top brand */}
         <div className='absolute top-4 left-1/2 -translate-x-1/2'>
-          <span className='font-oswald block p-2 text-2xl font-semibold'>
-            TubeBoost
-          </span>
+          <BrandName />
         </div>
 
         {/* Center content */}

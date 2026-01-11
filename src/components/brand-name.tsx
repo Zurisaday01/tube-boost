@@ -8,7 +8,8 @@ interface BrandNameProps {
 }
 
 const BrandName = ({ location = 'auth' }: BrandNameProps) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+
   return (
     <p
       className={cn(
@@ -20,14 +21,14 @@ const BrandName = ({ location = 'auth' }: BrandNameProps) => {
     >
       <Image
         src={
-          theme === 'dark'
+          resolvedTheme === 'dark'
             ? '/images/tube-boost-dark.png'
             : '/images/tube-boost-light.png'
         }
         alt='TubeBoost Logo'
         width={50}
         height={50}
-        className='inline-block mr-2 w-8'
+        className='inline-block mr-2 w-8 h-7'
       />
       Tube<span className='text-primary'>Boost</span>
     </p>

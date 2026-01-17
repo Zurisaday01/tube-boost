@@ -1,7 +1,7 @@
 'use client';
-import FilterByPlaylistType from '../playlist-type/filter-by-playlist-type';
+import FilterByPlaylistType from '@/components/playlist-type/filter-by-playlist-type';
 import { PlaylistType } from '@prisma/client';
-import SortByPlaylist from './sort-by-playlist';
+import SortByPlaylist from '@/components/playlists/sort-by-playlist';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface PlaylistToolbarProps {

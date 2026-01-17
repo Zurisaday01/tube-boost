@@ -12,6 +12,9 @@ const PlaylistToolbar = ({ playlistTypes }: PlaylistToolbarProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Get the current sortBy param to avoid an uncontrolled select component
+  const currentSortBy = searchParams.get('sort-by') ?? 'default';
+
   const handleSelectPlaylistType = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -52,6 +55,7 @@ const PlaylistToolbar = ({ playlistTypes }: PlaylistToolbarProps) => {
       <SortByPlaylist
         onClear={handleClearSortBy}
         onSelect={handleSelectSortBy}
+        value={currentSortBy}
       />
     </div>
   );

@@ -11,14 +11,15 @@ import { playlistSortOptions } from '@/constants/sorting';
 interface SortByPlaylistProps {
   onClear: () => void;
   onSelect: (sortBy: string) => void;
+  value?: string;
 }
 
-const SortByPlaylist = ({ onClear, onSelect }: SortByPlaylistProps) => {
+const SortByPlaylist = ({ onClear, onSelect, value }: SortByPlaylistProps) => {
   return (
     <div>
       <h2 className='text-lg font-semibold'>Sort by</h2>
       <Select
-        defaultValue='default'
+        value={value ?? 'default'}
         onValueChange={(value) => {
           if (value === 'default') {
             onClear();

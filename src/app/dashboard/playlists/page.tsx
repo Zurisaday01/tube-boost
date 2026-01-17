@@ -1,6 +1,6 @@
 import PageContainer from '@/components/layout/page-container';
 import { PaginationFooter } from '@/components/pagination';
-import FilterByPlaylistType from '@/components/playlist-type/filter-by-playlist-type';
+import PlaylistToolbar from '@/components/playlists/playlist-toolbar';
 import PlaylistsList from '@/components/playlists/playlists-list';
 import { getAllPlaylists } from '@/lib/actions/playlist';
 import { getAllPlaylistTypes } from '@/lib/actions/playlist-type';
@@ -20,8 +20,10 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
   // Extract playlist type filter from search params and ensure it's a string
   // (if multiple values are provided, ignore them)
   const rawPlaylistType = currentSearchParams['playlist-type'];
+  const rawSortBy = currentSearchParams['sort-by'];
   const playlistTypeParam =
     typeof rawPlaylistType === 'string' ? rawPlaylistType : undefined;
+  const sortByParam = typeof rawSortBy === 'string' ? rawSortBy : undefined;
 
   // pagination params
   const rawPage = currentSearchParams.page;
@@ -36,7 +38,12 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
       : 10;
 
   const [playlistResponse, playlistTypesResponse] = await Promise.all([
-    getAllPlaylists({ playlistTypeId: playlistTypeParam, page, pageSize }),
+    getAllPlaylists({
+      playlistTypeId: playlistTypeParam,
+      page,
+      pageSize,
+      sortBy: sortByParam
+    }),
     getAllPlaylistTypes()
   ]);
 
@@ -65,7 +72,7 @@ const PlaylistsPage = async ({ searchParams }: PageProps) => {
         <h1 className='text-2xl font-bold'>Your Playlists</h1>
 
         {playlistTypes && playlistTypes.length > 0 && (
-          <FilterByPlaylistType playlistTypes={playlistTypes || []} />
+          <PlaylistToolbar playlistTypes={playlistTypes} />
         )}
 
         <div className='flex-1'>

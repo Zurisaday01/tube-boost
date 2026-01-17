@@ -17,6 +17,7 @@ import {
   PlaylistWithStatsAndUncategorizedVideos
 } from '@/types/actions';
 import { Playlist } from '@prisma/client';
+import { playlistOrderByMap } from '../../constants/sorting';
 
 export const createPlaylist = async (
   data: z.infer<typeof createUpdatePlaylistSchema>
@@ -109,12 +110,14 @@ interface GetAllPlaylistsParams {
   playlistTypeId?: string;
   page?: number;
   pageSize?: number;
+  sortBy?: string;
 }
 
 export const getAllPlaylists = async ({
   playlistTypeId,
   page = 1,
-  pageSize = 10
+  pageSize = 10,
+  sortBy
 }: GetAllPlaylistsParams): Promise<
   ActionResponse<{ items: PlaylistWithStats[]; total: number }>
 > => {
@@ -136,13 +139,17 @@ export const getAllPlaylists = async ({
     // Pagination calculations
     const skip = (validPage - 1) * validPageSize;
 
+    // Determine orderBy based on sortBy param
+    const orderBy =
+      playlistOrderByMap[sortBy ?? 'default'] ?? playlistOrderByMap.default;
+
     // Fetch page data + total count in parallel
     const [playlists, total] = await Promise.all([
       prisma.playlist.findMany({
         where,
         skip,
         take: validPageSize,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         select: {
           id: true,
           title: true,

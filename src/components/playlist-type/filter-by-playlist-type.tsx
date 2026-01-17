@@ -12,24 +12,15 @@ const PlaylistTypeTag = dynamic(() => import('./playlist-type-tag'), {
 
 interface FilterByPlaylistTypeProps {
   playlistTypes: PlaylistType[];
+  onSelect: (id: string) => void;
+  onClear: () => void;
 }
 
-const FilterByPlaylistType = ({ playlistTypes }: FilterByPlaylistTypeProps) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleSelect = (id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    // Set or replace the playlist-type param
-    params.set('playlist-type', id);
-
-    // remove page param to reset pagination
-    params.delete('page');
-
-    router.push(`?${params.toString()}`);
-  };
-
+const FilterByPlaylistType = ({
+  playlistTypes,
+  onSelect,
+  onClear
+}: FilterByPlaylistTypeProps) => {
   return (
     <div className='flex flex-col gap-2'>
       <h2 className='text-lg font-semibold'>Filter by Playlist Type</h2>
@@ -37,11 +28,7 @@ const FilterByPlaylistType = ({ playlistTypes }: FilterByPlaylistTypeProps) => {
         <Button
           className='cursor-pointer rounded-full'
           variant='outline'
-          onClick={() => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.delete('playlist-type');
-            router.push(`?${params.toString()}`);
-          }}
+          onClick={() => onClear()}
         >
           All
         </Button>
@@ -51,7 +38,7 @@ const FilterByPlaylistType = ({ playlistTypes }: FilterByPlaylistTypeProps) => {
             <button
               key={type.id}
               className='cursor-pointer'
-              onClick={() => handleSelect(type.id)}
+              onClick={() => onSelect(type.id)}
             >
               <PlaylistTypeTag playlistType={type} isCard={false} />
             </button>

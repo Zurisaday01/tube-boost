@@ -42,6 +42,10 @@ const PlaylistToolbar = ({ playlistTypes }: PlaylistToolbarProps) => {
   const handleSelectSortBy = (sortBy: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sort-by', sortBy);
+
+    // remove page param to reset pagination
+    params.delete('page');
+
     router.push(`?${params.toString()}`);
   };
 

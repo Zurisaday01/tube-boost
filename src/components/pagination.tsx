@@ -77,6 +77,8 @@ export function PaginationFooter({
     return null;
   }
 
+  // If there's only one page, don't render pagination
+
   return (
     <div className='mt-4 flex w-full items-center justify-between'>
       {/* Page size selector */}
@@ -106,48 +108,50 @@ export function PaginationFooter({
       </div>
 
       {/* Actual pagination */}
-      <Pagination className='w-full'>
-        <PaginationContent>
-          {/* Previous */}
-          <PaginationItem>
-            <PaginationPrevious
-              className={cn(page === 1 && 'pointer-events-none opacity-50')}
-              href={page > 1 ? buildPageHref(page - 1) : undefined}
-            />
-          </PaginationItem>
+      {totalPages > 1 && (
+        <Pagination className='w-full'>
+          <PaginationContent>
+            {/* Previous */}
+            <PaginationItem>
+              <PaginationPrevious
+                className={cn(page === 1 && 'pointer-events-none opacity-50')}
+                href={page > 1 ? buildPageHref(page - 1) : undefined}
+              />
+            </PaginationItem>
 
-          {/* Numbers */}
-          {pages.map((p, idx) =>
-            p === 'ellipsis' ? (
-              <PaginationItem key={`e-${idx}`}>
-                <PaginationEllipsis />
-              </PaginationItem>
-            ) : (
-              <PaginationItem key={p}>
-                <PaginationLink
-                  href={totalPages > 1 ? buildPageHref(p) : undefined}
-                  className={cn(
-                    totalPages === 1 && 'pointer-events-none opacity-50'
-                  )}
-                  isActive={p === page}
-                >
-                  {p}
-                </PaginationLink>
-              </PaginationItem>
-            )
-          )}
+            {/* Numbers */}
+            {pages.map((p, idx) =>
+              p === 'ellipsis' ? (
+                <PaginationItem key={`e-${idx}`}>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              ) : (
+                <PaginationItem key={p}>
+                  <PaginationLink
+                    href={totalPages > 1 ? buildPageHref(p) : undefined}
+                    className={cn(
+                      totalPages === 1 && 'pointer-events-none opacity-50'
+                    )}
+                    isActive={p === page}
+                  >
+                    {p}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            )}
 
-          {/* Next */}
-          <PaginationItem>
-            <PaginationNext
-              className={cn(
-                page === totalPages && 'pointer-events-none opacity-50'
-              )}
-              href={page < totalPages ? buildPageHref(page + 1) : undefined}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            {/* Next */}
+            <PaginationItem>
+              <PaginationNext
+                className={cn(
+                  page === totalPages && 'pointer-events-none opacity-50'
+                )}
+                href={page < totalPages ? buildPageHref(page + 1) : undefined}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }

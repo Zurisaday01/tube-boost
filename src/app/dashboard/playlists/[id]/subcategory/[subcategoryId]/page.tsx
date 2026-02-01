@@ -1,22 +1,42 @@
 import PageContainer from '@/components/layout/page-container';
+import { PaginationFooter } from '@/components/pagination';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
 import {
   getAllSubcategories,
   getSubcategoryById
 } from '@/lib/actions/subcategory';
 import { isSuccess } from '@/lib/utils/actions';
+import { normalizeInt } from '@/lib/utils/pagination';
 import { Folder } from 'lucide-react';
 import { hasher } from 'node-object-hash';
+import { MAX_PAGE_SIZE } from '@/constants/pagination';
 
-type PageProps = { params: Promise<{ id: string; subcategoryId: string }> };
+type PageProps = {
+  params: Promise<{ id: string; subcategoryId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
 
-const SubcategoryPage = async ({ params }: PageProps) => {
+const SubcategoryPage = async ({ params, searchParams }: PageProps) => {
+  // Get the current search params
+  const currentSearchParams = await searchParams;
+  // pagination params
+  const rawPage = currentSearchParams.page;
+  const page = normalizeInt(rawPage, 1);
+  const pageSize = Math.min(
+    normalizeInt(currentSearchParams.pageSize, 10),
+    MAX_PAGE_SIZE
+  );
+
   // the first one belongs to the playlist, the second to the subcategory
   const { id, subcategoryId } = await params;
 
   // Initiate both requests in parallel
   const [subcategoryResponse, subcategoriesResponse] = await Promise.all([
-    getSubcategoryById(subcategoryId),
+    getSubcategoryById({
+      subcategoryId,
+      page,
+      pageSize
+    }),
     getAllSubcategories(id)
   ]);
 
@@ -44,18 +64,29 @@ const SubcategoryPage = async ({ params }: PageProps) => {
             <div>{/* TODO: Implement add description */}</div>
           </div>
         </header>
-        <VideosDraggerContainer
-          key={videoHashKey}
-          breadcrumbInfo={{
-            parentId: subcategory.id,
-            additionalId: id, // playlist id
-            parentName: subcategory.name,
-            parentType: 'subcategory'
-          }}
-          videos={subcategory.videos}
-          subcategoryId={subcategory.id}
-          subcategories={subcategories}
-        />
+
+        <div className='flex flex-col gap-6 pb-10'>
+          <VideosDraggerContainer
+            key={videoHashKey}
+            breadcrumbInfo={{
+              parentId: subcategory.id,
+              additionalId: id, // playlist id
+              parentName: subcategory.name,
+              parentType: 'subcategory'
+            }}
+            videos={subcategory.videos}
+            subcategoryId={subcategory.id}
+            subcategories={subcategories}
+          />
+          <div className='mb-10'>
+            <PaginationFooter
+              page={page}
+              totalPages={Math.ceil(subcategory.totalVideos / pageSize)}
+              pageSize={pageSize}
+              basePath={`/dashboard/playlists/${id}/subcategory/${subcategoryId}`}
+            />
+          </div>
+        </div>
       </section>
     </PageContainer>
   );

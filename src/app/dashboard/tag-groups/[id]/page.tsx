@@ -17,7 +17,11 @@ const TagGroupPage = async ({ params }: PageProps) => {
   ]);
 
   if (!isSuccess(tagsData) || !isSuccess(tagGroupData)) {
-    return <div>Failed to load data.</div>;
+    return (
+      <div className='mx-auto text-center text-red-500'>
+        Failed to load data.
+      </div>
+    );
   }
 
   // Destructure the tag data

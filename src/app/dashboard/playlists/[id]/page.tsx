@@ -82,7 +82,9 @@ const PlaylistPage = async ({ params, searchParams }: PageProps) => {
             <div className='mb-10'>
               <PaginationFooter
                 page={page}
-                totalPages={Math.ceil(playlist.totalVideos / pageSize)}
+                totalPages={Math.ceil(
+                  playlist.uncategorizedPlaylistVideos.length / pageSize
+                )}
                 pageSize={pageSize}
                 basePath={`/dashboard/playlists/${id}`}
               />

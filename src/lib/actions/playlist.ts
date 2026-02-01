@@ -194,10 +194,21 @@ export const getAllPlaylists = async ({
   }
 };
 
+interface GetPlaylistByIdParams {
+  id: string;
+  page?: number;
+  pageSize?: number;
+}
 // Get playlist by ID along with stats and the uncategorized videos payload
-export const getPlaylistById = async (
-  id: string
-): Promise<ActionResponse<PlaylistWithStatsAndUncategorizedVideos>> => {
+export const getPlaylistById = async ({
+  id,
+  page = 1,
+  pageSize = 10
+}: GetPlaylistByIdParams): Promise<
+  ActionResponse<PlaylistWithStatsAndUncategorizedVideos>
+> => {
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
   try {
     const user = await getSessionUser();
     if (!isUserAuthenticated(user)) {
@@ -214,7 +225,9 @@ export const getPlaylistById = async (
         playlistType: true,
         videos: {
           // include the playlist videos
-          include: { video: true, note: true }
+          include: { video: true, note: true },
+          skip,
+          take
         },
         _count: {
           select: {

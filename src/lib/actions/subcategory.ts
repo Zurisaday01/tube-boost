@@ -91,9 +91,20 @@ export const getAllSubcategories = async (
   }
 };
 
-export const getSubcategoryById = async (
-  id: string
-): Promise<ActionResponse<SubcategoryWithStats>> => {
+interface GetSubcategoryByIdParams {
+  subcategoryId: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export const getSubcategoryById = async ({
+  subcategoryId: id,
+  page = 1,
+  pageSize = 10
+}: GetSubcategoryByIdParams): Promise<ActionResponse<SubcategoryWithStats>> => {
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
+
   try {
     const subcategory = await prisma.subcategory.findUnique({
       where: { id },
@@ -104,7 +115,9 @@ export const getSubcategoryById = async (
             video: true,
             note: true
           },
-          orderBy: { orderIndex: 'asc' }
+          orderBy: { orderIndex: 'asc' },
+          skip,
+          take
         },
         _count: {
           select: {

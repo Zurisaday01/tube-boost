@@ -8,20 +8,39 @@ import { isSuccess } from '@/lib/utils/actions';
 
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
 import PlaylistHeaderDetails from '@/components/playlist-type/playlist-header-details';
+import { PaginationFooter } from '@/components/pagination';
 
 export const dynamic = 'force-dynamic';
 
-const PlaylistPage = async ({
-  params
-}: {
-  params: Promise<{ id: string }>;
-}) => {
+type PageProps = {
+  params: Promise<{ id: string; subcategoryId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+const PlaylistPage = async ({ params, searchParams }: PageProps) => {
   // asynchronous access of `params.id`.
   const { id } = await params;
+  const currentSearchParams = await searchParams;
+
+  // pagination params
+  const rawPage = currentSearchParams.page;
+  const page =
+    rawPage && !isNaN(Number(rawPage)) && Number(rawPage) >= 1
+      ? Math.floor(Number(rawPage))
+      : 1;
+  const rawPageSize = currentSearchParams.pageSize;
+  const pageSize =
+    rawPageSize && !isNaN(Number(rawPageSize)) && Number(rawPageSize) >= 1
+      ? Math.floor(Number(rawPageSize))
+      : 10;
 
   // Initiate both requests in parallel
   const [playlistResponse, subcategoriesResponse] = await Promise.all([
-    getPlaylistById(id),
+    getPlaylistById({
+      id,
+      page,
+      pageSize
+    }),
     getAllSubcategories(id)
   ]);
 
@@ -49,17 +68,27 @@ const PlaylistPage = async ({
         <SubcategoriesList subcategories={subcategories} />
 
         {playlist.uncategorizedPlaylistVideos.length > 0 && (
-          <div className='mt-10'>
-            <VideosDraggerContainer
-              key={`${playlist.uncategorizedPlaylistVideos.length}-${playlist.updatedAt}`}
-              breadcrumbInfo={{
-                parentId: playlist.id,
-                parentName: playlist.title,
-                parentType: 'playlist'
-              }}
-              videos={playlist.uncategorizedPlaylistVideos}
-              subcategories={subcategories}
-            />
+          <div className='flex flex-col gap-6 pb-10'>
+            <div className='mt-10'>
+              <VideosDraggerContainer
+                key={`${playlist.uncategorizedPlaylistVideos.length}-${playlist.updatedAt}`}
+                breadcrumbInfo={{
+                  parentId: playlist.id,
+                  parentName: playlist.title,
+                  parentType: 'playlist'
+                }}
+                videos={playlist.uncategorizedPlaylistVideos}
+                subcategories={subcategories}
+              />
+            </div>
+            <div className='mb-10'>
+              <PaginationFooter
+                page={page}
+                totalPages={Math.ceil(playlist.totalVideos / pageSize)}
+                pageSize={pageSize}
+                basePath={`/dashboard/playlists/${id}`}
+              />
+            </div>
           </div>
         )}
       </section>

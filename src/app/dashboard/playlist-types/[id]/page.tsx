@@ -35,7 +35,11 @@ const PlaylistTypePage = async ({ params, searchParams }: PageProps) => {
   ]);
 
   if (!isSuccess(playlistTypeCountData) || !isSuccess(playlistTypeData)) {
-    return <div>Failed to load data.</div>;
+    return (
+      <div className='mx-auto text-center text-red-500'>
+        Failed to load data.
+      </div>
+    );
   }
 
   // Destructure the playlist type data

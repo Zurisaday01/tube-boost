@@ -5,7 +5,6 @@ import {
   getAllSubcategories,
   getSubcategoryById
 } from '@/lib/actions/subcategory';
-import { searchParams } from '@/lib/searchparams';
 import { isSuccess } from '@/lib/utils/actions';
 import { Folder } from 'lucide-react';
 import { hasher } from 'node-object-hash';

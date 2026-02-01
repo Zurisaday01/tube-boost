@@ -6,8 +6,10 @@ import {
   getSubcategoryById
 } from '@/lib/actions/subcategory';
 import { isSuccess } from '@/lib/utils/actions';
+import { normalizeInt } from '@/lib/utils/pagination';
 import { Folder } from 'lucide-react';
 import { hasher } from 'node-object-hash';
+import { MAX_PAGE_SIZE } from '@/constants/pagination';
 
 type PageProps = {
   params: Promise<{ id: string; subcategoryId: string }>;
@@ -19,15 +21,11 @@ const SubcategoryPage = async ({ params, searchParams }: PageProps) => {
   const currentSearchParams = await searchParams;
   // pagination params
   const rawPage = currentSearchParams.page;
-  const page =
-    rawPage && !isNaN(Number(rawPage)) && Number(rawPage) >= 1
-      ? Math.floor(Number(rawPage))
-      : 1;
-  const rawPageSize = currentSearchParams.pageSize;
-  const pageSize =
-    rawPageSize && !isNaN(Number(rawPageSize)) && Number(rawPageSize) >= 1
-      ? Math.floor(Number(rawPageSize))
-      : 10;
+  const page = normalizeInt(rawPage, 1);
+  const pageSize = Math.min(
+    normalizeInt(currentSearchParams.pageSize, 10),
+    MAX_PAGE_SIZE
+  );
 
   // the first one belongs to the playlist, the second to the subcategory
   const { id, subcategoryId } = await params;

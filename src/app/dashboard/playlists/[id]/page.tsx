@@ -9,6 +9,8 @@ import { isSuccess } from '@/lib/utils/actions';
 import VideosDraggerContainer from '@/components/video/videos-dragger-container';
 import PlaylistHeaderDetails from '@/components/playlist-type/playlist-header-details';
 import { PaginationFooter } from '@/components/pagination';
+import { normalizeInt } from '@/lib/utils/pagination';
+import { MAX_PAGE_SIZE } from '@/constants/pagination';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,15 +26,11 @@ const PlaylistPage = async ({ params, searchParams }: PageProps) => {
 
   // pagination params
   const rawPage = currentSearchParams.page;
-  const page =
-    rawPage && !isNaN(Number(rawPage)) && Number(rawPage) >= 1
-      ? Math.floor(Number(rawPage))
-      : 1;
-  const rawPageSize = currentSearchParams.pageSize;
-  const pageSize =
-    rawPageSize && !isNaN(Number(rawPageSize)) && Number(rawPageSize) >= 1
-      ? Math.floor(Number(rawPageSize))
-      : 10;
+  const page = normalizeInt(rawPage, 1);
+  const pageSize = Math.min(
+    normalizeInt(currentSearchParams.pageSize, 10),
+    MAX_PAGE_SIZE
+  );
 
   // Initiate both requests in parallel
   const [playlistResponse, subcategoriesResponse] = await Promise.all([
